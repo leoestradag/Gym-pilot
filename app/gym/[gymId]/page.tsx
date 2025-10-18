@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart } from "lucide-react"
+import { GymNavigation } from "@/components/gym-navigation"
 
 const gymsData = {
   "tessalp-centro": {
@@ -87,6 +88,9 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <GymNavigation gymId={params.gymId} />
+      
       {/* Hero Section */}
       <section id="inicio" className="relative h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/20" />
