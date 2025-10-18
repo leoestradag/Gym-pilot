@@ -26,6 +26,16 @@ const navigationItems = [
     href: "#clases"
   },
   {
+    id: "nutricion",
+    label: "Nutrición",
+    href: "#nutricion"
+  },
+  {
+    id: "gym-coach",
+    label: "Gym Coach",
+    href: "#gym-coach"
+  },
+  {
     id: "instalaciones",
     label: "Nuestras Instalaciones",
     href: "#instalaciones"
