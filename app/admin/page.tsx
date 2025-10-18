@@ -3,8 +3,7 @@ import { StatsCard } from "@/components/stats-card"
 import { Users, CheckCircle, DollarSign, TrendingUp, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { mockStats, mockWeeklyAttendance } from "@/lib/db"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { mockStats } from "@/lib/db"
 
 export default function AdminDashboardPage() {
   return (
@@ -59,32 +58,42 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-        {/* Weekly Attendance Chart */}
+        {/* Weekly Attendance Summary */}
         <Card className="border-border/50 bg-card/50 backdrop-blur">
           <CardHeader>
             <CardTitle className="text-foreground">Asistencia Semanal</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockWeeklyAttendance}>
-                <XAxis
-                  dataKey="day"
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "var(--radius)",
-                  }}
-                />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="grid grid-cols-7 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">85</div>
+                <div className="text-sm text-muted-foreground">Lun</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">92</div>
+                <div className="text-sm text-muted-foreground">Mar</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">78</div>
+                <div className="text-sm text-muted-foreground">Mié</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">88</div>
+                <div className="text-sm text-muted-foreground">Jue</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">95</div>
+                <div className="text-sm text-muted-foreground">Vie</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">67</div>
+                <div className="text-sm text-muted-foreground">Sáb</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">45</div>
+                <div className="text-sm text-muted-foreground">Dom</div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
