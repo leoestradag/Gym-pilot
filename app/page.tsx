@@ -85,7 +85,10 @@ export default function LandingPage() {
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 text-balance">
             Los sueños se planean y se construyen día a día
           </p>
-          <p className="text-lg text-muted-foreground/80 mb-12 text-balance">Nosotros te acompañamos en cada paso</p>
+          <p className="text-lg text-muted-foreground/80 mb-6 text-balance">Nosotros te acompañamos en cada paso</p>
+          <p className="text-2xl md:text-3xl font-bold text-primary mb-12 text-balance">
+            ¡Tu mejor versión te está esperando!
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/gimnasios">
               <Button size="lg" className="text-lg px-8 py-6 gap-2">
