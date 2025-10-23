@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -35,6 +35,7 @@ export default function GymCoachPage() {
   ])
   const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const quickActions = [
     {
@@ -110,6 +111,15 @@ export default function GymCoachPage() {
     setInput(prompt)
   }
 
+  // Auto scroll to bottom when new messages arrive
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, isTyping])
+
   return (
     <div className="min-h-screen bg-background">
       {/* User Avatar */}
@@ -159,7 +169,7 @@ export default function GymCoachPage() {
           {/* Chat Section */}
           <div className="lg:col-span-2">
             <Card className="border-2 border-border/60 bg-card/90 backdrop-blur h-[600px] flex flex-col">
-              <CardHeader className="border-b border-border/50">
+              <CardHeader className="border-b border-border/50 flex-shrink-0">
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-primary" />
                   Chat con tu Coach
@@ -169,16 +179,16 @@ export default function GymCoachPage() {
                 </p>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-0">
+              <CardContent className="flex-1 flex flex-col p-0 min-h-0">
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
                   {messages.map((message) => (
                     <div
                       key={message.id}
                       className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-[80%] rounded-lg p-4 ${
+                        className={`max-w-[85%] rounded-lg p-4 break-words ${
                           message.type === "user"
                             ? "bg-primary text-primary-foreground"
                             : "bg-muted text-foreground"
@@ -195,8 +205,8 @@ export default function GymCoachPage() {
                               <User className="h-4 w-4 text-primary" />
                             </div>
                           )}
-                          <div className="flex-1">
-                            <p className="text-sm">{message.content}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm leading-relaxed break-words">{message.content}</p>
                             <p className="text-xs opacity-70 mt-2">{message.timestamp}</p>
                           </div>
                         </div>
@@ -220,10 +230,13 @@ export default function GymCoachPage() {
                       </div>
                     </div>
                   )}
+                  
+                  {/* Scroll anchor */}
+                  <div ref={messagesEndRef} />
                 </div>
 
                 {/* Input */}
-                <div className="border-t border-border/50 p-4">
+                <div className="border-t border-border/50 p-4 flex-shrink-0">
                   <form onSubmit={handleSendMessage} className="flex gap-2">
                     <Input
                       value={input}
