@@ -22,6 +22,7 @@ import {
   Sparkles
 } from "lucide-react"
 import Link from "next/link"
+import { UserAvatar } from "@/components/user-avatar"
 
 export default function GymCoachPage() {
   const [messages, setMessages] = useState([
@@ -111,8 +112,13 @@ export default function GymCoachPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* User Avatar */}
+      <div className="fixed top-6 right-6 z-50">
+        <UserAvatar />
+      </div>
+
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur border-b border-border/50">
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MapPin, Users, Star, ArrowRight, Dumbbell } from "lucide-react"
 import Link from "next/link"
 import { GymCoachPreview } from "@/components/gym-coach-preview"
+import { UserAvatar } from "@/components/user-avatar"
 
 const gyms = [
   {
@@ -64,6 +65,11 @@ const gyms = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* User Avatar */}
+      <div className="fixed top-6 right-6 z-50">
+        <UserAvatar />
+      </div>
+
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-primary/20" />
