@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { ArrowLeft, Home } from "lucide-react"
 
 interface GymNavigationProps {
   gymId: string
@@ -94,6 +96,14 @@ export function GymNavigation({ gymId, currentSection = "inicio" }: GymNavigatio
               </Button>
             ))}
           </div>
+
+          {/* Back to Home Button */}
+          <Link href="/">
+            <Button variant="outline" size="sm" className="gap-2 bg-background/80 backdrop-blur border-border/50 hover:bg-background/90">
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Volver al Inicio</span>
+            </Button>
+          </Link>
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="sm" className="md:hidden">

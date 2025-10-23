@@ -2,8 +2,9 @@ import { CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, Apple, Utensils, Target, Zap } from "lucide-react"
+import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, Apple, Utensils, Target, Zap, ArrowLeft, Home } from "lucide-react"
 import { GymNavigation } from "@/components/gym-navigation"
+import Link from "next/link"
 
 const gymsData = {
   "tessalp-centro": {
@@ -185,6 +186,17 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
           alt={gym.name}
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         />
+        
+        {/* Back Button */}
+        <div className="absolute top-6 right-6 z-20">
+          <Link href="/">
+            <Button variant="outline" size="sm" className="gap-2 bg-background/80 backdrop-blur border-border/50 hover:bg-background/90">
+              <ArrowLeft className="h-4 w-4" />
+              Volver al Inicio
+            </Button>
+          </Link>
+        </div>
+        
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance">
             Transforma tu vida en <span className="text-primary">{gym.name}</span>
