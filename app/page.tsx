@@ -39,7 +39,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/30" />
         <img
           src="/people-training-in-modern-gym.jpg"
           alt="Hero"
@@ -78,7 +78,7 @@ export default function LandingPage() {
             {gyms.map((gym) => (
               <Card
                 key={gym.id}
-                className="border-border/50 bg-card/50 backdrop-blur overflow-hidden hover:border-primary/50 transition-colors"
+                className="border-border/50 bg-card/80 backdrop-blur overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300"
               >
                 <img src={gym.image || "/placeholder.svg"} alt={gym.name} className="w-full h-48 object-cover" />
                 <CardHeader>
@@ -114,7 +114,7 @@ export default function LandingPage() {
       </section>
 
       {/* Gym Coach AI Preview Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 to-primary/10">
+      <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/15">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">🚀 Descubre Gym Coach AI</h2>

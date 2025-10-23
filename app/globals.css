@@ -3,41 +3,41 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Updated theme from emerald green/black to red/gray color scheme */
+/* Gym-themed color scheme - Energizing orange, blue, and dark tones */
 :root {
-  --background: oklch(0.25 0.01 0); /* #3a3a3a - Medium gray background */
-  --foreground: oklch(0.98 0 0); /* Almost white text */
-  --card: oklch(0.3 0.01 0); /* #4a4a4a - Lighter gray card background */
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.3 0.01 0);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.55 0.22 25); /* #dc2626 - Red primary color */
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.35 0.01 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.35 0.01 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.55 0.22 25); /* Red accent */
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.4 0.01 0);
-  --input: oklch(0.4 0.01 0);
-  --ring: oklch(0.55 0.22 25);
-  --chart-1: oklch(0.55 0.22 25); /* Red */
-  --chart-2: oklch(0.5 0.15 0); /* Gray */
-  --chart-3: oklch(0.65 0.18 30); /* Orange-red */
-  --chart-4: oklch(0.45 0.12 320); /* Purple-gray */
-  --chart-5: oklch(0.6 0.2 15); /* Dark red */
+  --background: oklch(0.15 0.01 0); /* #1a1a1a - Dark background */
+  --foreground: oklch(0.95 0 0); /* Almost white text */
+  --card: oklch(0.2 0.01 0); /* #2a2a2a - Dark card background */
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.2 0.01 0);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: oklch(0.6 0.18 35); /* #ff6b35 - Vibrant orange primary */
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.25 0.01 0);
+  --secondary-foreground: oklch(0.9 0 0);
+  --muted: oklch(0.25 0.01 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.5 0.15 220); /* #3b82f6 - Blue accent */
+  --accent-foreground: oklch(0.95 0 0);
+  --destructive: oklch(0.6 0.2 15); /* #ef4444 - Red destructive */
+  --destructive-foreground: oklch(0.95 0 0);
+  --border: oklch(0.3 0.01 0);
+  --input: oklch(0.25 0.01 0);
+  --ring: oklch(0.6 0.18 35);
+  --chart-1: oklch(0.6 0.18 35); /* Orange */
+  --chart-2: oklch(0.5 0.15 220); /* Blue */
+  --chart-3: oklch(0.7 0.2 45); /* Yellow-orange */
+  --chart-4: oklch(0.55 0.15 280); /* Purple */
+  --chart-5: oklch(0.6 0.2 15); /* Red */
   --radius: 0.75rem;
-  --sidebar: oklch(0.28 0.01 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.55 0.22 25);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.35 0.01 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.4 0.01 0);
-  --sidebar-ring: oklch(0.55 0.22 25);
+  --sidebar: oklch(0.18 0.01 0);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.6 0.18 35);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.25 0.01 0);
+  --sidebar-accent-foreground: oklch(0.9 0 0);
+  --sidebar-border: oklch(0.3 0.01 0);
+  --sidebar-ring: oklch(0.6 0.18 35);
 }
 
 @theme inline {

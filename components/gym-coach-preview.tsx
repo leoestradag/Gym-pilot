@@ -29,10 +29,10 @@ export function GymCoachPreview() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <Card className="border-border/50 bg-gradient-to-br from-card/50 to-primary/10 backdrop-blur relative overflow-hidden">
+      <Card className="border-border/50 bg-gradient-to-br from-card/80 to-primary/20 backdrop-blur relative overflow-hidden shadow-2xl">
         {/* Premium Badge */}
         <div className="absolute top-4 right-4 z-10">
-          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+          <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground border-0 shadow-lg">
             <Crown className="h-3 w-3 mr-1" />
             PREMIUM
           </Badge>
@@ -40,11 +40,11 @@ export function GymCoachPreview() {
 
         <CardHeader className="text-center pb-4">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
               <Bot className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Gym Coach AI
               </CardTitle>
               <p className="text-muted-foreground">Tu entrenador personal inteligente</p>
