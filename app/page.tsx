@@ -59,10 +59,12 @@ export default function LandingPage() {
             Los sueños se planean y se construyen día a día
           </p>
           <p className="text-lg text-muted-foreground/80 mb-12 text-balance">Nosotros te acompañamos en cada paso</p>
-          <Button size="lg" className="text-lg px-8 py-6 gap-2">
-            Entrena con nosotros
-            <ArrowRight className="h-5 w-5" />
-          </Button>
+          <Link href="/gimnasios">
+            <Button size="lg" className="text-lg px-8 py-6 gap-2">
+              Entrena con nosotros
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
