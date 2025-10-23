@@ -34,20 +34,23 @@ export default function AuthPage() {
     e.preventDefault()
     // Aquí iría la lógica de login
     console.log("Login clicked")
-    router.push("/")
+    // Redirigir al Gym Coach desbloqueado
+    router.push("/gym-coach")
   }
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault()
     // Aquí iría la lógica de registro
     console.log("Register clicked")
-    router.push("/")
+    // Redirigir al Gym Coach desbloqueado
+    router.push("/gym-coach")
   }
 
   const handleGuestLogin = () => {
     // Lógica para entrar como guest
     console.log("Guest login")
-    router.push("/")
+    // Redirigir al Gym Coach desbloqueado también para guests
+    router.push("/gym-coach")
   }
 
   const benefits = [
