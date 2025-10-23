@@ -31,6 +31,30 @@ const gymsData = {
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
     image: "/gym-training-area.jpg",
   },
+  "one-gym": {
+    name: "One Gym",
+    location: "Plaza Galerías, Zona Rosa",
+    phone: "+52 (555) 456-7890",
+    email: "info@onegym.com",
+    hours: "24/7 - Acceso ilimitado todos los días",
+    image: "/people-training-in-modern-gym.jpg",
+  },
+  "world-gym": {
+    name: "World Gym",
+    location: "Centro Comercial Perisur",
+    phone: "+52 (555) 567-8901",
+    email: "contacto@worldgym.com",
+    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
+    image: "/people-training-in-modern-gym.jpg",
+  },
+  "smartfit": {
+    name: "Smart Fit",
+    location: "Plaza Satélite",
+    phone: "+52 (555) 678-9012",
+    email: "atencion@smartfit.com",
+    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
+    image: "/people-training-in-modern-gym.jpg",
+  },
 }
 
 const memberships = [

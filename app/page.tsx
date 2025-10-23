@@ -32,6 +32,33 @@ const gyms = [
     image: "/gym-training-area.jpg",
     description: "Ambiente familiar con entrenadores personalizados",
   },
+  {
+    id: "one-gym",
+    name: "One Gym",
+    location: "Plaza Galerías, Zona Rosa",
+    members: 1200,
+    rating: 4.6,
+    image: "/people-training-in-modern-gym.jpg",
+    description: "Tecnología de vanguardia con acceso 24/7 y app personalizada",
+  },
+  {
+    id: "world-gym",
+    name: "World Gym",
+    location: "Centro Comercial Perisur",
+    members: 950,
+    rating: 4.5,
+    image: "/people-training-in-modern-gym.jpg",
+    description: "Máquinas profesionales y entrenamiento personal de calidad mundial",
+  },
+  {
+    id: "smartfit",
+    name: "Smart Fit",
+    location: "Plaza Satélite",
+    members: 1800,
+    rating: 4.4,
+    image: "/people-training-in-modern-gym.jpg",
+    description: "Precio accesible, múltiples ubicaciones y sin contratos",
+  },
 ]
 
 export default function LandingPage() {
