@@ -119,7 +119,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
       
       {/* Hero Section */}
       <section id="inicio" className="relative h-[500px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-primary/25" />
         <img
           src={gym.image || "/placeholder.svg"}
           alt={gym.name}
