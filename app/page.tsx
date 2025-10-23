@@ -82,10 +82,6 @@ export default function LandingPage() {
           <p className="text-sm md:text-base text-muted-foreground/60 mb-6 uppercase tracking-wider">
             Powered by Tessalps Gym Efficency
           </p>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 text-balance">
-            Los sueños se planean y se construyen día a día
-          </p>
-          <p className="text-lg text-muted-foreground/80 mb-6 text-balance">Nosotros te acompañamos en cada paso</p>
           <p className="text-2xl md:text-3xl font-bold text-primary mb-12 text-balance">
             ¡Tu mejor versión te está esperando!
           </p>
