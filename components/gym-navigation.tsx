@@ -11,52 +11,58 @@ interface GymNavigationProps {
   currentSection?: string
 }
 
-const navigationItems = [
+const getNavigationItems = (gymId: string) => [
   {
     id: "inicio",
     label: "Inicio",
-    href: "#inicio"
+    href: `#inicio`
   },
   {
-    id: "membresias", 
+    id: "membresias",
     label: "Planes de Membresía",
-    href: "#membresias"
+    href: `/gym/${gymId}/membresias`
   },
   {
     id: "clases",
     label: "Clases Grupales", 
-    href: "#clases"
+    href: `/gym/${gymId}/clases`
   },
   {
     id: "instalaciones",
     label: "Nuestras Instalaciones",
-    href: "#instalaciones"
+    href: `/gym/${gymId}/instalaciones`
   },
   {
     id: "horarios",
     label: "Horarios",
-    href: "#horarios"
+    href: `/gym/${gymId}/horarios`
   },
   {
     id: "contacto",
     label: "Contacto",
-    href: "#contacto"
+    href: `/gym/${gymId}/contacto`
   }
 ]
 
 export function GymNavigation({ gymId, currentSection = "inicio" }: GymNavigationProps) {
   const [activeSection, setActiveSection] = useState(currentSection)
+  const navigationItems = getNavigationItems(gymId)
 
   const handleNavigation = (sectionId: string, href: string) => {
     setActiveSection(sectionId)
     
-    // Smooth scroll to section
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      })
+    if (href.startsWith('#')) {
+      // Smooth scroll to section
+      const element = document.querySelector(href)
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
+    } else {
+      // Navigate to page
+      window.location.href = href
     }
   }
 
