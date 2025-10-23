@@ -193,9 +193,34 @@ export default function GymCoachPage() {
   const generateAIResponse = (userInput: string): string => {
     const lowerInput = userInput.toLowerCase()
 
+    // Respuestas amigables para saludos
+    if (lowerInput.includes('hola') || lowerInput.includes('hi') || lowerInput.includes('hello') || lowerInput.includes('buenos días') || lowerInput.includes('buenas tardes') || lowerInput.includes('buenas noches')) {
+      return `¡Hola! 👋 Me da mucho gusto saludarte. Soy tu Gym Coach AI personalizado y estoy aquí para ayudarte a alcanzar tus objetivos fitness.\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y alimentación\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 🥗 **Consejos nutricionales** - Alimentación para tus objetivos\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n\n¿Cuál de estas opciones te interesa más?`
+    }
+
+    // Respuestas para preguntas generales
+    if (lowerInput.includes('cómo estás') || lowerInput.includes('qué tal') || lowerInput.includes('cómo te va')) {
+      return `¡Excelente! 😊 Estoy muy bien y listo para ayudarte con tu fitness. Me encanta trabajar con personas que quieren mejorar su salud y condición física.\n\n¿Hay algo específico en lo que pueda ayudarte hoy? Puedo crear rutinas, dar consejos nutricionales o ayudarte con cualquier duda sobre entrenamiento.`
+    }
+
+    // Respuestas para preguntas sobre qué puede hacer
+    if (lowerInput.includes('qué puedes hacer') || lowerInput.includes('qué haces') || lowerInput.includes('ayudar') || lowerInput.includes('funciones')) {
+      return `¡Genial pregunta! 🚀 Como tu Gym Coach AI, puedo ayudarte con:\n\n**🏋️‍♂️ ENTRENAMIENTO:**\n• Crear rutinas personalizadas según tu peso, estatura y edad\n• Diseñar planes de pérdida de peso o ganancia muscular\n• Adaptar ejercicios a tu nivel de experiencia\n• Crear retos de 20 días personalizados\n\n**🥗 NUTRICIÓN:**\n• Calcular tus calorías diarias necesarias\n• Recomendar macronutrientes (proteínas, carbohidratos, grasas)\n• Sugerir horarios de comida\n• Crear planes alimenticios\n\n**📊 ANÁLISIS:**\n• Evaluar tu composición corporal con foto\n• Calcular tu BMI y estado físico\n• Recomendar intensidad de entrenamiento\n\n¿Con cuál de estas áreas te gustaría empezar?`
+    }
+
     // Verificar si es sobre fitness
     if (!isFitnessRelated(userInput)) {
-      return "Lo siento, solo puedo ayudarte con temas relacionados con fitness, gimnasio, ejercicios, nutrición deportiva y entrenamiento. ¿Hay algo específico sobre tu rutina de ejercicios en lo que pueda ayudarte?"
+      return `¡Hola! 😊 Me da mucho gusto que me escribas. Aunque me encanta conversar contigo, me especializo únicamente en temas de fitness, gimnasio, ejercicios y nutrición deportiva.\n\n🎯 **¿En qué puedo ayudarte con tu fitness?**\n\n• 💪 Crear una rutina personalizada\n• 🏃‍♂️ Plan para perder peso\n• 💪 Ganar masa muscular\n• 🥗 Consejos nutricionales\n• 📸 Análisis de tu composición corporal\n\n¿Hay algo específico sobre tu entrenamiento en lo que pueda ayudarte?`
+    }
+
+    // Respuestas para agradecimientos
+    if (lowerInput.includes('gracias') || lowerInput.includes('thanks') || lowerInput.includes('thank you')) {
+      return `¡De nada! 😊 Es un placer ayudarte con tu fitness. Estoy aquí para apoyarte en todo tu journey de salud y bienestar.\n\n¿Hay algo más en lo que pueda ayudarte? Puedo crear más rutinas, dar consejos nutricionales o resolver cualquier duda sobre entrenamiento.`
+    }
+
+    // Respuestas para despedidas
+    if (lowerInput.includes('adiós') || lowerInput.includes('bye') || lowerInput.includes('hasta luego') || lowerInput.includes('nos vemos')) {
+      return `¡Hasta luego! 👋 Ha sido un placer ayudarte. Recuerda que estoy aquí siempre que necesites consejos de fitness, rutinas personalizadas o motivación.\n\n💪 **¡Sigue entrenando y alcanzando tus objetivos!**\n\n¡Nos vemos pronto!`
     }
 
     // Respuestas específicas basadas en el input
@@ -203,27 +228,27 @@ export default function GymCoachPage() {
       if (userData.weight && userData.height && userData.age) {
         return generatePersonalizedRoutine()
       } else {
-        return "Para crear una rutina personalizada, necesito que primero completes tus datos básicos. ¿Podrías decirme tu peso, estatura y edad?"
+        return `¡Perfecto! Me encanta que quieras empezar una rutina. 💪 Para crear la rutina perfecta para ti, necesito conocer algunos datos básicos.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar un plan 100% personalizado para tus objetivos. ¿Te parece bien?`
       }
     }
 
     if (lowerInput.includes('peso') || lowerInput.includes('adelgazar') || lowerInput.includes('perder')) {
-      return "Para ayudarte con la pérdida de peso, necesito saber tu peso actual, estatura y edad. También sería ideal ver una foto de tu cuerpo para evaluar tu composición corporal actual. ¿Podrías compartir estos datos?"
+      return `¡Excelente objetivo! 🔥 Perder peso de forma saludable es una meta muy importante. Para ayudarte de la mejor manera, necesito conocer tu perfil físico.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré crear un plan personalizado que incluya:\n• 🏃‍♂️ Rutina de cardio y fuerza\n• 🥗 Plan nutricional específico\n• 📅 Cronograma de entrenamiento\n• 🎯 Metas realistas y alcanzables\n\n¿Te parece bien empezar con estos datos?`
     }
 
     if (lowerInput.includes('masa') || lowerInput.includes('muscular') || lowerInput.includes('ganar')) {
-      return "Para ganar masa muscular de forma efectiva, necesito conocer tu peso, estatura, edad y nivel de experiencia. Una foto también me ayudaría a evaluar tu desarrollo muscular actual. ¿Podrías proporcionarme esta información?"
+      return `¡Fantástico! 💪 Ganar masa muscular es un objetivo increíble. Me encanta ayudarte a construir un cuerpo más fuerte y definido.\n\n📊 **Para crear tu plan de hipertrofia, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu nivel de experiencia (principiante/intermedio/avanzado)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar:\n• 🏋️‍♂️ Rutina de fuerza e hipertrofia\n• 🥩 Plan nutricional para ganancia muscular\n• 📈 Progresión de pesos y repeticiones\n• 🎯 Ejercicios específicos para tus objetivos\n\n¿Empezamos con tus datos básicos?`
     }
 
     if (lowerInput.includes('nutrición') || lowerInput.includes('dieta') || lowerInput.includes('comer')) {
-      return "Para darte recomendaciones nutricionales precisas, necesito saber tu peso, estatura, edad y objetivos específicos. ¿Podrías compartir estos datos conmigo?"
+      return `¡Perfecto! 🥗 La nutrición es la base de cualquier objetivo fitness. Me encanta ayudarte a optimizar tu alimentación.\n\n📊 **Para darte recomendaciones precisas, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu objetivo (perder peso/ganar masa/mantener)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré calcular:\n• 🔥 Tus calorías diarias necesarias\n• 🥩 Cantidad de proteínas, carbohidratos y grasas\n• ⏰ Horarios de comida óptimos\n• 🍎 Alimentos específicos para tus objetivos\n• 💧 Hidratación personalizada\n\n¿Te parece bien compartir estos datos?`
     }
 
     // Respuesta genérica para preguntas de fitness
     const fitnessResponses = [
-      "Excelente pregunta sobre fitness. Para darte la mejor respuesta, necesito conocer tus datos básicos (peso, estatura, edad) y objetivos. ¿Podrías compartir esta información?",
-      "Me encanta que te enfoques en tu salud física. Para personalizar mi consejo, necesito saber tu peso, estatura, edad y objetivos específicos. ¿Podrías proporcionarme estos datos?",
-      "¡Genial pregunta! Para ayudarte de la mejor manera, necesito conocer tu perfil físico (peso, estatura, edad) y una foto de tu cuerpo. ¿Podrías compartir esta información?"
+      `¡Excelente pregunta! 😊 Me encanta que te enfoques en tu fitness. Para darte la mejor respuesta personalizada, necesito conocer algunos datos básicos.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré crear un plan 100% adaptado a ti. ¿Te parece bien?`,
+      `¡Me encanta tu enfoque en la salud física! 💪 Para personalizar mi consejo y crear algo específico para ti, necesito conocer tu perfil.\n\n📊 **¿Podrías decirme?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nAsí podré darte recomendaciones exactas para tus objetivos. ¿Empezamos?`,
+      `¡Genial pregunta sobre fitness! 🚀 Para ayudarte de la mejor manera y crear algo personalizado, necesito conocer tus datos básicos.\n\n📊 **¿Podrías compartir?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar un plan perfecto para ti. ¿Te parece bien?`
     ]
     
     return fitnessResponses[Math.floor(Math.random() * fitnessResponses.length)]
