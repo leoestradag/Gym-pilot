@@ -184,6 +184,115 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
         </div>
       </section>
 
+      {/* Services Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Nuestros Servicios</h2>
+            <p className="text-xl text-muted-foreground text-balance">
+              Explora todo lo que tenemos para ofrecerte
+            </p>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <Link href={`/gym/${params.gymId}/membresias`}>
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Dumbbell className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Planes de Membresía</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Elige el plan que mejor se adapte a tus objetivos
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Ver Planes
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href={`/gym/${params.gymId}/clases`}>
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Clases Grupales</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Únete a nuestras clases dirigidas por instructores
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Ver Clases
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href={`/gym/${params.gymId}/instalaciones`}>
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Heart className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Nuestras Instalaciones</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Conoce nuestras instalaciones de primera clase
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Ver Instalaciones
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href={`/gym/${params.gymId}/horarios`}>
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Clock className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Horarios</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Consulta nuestros horarios de clases y servicios
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Ver Horarios
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href={`/gym/${params.gymId}/contacto`}>
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Mail className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Contacto</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Contáctanos para más información
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Contactar
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Memberships Section */}
       <section id="membresias" className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
