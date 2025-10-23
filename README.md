@@ -2,6 +2,8 @@
 
 Sistema de gestión integral para gimnasios desarrollado con Next.js 15 y React 19.
 
+🚀 **Deploy Test - $(date)** - Verificando funcionamiento en Render
+
 ## 🏋️ Características
 
 - **Panel de Administración Completo**
