@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Bot, Star, Zap, Target, Users, Crown, Lock } from "lucide-react"
+import Link from "next/link"
 
 export function GymCoachPreview() {
   const [isHovered, setIsHovered] = useState(false)
@@ -143,18 +144,22 @@ export function GymCoachPreview() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <Crown className="h-4 w-4 mr-2" />
-                Desbloquear Gym Coach AI
-              </Button>
-              <Button variant="outline" size="lg">
-                Probar Gratis 7 Días
-              </Button>
+              <Link href="/auth">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Desbloquear Gym Coach AI
+                </Button>
+              </Link>
+              <Link href="/auth">
+                <Button variant="outline" size="lg">
+                  Probar Gratis 7 Días
+                </Button>
+              </Link>
             </div>
 
             <p className="text-xs text-muted-foreground">

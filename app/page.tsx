@@ -59,12 +59,20 @@ export default function LandingPage() {
             Los sueños se planean y se construyen día a día
           </p>
           <p className="text-lg text-muted-foreground/80 mb-12 text-balance">Nosotros te acompañamos en cada paso</p>
-          <Link href="/gimnasios">
-            <Button size="lg" className="text-lg px-8 py-6 gap-2">
-              Entrena con nosotros
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/gimnasios">
+              <Button size="lg" className="text-lg px-8 py-6 gap-2">
+                Entrena con nosotros
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/auth">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 gap-2 bg-transparent">
+                Crear Cuenta
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
