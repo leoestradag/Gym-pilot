@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Users, Star, ArrowRight, Dumbbell } from "lucide-react"
 import Link from "next/link"
+import { GymCoachPreview } from "@/components/gym-coach-preview"
 
 const gyms = [
   {
@@ -109,6 +110,20 @@ export default function LandingPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Gym Coach AI Preview Section */}
+      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 to-primary/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">🚀 Descubre Gym Coach AI</h2>
+            <p className="text-xl text-muted-foreground text-balance">
+              Tu entrenador personal inteligente que revolucionará tu forma de entrenar
+            </p>
+          </div>
+          
+          <GymCoachPreview />
         </div>
       </section>
 

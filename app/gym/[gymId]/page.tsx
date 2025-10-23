@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, Apple, Utensils, Target, Zap } from "lucide-react"
 import { GymNavigation } from "@/components/gym-navigation"
-import { GymCoachChat } from "@/components/gym-coach-chat"
 
 const gymsData = {
   "tessalp-centro": {
@@ -389,19 +388,6 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
         </div>
       </section>
 
-      {/* Gym Coach Section */}
-      <section id="gym-coach" className="py-20 px-4 bg-card/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Gym Coach - Tu Entrenador Personal IA</h2>
-            <p className="text-xl text-muted-foreground text-balance">
-              Obtén rutinas personalizadas, consejos de ejercicios y seguimiento de tu progreso
-            </p>
-          </div>
-
-          <GymCoachChat />
-        </div>
-      </section>
 
       {/* Installations Section */}
       <section id="instalaciones" className="py-20 px-4">
