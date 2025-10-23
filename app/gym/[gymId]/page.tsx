@@ -248,6 +248,116 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
       </section>
 
 
+      {/* About Section */}
+      <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Conócenos</h2>
+            <p className="text-xl text-muted-foreground text-balance">
+              Descubre la historia y valores de {gym.name}
+            </p>
+          </div>
+          
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-6 w-6 text-primary" />
+                  Nuestra Ubicación
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{gym.location}</p>
+                <p className="text-sm text-muted-foreground">
+                  Ubicado estratégicamente para brindarte fácil acceso y comodidad en tu rutina diaria.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-6 w-6 text-primary" />
+                  Horarios de Atención
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{gym.hours}</p>
+                <p className="text-sm text-muted-foreground">
+                  Horarios flexibles diseñados para adaptarse a tu estilo de vida y compromisos.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Phone className="h-6 w-6 text-primary" />
+                  Contacto Directo
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-2">{gym.phone}</p>
+                <p className="text-muted-foreground mb-4">{gym.email}</p>
+                <p className="text-sm text-muted-foreground">
+                  Nuestro equipo está siempre disponible para resolver tus dudas y brindarte el mejor servicio.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-12">
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center">Nuestra Historia</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground text-center">
+                  {gym.name} forma parte de la familia Tessalp Gyms, una red de gimnasios comprometida 
+                  con la transformación de vidas a través del fitness y el bienestar integral.
+                </p>
+                <p className="text-muted-foreground text-center">
+                  Desde nuestros inicios, nos hemos dedicado a crear un ambiente donde cada miembro 
+                  pueda alcanzar sus metas fitness, rodeado de equipamiento de última generación, 
+                  entrenadores certificados y una comunidad que te apoya en cada paso del camino.
+                </p>
+                <div className="grid gap-4 md:grid-cols-3 mt-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-2">5+</div>
+                    <p className="text-sm text-muted-foreground">Años de experiencia</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-2">500+</div>
+                    <p className="text-sm text-muted-foreground">Miembros activos</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-2">15+</div>
+                    <p className="text-sm text-muted-foreground">Entrenadores certificados</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-12 text-center">
+            <h3 className="text-2xl font-bold mb-4">¿Listo para comenzar tu transformación?</h3>
+            <p className="text-muted-foreground mb-8">
+              Únete a nuestra comunidad y descubre todo lo que {gym.name} tiene para ofrecerte
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="gap-2">
+                <Users className="h-5 w-5" />
+                Agendar Visita
+              </Button>
+              <Button variant="outline" size="lg" className="gap-2">
+                <Phone className="h-5 w-5" />
+                Llamar Ahora
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 px-4 bg-card/30">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
