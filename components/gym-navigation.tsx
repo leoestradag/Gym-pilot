@@ -28,11 +28,6 @@ const navigationItems = [
     href: "#clases"
   },
   {
-    id: "nutricion",
-    label: "Nutrición",
-    href: "#nutricion"
-  },
-  {
     id: "instalaciones",
     label: "Nuestras Instalaciones",
     href: "#instalaciones"

@@ -2,7 +2,7 @@ import { CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, Apple, Utensils, Target, Zap, ArrowLeft, Home } from "lucide-react"
+import { Check, Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, ArrowLeft, Home } from "lucide-react"
 import { GymNavigation } from "@/components/gym-navigation"
 import Link from "next/link"
 
@@ -104,91 +104,6 @@ const classes = [
   { name: "Boxing", time: "5:00 PM - 6:00 PM", instructor: "Miguel Ángel", capacity: "10/15" },
 ]
 
-const nutritionPlans = [
-  {
-    name: "Plan Básico",
-    description: "Para mantener un estilo de vida saludable",
-    calories: "1800-2000 kcal/día",
-    meals: 5,
-    features: [
-      "Desayuno balanceado",
-      "Snack matutino",
-      "Almuerzo completo",
-      "Snack vespertino",
-      "Cena ligera"
-    ],
-    sample: {
-      breakfast: "Avena con frutas y nueces",
-      snack1: "Yogurt griego con berries",
-      lunch: "Pollo a la plancha con quinoa y vegetales",
-      snack2: "Manzana con almendras",
-      dinner: "Salmón con espinacas y arroz integral"
-    }
-  },
-  {
-    name: "Plan Fitness",
-    description: "Para maximizar rendimiento deportivo",
-    calories: "2200-2500 kcal/día",
-    meals: 6,
-    features: [
-      "Alto contenido proteico",
-      "Carbohidratos estratégicos",
-      "Grasas saludables",
-      "Hidratación optimizada",
-      "Suplementación básica"
-    ],
-    sample: {
-      breakfast: "Omelet de claras con avena y plátano",
-      snack1: "Batido de proteína con frutas",
-      lunch: "Pechuga de pollo con batata y brócoli",
-      snack2: "Atún con crackers integrales",
-      dinner: "Carne magra con arroz y vegetales",
-      snack3: "Caseína antes de dormir"
-    }
-  },
-  {
-    name: "Plan Transformación",
-    description: "Para cambios corporales significativos",
-    calories: "1600-1800 kcal/día",
-    meals: 4,
-    features: [
-      "Déficit calórico controlado",
-      "Proteína alta",
-      "Carbohidratos bajos",
-      "Ayuno intermitente opcional",
-      "Cheat meal semanal"
-    ],
-    sample: {
-      breakfast: "Huevos revueltos con espinacas",
-      lunch: "Ensalada de pollo con aguacate",
-      snack: "Nueces y semillas",
-      dinner: "Pescado con vegetales al vapor"
-    }
-  }
-]
-
-const nutritionTips = [
-  {
-    title: "Hidratación",
-    tip: "Bebe 3-4 litros de agua al día. Agrega electrolitos si entrenas intenso.",
-    icon: "💧"
-  },
-  {
-    title: "Proteína",
-    tip: "Consume 1.6-2.2g de proteína por kg de peso corporal para ganar músculo.",
-    icon: "🥩"
-  },
-  {
-    title: "Timing",
-    tip: "Come proteína 30 min antes y después del entrenamiento para mejores resultados.",
-    icon: "⏰"
-  },
-  {
-    title: "Frecuencia",
-    tip: "Come cada 3-4 horas para mantener el metabolismo activo.",
-    icon: "🔄"
-  }
-]
 
 export default function GymPage({ params }: { params: { gymId: string } }) {
   const gym = gymsData[params.gymId as keyof typeof gymsData]
@@ -352,77 +267,6 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
         </div>
       </section>
 
-      {/* Nutrition Section */}
-      <section id="nutricion" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Nutrición Personalizada</h2>
-            <p className="text-xl text-muted-foreground text-balance">
-              Planes nutricionales diseñados para tus objetivos específicos
-            </p>
-          </div>
-
-          {/* Nutrition Plans */}
-          <div className="grid gap-8 md:grid-cols-3 mb-16">
-            {nutritionPlans.map((plan) => (
-              <Card key={plan.name} className="border-border/50 bg-card/50 backdrop-blur">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Apple className="h-6 w-6 text-primary" />
-                    {plan.name}
-                  </CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Zap className="h-4 w-4" />
-                      {plan.calories}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Utensils className="h-4 w-4" />
-                      {plan.meals} comidas
-                    </span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Características:</h4>
-                    <ul className="space-y-1">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-2 text-sm">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Ejemplo de menú:</h4>
-                    <div className="text-sm space-y-1 text-muted-foreground">
-                      <p><strong>Desayuno:</strong> {plan.sample.breakfast}</p>
-                      <p><strong>Almuerzo:</strong> {plan.sample.lunch}</p>
-                      <p><strong>Cena:</strong> {plan.sample.dinner}</p>
-                    </div>
-                  </div>
-                  <Button className="w-full">Seleccionar Plan</Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Nutrition Tips */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {nutritionTips.map((tip) => (
-              <Card key={tip.title} className="border-border/50 bg-card/50 backdrop-blur text-center">
-                <CardContent className="pt-6">
-                  <div className="text-4xl mb-4">{tip.icon}</div>
-                  <h3 className="font-semibold mb-2">{tip.title}</h3>
-                  <p className="text-sm text-muted-foreground">{tip.tip}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
 
       {/* Installations Section */}

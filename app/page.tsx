@@ -80,7 +80,7 @@ export default function LandingPage() {
             </h1>
           </div>
           <p className="text-sm md:text-base text-muted-foreground/60 mb-6 uppercase tracking-wider">
-            Powered by Tessalps Gym Efficency
+            Powered by Tessalps Gym Efficiency
           </p>
           <p className="text-2xl md:text-3xl font-bold text-primary mb-12 text-balance">
             ¡Tu mejor versión te está esperando!
