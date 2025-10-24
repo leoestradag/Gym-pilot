@@ -714,6 +714,37 @@ export default function GymCoachPage() {
       return generatePersonalizedRoutineWithData(newUserData)
     }
 
+    // Respuestas específicas para confirmaciones y respuestas cortas
+    if (lowerInput === 'si' || lowerInput === 'sí' || lowerInput === 'yes' || lowerInput === 'ok' || lowerInput === 'okay') {
+      // Verificar el contexto del último mensaje del AI
+      const lastAIMessage = messages.filter(msg => msg.type === 'ai').pop()
+      if (lastAIMessage) {
+        const lastContent = lastAIMessage.content.toLowerCase()
+        
+        if (lastContent.includes('motivación') || lastContent.includes('motivar')) {
+          return `¡Perfecto! 💪 Te voy a crear un plan de motivación personalizado para ti.\n\n**🔥 PLAN DE MOTIVACIÓN PERSONALIZADO:**\n\n**📅 ESTRUCTURA SEMANAL:**\n• **Lunes:** Día de metas - Establece 3 objetivos pequeños\n• **Miércoles:** Día de progreso - Revisa tus avances\n• **Viernes:** Día de celebración - Recompénsate por tus logros\n• **Domingo:** Día de reflexión - Evalúa la semana\n\n**💪 TÉCNICAS MOTIVACIONALES:**\n• 🎯 **Regla del 2%:** Mejora solo 2% cada día\n• 📱 **Tracking diario:** Anota 1 logro por día\n• 🎵 **Playlist energética:** 3 canciones que te motiven\n• 📸 **Fotos de progreso:** 1 foto cada 3 días\n• 👥 **Compañero de entrenamiento:** Busca un partner\n\n**🧠 MINDSET DIARIO:**\n• Mañana: "Hoy voy a ser mejor que ayer"\n• Tarde: "Estoy más fuerte que hace 1 hora"\n• Noche: "Mañana seré mejor que hoy"\n\n**🎯 RETO DE 7 DÍAS:**\nCada día haz 1 cosa que te acerque a tu objetivo. ¿Empezamos hoy?`
+        }
+        
+        if (lastContent.includes('rutina') || lastContent.includes('ejercicio')) {
+          if (userData.weight && userData.height && userData.age) {
+            return generatePersonalizedRoutine()
+          } else {
+            return `¡Excelente! 💪 Para crear tu rutina personalizada, necesito algunos datos básicos.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n\nCon esta información podré diseñar un plan 100% adaptado a ti. ¿Te parece bien?`
+          }
+        }
+        
+        if (lastContent.includes('peso') || lastContent.includes('adelgazar')) {
+          if (userData.weight && userData.height && userData.age) {
+            return generatePersonalizedRoutine()
+          } else {
+            return `¡Perfecto! 🔥 Para tu plan de pérdida de peso, necesito conocer tu perfil físico.\n\n📊 **¿Podrías decirme?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n\nCon estos datos podré crear un plan específico para ti. ¿Empezamos?`
+          }
+        }
+      }
+      
+      return `¡Perfecto! 😊 ¿En qué más puedo ayudarte? Puedo ayudarte con rutinas, motivación, técnicas de ejercicios o cualquier duda sobre fitness.`
+    }
+
     // Respuestas amigables para saludos
     if (lowerInput.includes('hola') || lowerInput.includes('hi') || lowerInput.includes('hello') || lowerInput.includes('buenos días') || lowerInput.includes('buenas tardes') || lowerInput.includes('buenas noches')) {
       if (userData.weight && userData.height && userData.age) {
@@ -765,6 +796,23 @@ export default function GymCoachPage() {
         lowerInput.includes('necesito motivación') || lowerInput.includes('motivación hoy') ||
         lowerInput.includes('motivación para el gym') || lowerInput.includes('motivar para el gym')) {
       return `¡Entiendo perfectamente! 💪 Todos pasamos por momentos difíciles. Te voy a ayudar a recuperar esa motivación.\n\n**🔥 CONSEJOS PARA MOTIVARTE:**\n• 🎯 Establece metas pequeñas y alcanzables\n• 📱 Haz seguimiento de tu progreso\n• 👥 Entrena con un compañero\n• 🎵 Crea una playlist motivacional\n• 📸 Toma fotos de tu progreso\n\n**💪 RECUERDA:**\n"La disciplina es el puente entre tus metas y tus logros."\n\n¿Quieres que creemos un plan específico para mantener tu motivación?`
+    }
+
+    // Respuestas para preguntas específicas sobre planes
+    if (lowerInput.includes('plan') || lowerInput.includes('plán') || lowerInput.includes('programa')) {
+      if (lowerInput.includes('motivación') || lowerInput.includes('motivar')) {
+        return `¡Perfecto! 💪 Te voy a crear un plan de motivación personalizado para ti.\n\n**🔥 PLAN DE MOTIVACIÓN PERSONALIZADO:**\n\n**📅 ESTRUCTURA SEMANAL:**\n• **Lunes:** Día de metas - Establece 3 objetivos pequeños\n• **Miércoles:** Día de progreso - Revisa tus avances\n• **Viernes:** Día de celebración - Recompénsate por tus logros\n• **Domingo:** Día de reflexión - Evalúa la semana\n\n**💪 TÉCNICAS MOTIVACIONALES:**\n• 🎯 **Regla del 2%:** Mejora solo 2% cada día\n• 📱 **Tracking diario:** Anota 1 logro por día\n• 🎵 **Playlist energética:** 3 canciones que te motiven\n• 📸 **Fotos de progreso:** 1 foto cada 3 días\n• 👥 **Compañero de entrenamiento:** Busca un partner\n\n**🧠 MINDSET DIARIO:**\n• Mañana: "Hoy voy a ser mejor que ayer"\n• Tarde: "Estoy más fuerte que hace 1 hora"\n• Noche: "Mañana seré mejor que hoy"\n\n**🎯 RETO DE 7 DÍAS:**\nCada día haz 1 cosa que te acerque a tu objetivo. ¿Empezamos hoy?`
+      }
+      
+      if (lowerInput.includes('entrenamiento') || lowerInput.includes('ejercicio') || lowerInput.includes('rutina')) {
+        if (userData.weight && userData.height && userData.age) {
+          return generatePersonalizedRoutine()
+        } else {
+          return `¡Excelente! 💪 Para crear tu plan de entrenamiento personalizado, necesito algunos datos básicos.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n\nCon esta información podré diseñar un plan 100% adaptado a ti. ¿Te parece bien?`
+        }
+      }
+      
+      return `¡Perfecto! 📋 Puedo ayudarte a crear diferentes tipos de planes:\n\n• 💪 **Plan de entrenamiento** - Rutinas personalizadas\n• 🔥 **Plan de motivación** - Estrategias para mantenerte motivado\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Plan de ganancia muscular** - Hipertrofia\n• 🎯 **Plan de 20 días** - Reto personalizado\n\n¿Qué tipo de plan te interesa más?`
     }
 
     // Respuestas específicas basadas en el input
