@@ -142,11 +142,11 @@ export default function GymCoachPage() {
     return fitnessKeywords.some(keyword => lowerInput.includes(keyword))
   }
 
-  // Función para generar rutina personalizada
-  const generatePersonalizedRoutine = (): string => {
-    const currentWeight = userData.weight
-    const currentHeight = userData.height
-    const currentAge = userData.age
+  // Función para generar rutina personalizada con datos específicos
+  const generatePersonalizedRoutineWithData = (data: UserData): string => {
+    const currentWeight = data.weight
+    const currentHeight = data.height
+    const currentAge = data.age
 
     if (!currentWeight || !currentHeight || !currentAge) {
       return "Primero necesito que completes tus datos básicos (peso, estatura, edad) para poder crear una rutina personalizada."
@@ -236,26 +236,65 @@ export default function GymCoachPage() {
     return routine
   }
 
+  // Función para generar rutina personalizada (usa el estado actual)
+  const generatePersonalizedRoutine = (): string => {
+    return generatePersonalizedRoutineWithData(userData)
+  }
+
   // Función para extraer datos del usuario del texto
   const extractUserData = (input: string): { weight?: number, height?: number, age?: number } => {
     const data: { weight?: number, height?: number, age?: number } = {}
     
-    // Extraer peso
-    const weightMatch = input.match(/(\d+)\s*(kilos?|kg|peso)/i)
-    if (weightMatch) {
-      data.weight = parseInt(weightMatch[1])
+    // Extraer peso - patrones más flexibles
+    const weightPatterns = [
+      /peso\s*(\d+)/i,
+      /(\d+)\s*kilos?/i,
+      /(\d+)\s*kg/i,
+      /peso\s*(\d+)\s*kilos?/i,
+      /peso\s*(\d+)\s*kg/i
+    ]
+    
+    for (const pattern of weightPatterns) {
+      const match = input.match(pattern)
+      if (match) {
+        data.weight = parseInt(match[1])
+        break
+      }
     }
     
-    // Extraer estatura
-    const heightMatch = input.match(/(\d+)\s*(cm|centímetros?|mido|estatura)/i)
-    if (heightMatch) {
-      data.height = parseInt(heightMatch[1])
+    // Extraer estatura - patrones más flexibles
+    const heightPatterns = [
+      /mido\s*(\d+)/i,
+      /(\d+)\s*cm/i,
+      /(\d+)\s*centímetros?/i,
+      /estatura\s*(\d+)/i,
+      /altura\s*(\d+)/i,
+      /mido\s*(\d+)\s*cm/i
+    ]
+    
+    for (const pattern of heightPatterns) {
+      const match = input.match(pattern)
+      if (match) {
+        data.height = parseInt(match[1])
+        break
+      }
     }
     
-    // Extraer edad
-    const ageMatch = input.match(/(\d+)\s*(años?|edad|tengo)/i)
-    if (ageMatch) {
-      data.age = parseInt(ageMatch[1])
+    // Extraer edad - patrones más flexibles
+    const agePatterns = [
+      /tengo\s*(\d+)/i,
+      /(\d+)\s*años?/i,
+      /edad\s*(\d+)/i,
+      /tengo\s*(\d+)\s*años?/i,
+      /edad\s*(\d+)\s*años?/i
+    ]
+    
+    for (const pattern of agePatterns) {
+      const match = input.match(pattern)
+      if (match) {
+        data.age = parseInt(match[1])
+        break
+      }
     }
     
     return data
@@ -266,14 +305,25 @@ export default function GymCoachPage() {
 
     // Extraer datos del usuario si están en el mensaje
     const extractedData = extractUserData(userInput)
+    console.log('Extracted data:', extractedData)
+    console.log('User input:', userInput)
+    
     if (extractedData.weight || extractedData.height || extractedData.age) {
-      // Actualizar datos del usuario
-      if (extractedData.weight) setUserData(prev => ({ ...prev, weight: extractedData.weight }))
-      if (extractedData.height) setUserData(prev => ({ ...prev, height: extractedData.height }))
-      if (extractedData.age) setUserData(prev => ({ ...prev, age: extractedData.age }))
+      // Actualizar datos del usuario inmediatamente
+      const newUserData = {
+        ...userData,
+        ...(extractedData.weight && { weight: extractedData.weight }),
+        ...(extractedData.height && { height: extractedData.height }),
+        ...(extractedData.age && { age: extractedData.age })
+      }
       
-      // Generar rutina personalizada con los datos
-      return generatePersonalizedRoutine()
+      console.log('New user data:', newUserData)
+      
+      // Actualizar el estado
+      setUserData(newUserData)
+      
+      // Generar rutina personalizada con los datos actualizados
+      return generatePersonalizedRoutineWithData(newUserData)
     }
 
     // Respuestas amigables para saludos
