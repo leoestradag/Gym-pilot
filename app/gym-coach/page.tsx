@@ -507,7 +507,11 @@ export default function GymCoachPage() {
       'cálculos', 'estrategias', 'principiante', 'intermedio', 'avanzado', 'nivel', 'experiencia',
       'objetivo', 'meta', 'resultado', 'progreso', 'mejorar', 'cambiar', 'transformar', 'salud',
       'bienestar', 'actividad', 'deporte', 'deportista', 'atleta', 'hipertrofia', 'cutting', 'bulking',
-      'masa', 'ganar', 'perder', 'adelgazar', 'bajar', 'quemar', 'grasa', 'definir', 'mantener'
+      'masa', 'ganar', 'perder', 'adelgazar', 'bajar', 'quemar', 'grasa', 'definir', 'mantener',
+      'primera vez', 'principiante', 'nunca he ido', 'nuevo', 'empezar', 'comenzar', 'máquina', 'maquina',
+      'aparato', 'equipo', 'cómo usar', 'como usar', 'peso', 'carga', 'cuánto peso', 'cuanto peso',
+      'kg', 'kilos', 'pesas', 'discos', 'press banca', 'leg press', 'pulldown', 'lat pulldown',
+      'smith', 'hack squat', 'prensa', 'extensión', 'curl', 'press', 'remo', 'tirón'
     ]
     
     const lowerInput = input.toLowerCase()
@@ -790,11 +794,47 @@ export default function GymCoachPage() {
       return `⚠️ **IMPORTANTE:** Si tienes una lesión, te recomiendo consultar con un médico o fisioterapeuta antes de continuar entrenando.\n\n**🩺 MIENTRAS TANTO:**\n• 🧘‍♂️ Enfócate en ejercicios de movilidad\n• 🏃‍♂️ Mantén el cardio de bajo impacto\n• 💪 Trabaja otras partes del cuerpo\n• 🥗 Mantén una buena nutrición\n\n**💡 CONSEJO:**\nLa prevención es mejor que la curación. Siempre calienta bien y usa la técnica correcta.\n\n¿Hay alguna zona específica que te molesta?`
     }
 
+    // Respuestas para principiantes
+    if (lowerInput.includes('primera vez') || lowerInput.includes('principiante') || lowerInput.includes('nunca he ido') || 
+        lowerInput.includes('nuevo') || lowerInput.includes('empezar') || lowerInput.includes('comenzar')) {
+      return `¡Excelente! 🎉 Me encanta que quieras empezar en el gimnasio. Te voy a ayudar a dar tus primeros pasos de manera segura y efectiva.\n\n**🏋️‍♂️ GUÍA PARA PRINCIPIANTES:**\n\n**📋 ANTES DE EMPEZAR:**\n• 🎯 Establece objetivos realistas\n• 📅 Planifica 2-3 días por semana\n• ⏰ Sesiones de 30-45 minutos\n• 💧 Hidrátate bien\n\n**💪 PRIMEROS EJERCICIOS:**\n• Sentadillas (sin peso)\n• Flexiones (en rodillas si es necesario)\n• Plancha (10-30 segundos)\n• Caminar en cinta\n\n**⚠️ CONSEJOS IMPORTANTES:**\n• Siempre calienta 5-10 minutos\n• Aprende la técnica antes de agregar peso\n• No te compares con otros\n• Escucha a tu cuerpo\n\n¿Te gustaría que te enseñe cómo usar alguna máquina específica?`
+    }
+
+    // Respuestas específicas para máquinas comunes
+    if (lowerInput.includes('press banca') || lowerInput.includes('bench press')) {
+      return `¡Excelente! 💪 El press banca es fundamental para el pecho. Te explico cómo usarlo correctamente:\n\n**🏋️‍♂️ PRESS BANCA (MÁQUINA):**\n• Siéntate con la espalda recta contra el respaldo\n• Agarra las manijas al ancho de los hombros\n• Empuja hacia adelante con control\n• Regresa lentamente hasta el pecho\n• Mantén los hombros estables\n\n**💪 PRESS BANCA (BARRA):**\n• Acostado en banco plano\n• Agarre ligeramente más ancho que los hombros\n• Baja la barra hasta el pecho\n• Empuja hacia arriba con control\n• Mantén los pies en el suelo\n\n**⚠️ CONSEJOS IMPORTANTES:**\n• Comienza con peso ligero\n• Aprende la técnica antes de aumentar peso\n• No rebotes la barra en el pecho\n• Mantén la espalda recta\n\n¿Quieres saber sobre otros ejercicios de pecho?`
+    }
+
+    if (lowerInput.includes('leg press') || lowerInput.includes('prensa')) {
+      return `¡Perfecto! 🦵 La leg press es excelente para las piernas. Te explico cómo usarla:\n\n**🦵 LEG PRESS:**\n• Siéntate con la espalda completamente apoyada\n• Coloca los pies al ancho de los hombros\n• Empuja las piernas hacia adelante\n• Flexiona las rodillas controladamente\n• Mantén los pies planos en la plataforma\n\n**⚠️ CONSEJOS DE SEGURIDAD:**\n• No bloquees las rodillas completamente\n• Mantén la espalda recta contra el respaldo\n• Comienza con peso ligero\n• Controla el movimiento en ambas direcciones\n\n**🎯 VARIACIONES:**\n• Pies altos: trabaja más glúteos\n• Pies bajos: trabaja más cuádriceps\n• Pies juntos: trabaja más la parte interna\n\n¿Te interesa saber sobre otros ejercicios de piernas?`
+    }
+
+    if (lowerInput.includes('pulldown') || lowerInput.includes('lat pulldown')) {
+      return `¡Genial! 🏋️‍♂️ El pulldown es perfecto para la espalda. Te explico cómo usarlo:\n\n**🏋️‍♂️ PULLDOWN (LAT PULLDOWN):**\n• Siéntate con los muslos bajo las almohadillas\n• Agarra la barra más ancho que los hombros\n• Tira hacia abajo hasta el pecho\n• Regresa controladamente\n• Mantén el pecho hacia arriba\n\n**⚠️ CONSEJOS IMPORTANTES:**\n• No uses el impulso del cuerpo\n• Mantén los hombros hacia abajo\n• Controla el movimiento en ambas direcciones\n• Comienza con peso ligero\n\n**🎯 VARIACIONES:**\n• Agarre ancho: trabaja más la espalda\n• Agarre estrecho: trabaja más los bíceps\n• Agarre por detrás: variación avanzada\n\n¿Quieres saber sobre otros ejercicios de espalda?`
+    }
+
+    if (lowerInput.includes('smith') || lowerInput.includes('máquina smith')) {
+      return `¡Excelente! 🏋️‍♂️ La máquina Smith es muy versátil y segura. Te explico cómo usarla:\n\n**🏋️‍♂️ MÁQUINA SMITH:**\n• Barra guiada que se mueve en un plano fijo\n• Más segura que la barra libre\n• Ideal para principiantes\n• Permite enfocarte en la técnica\n\n**💪 EJERCICIOS COMUNES:**\n• Sentadillas en Smith\n• Press banca en Smith\n• Remo en Smith\n• Press militar en Smith\n\n**⚠️ CONSEJOS IMPORTANTES:**\n• Ajusta la altura de la barra\n• Desbloquea la barra antes de empezar\n• Mantén la técnica correcta\n• Bloquea la barra al terminar\n\n**✅ VENTAJAS:**\n• Más segura para principiantes\n• Permite enfocarte en la técnica\n• Menos riesgo de lesión\n• Ideal para aprender movimientos\n\n¿Te interesa saber sobre algún ejercicio específico en Smith?`
+    }
+
+    // Respuestas para máquinas del gimnasio (genérica)
+    if (lowerInput.includes('máquina') || lowerInput.includes('maquina') || lowerInput.includes('aparato') || 
+        lowerInput.includes('equipo') || lowerInput.includes('cómo usar') || lowerInput.includes('como usar')) {
+      return `¡Perfecto! 🏋️‍♂️ Te voy a enseñar cómo usar las máquinas más comunes del gimnasio de manera segura.\n\n**🔧 MÁQUINAS BÁSICAS:**\n\n**💪 PRESS BANCA (MÁQUINA):**\n• Siéntate con la espalda recta\n• Agarra las manijas al ancho de los hombros\n• Empuja hacia adelante con control\n• Regresa lentamente\n\n**🦵 LEG PRESS:**\n• Siéntate con la espalda apoyada\n• Coloca los pies al ancho de hombros\n• Empuja las piernas hacia adelante\n• Flexiona las rodillas controladamente\n\n**🏋️‍♂️ PULLDOWN (LAT PULLDOWN):**\n• Siéntate con los muslos bajo las almohadillas\n• Agarra la barra más ancho que los hombros\n• Tira hacia abajo hasta el pecho\n• Regresa controladamente\n\n**⚠️ CONSEJOS DE SEGURIDAD:**\n• Ajusta el asiento a tu altura\n• Comienza con peso ligero\n• Pide ayuda si no estás seguro\n• Mantén la técnica correcta\n\n¿Hay alguna máquina específica que te interese aprender?`
+    }
+
+    // Respuestas para pesos y cargas
+    if (lowerInput.includes('peso') || lowerInput.includes('carga') || lowerInput.includes('cuánto peso') || 
+        lowerInput.includes('cuanto peso') || lowerInput.includes('kg') || lowerInput.includes('kilos') ||
+        lowerInput.includes('pesas') || lowerInput.includes('discos')) {
+      return `¡Excelente pregunta! 🏋️‍♂️ Elegir el peso correcto es fundamental para progresar de manera segura.\n\n**📊 CÓMO ELEGIR EL PESO CORRECTO:**\n\n**🎯 REGLA GENERAL:**\n• Debes poder hacer 8-12 repeticiones con buena técnica\n• Las últimas 2-3 repeticiones deben ser difíciles\n• Si puedes hacer más de 15 reps, aumenta el peso\n• Si no puedes hacer 6 reps, reduce el peso\n\n**💪 POR TIPO DE EJERCICIO:**\n• **Ejercicios grandes:** 70-80% de tu máximo\n• **Ejercicios pequeños:** 60-70% de tu máximo\n• **Aislamiento:** 50-60% de tu máximo\n\n**📈 PROGRESIÓN:**\n• Semana 1-2: Aprende la técnica\n• Semana 3-4: Aumenta 2-5 kg\n• Cada mes: Revisa y ajusta\n\n**⚠️ SEÑALES DE PESO CORRECTO:**\n✅ Últimas reps son desafiantes pero controladas\n✅ Puedes mantener buena técnica\n✅ No sientes dolor en articulaciones\n❌ No puedes completar el rango de movimiento\n❌ Técnica se deteriora\n\n¿En qué ejercicio específico necesitas ayuda con el peso?`
+    }
+
     // Respuestas para dudas o preguntas adicionales
     if (lowerInput.includes('duda') || lowerInput.includes('pregunta') || lowerInput.includes('ayuda') ||
         lowerInput.includes('no sé') || lowerInput.includes('cómo') || lowerInput.includes('qué') ||
         lowerInput.includes('explícame') || lowerInput.includes('enseña')) {
-      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte con:\n\n• 💪 Técnicas de ejercicios\n• 🏋️‍♂️ Rutinas de fuerza\n• 🎯 Estrategias de entrenamiento\n• 🏃‍♂️ Planes de cardio\n• 📊 Progresión de pesos\n• 💪 Ejercicios específicos\n\n¿Sobre qué tema específico te gustaría saber más?`
+      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte con:\n\n• 💪 Técnicas de ejercicios\n• 🏋️‍♂️ Rutinas de fuerza\n• 🎯 Estrategias de entrenamiento\n• 🏃‍♂️ Planes de cardio\n• 📊 Progresión de pesos\n• 💪 Ejercicios específicos\n• 🔧 Uso de máquinas\n• 🎯 Guías para principiantes\n\n¿Sobre qué tema específico te gustaría saber más?`
     }
 
     // Respuesta genérica para preguntas de fitness
