@@ -27,7 +27,10 @@ import {
   Ruler,
   Calendar as CalendarIcon,
   Image as ImageIcon,
-  ArrowDown
+  ArrowDown,
+  Heart,
+  Users,
+  Activity
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/user-avatar"
@@ -856,6 +859,118 @@ export default function GymCoachPage() {
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">0</div>
                   <div className="text-sm text-muted-foreground">Calorías quemadas</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Weekly Calendar */}
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Calendario Semanal
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Plan de entrenamiento por días de la semana
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Lunes */}
+                <div className="border border-border/50 rounded-lg p-3 bg-primary/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Dumbbell className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">LUNES - PECHO Y TRÍCEPS</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Press banca (máquina/barra)</div>
+                    <div>• Aperturas con mancuernas</div>
+                    <div>• Fondos en paralelas</div>
+                    <div>• Extensión de tríceps</div>
+                  </div>
+                </div>
+
+                {/* Martes */}
+                <div className="border border-border/50 rounded-lg p-3 bg-accent/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-4 w-4 text-accent" />
+                    <span className="font-semibold text-sm">MARTES - ESPALDA Y BÍCEPS</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Dominadas/Remo con barra</div>
+                    <div>• Jalón al pecho (polea)</div>
+                    <div>• Curl de bíceps</div>
+                    <div>• Martillo con mancuernas</div>
+                  </div>
+                </div>
+
+                {/* Miércoles */}
+                <div className="border border-border/50 rounded-lg p-3 bg-green-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Activity className="h-4 w-4 text-green-500" />
+                    <span className="font-semibold text-sm">MIÉRCOLES - PIERNAS</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Sentadillas (máquina/peso libre)</div>
+                    <div>• Peso muerto</div>
+                    <div>• Prensa de piernas</div>
+                    <div>• Gemelos (máquina)</div>
+                  </div>
+                </div>
+
+                {/* Jueves */}
+                <div className="border border-border/50 rounded-lg p-3 bg-orange-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="h-4 w-4 text-orange-500" />
+                    <span className="font-semibold text-sm">JUEVES - HOMBROS Y CORE</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Press militar (máquina/barra)</div>
+                    <div>• Elevaciones laterales</div>
+                    <div>• Plancha abdominal</div>
+                    <div>• Crunches y abdominales</div>
+                  </div>
+                </div>
+
+                {/* Viernes */}
+                <div className="border border-border/50 rounded-lg p-3 bg-purple-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-4 w-4 text-purple-500" />
+                    <span className="font-semibold text-sm">VIERNES - CARDIO Y FUNCIONAL</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• 30 min cardio (cinta/bici)</div>
+                    <div>• Burpees y mountain climbers</div>
+                    <div>• Circuito funcional</div>
+                    <div>• Estiramientos</div>
+                  </div>
+                </div>
+
+                {/* Sábado */}
+                <div className="border border-border/50 rounded-lg p-3 bg-blue-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clock className="h-4 w-4 text-blue-500" />
+                    <span className="font-semibold text-sm">SÁBADO - ENTRENAMIENTO LIBRE</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Ejercicios de tu preferencia</div>
+                    <div>• Actividades recreativas</div>
+                    <div>• Yoga o pilates</div>
+                    <div>• Descanso activo</div>
+                  </div>
+                </div>
+
+                {/* Domingo */}
+                <div className="border border-border/50 rounded-lg p-3 bg-gray-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-4 w-4 text-gray-500" />
+                    <span className="font-semibold text-sm">DOMINGO - DESCANSO</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>• Día de recuperación</div>
+                    <div>• Estiramientos suaves</div>
+                    <div>• Caminata ligera</div>
+                    <div>• Hidratación extra</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
