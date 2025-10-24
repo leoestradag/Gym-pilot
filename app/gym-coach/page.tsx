@@ -82,7 +82,55 @@ export default function GymCoachPage() {
     sábado: false,
     domingo: false
   })
+  const [allDaysCompleted, setAllDaysCompleted] = useState(false)
+  const [resetTimer, setResetTimer] = useState<number | null>(null)
+  const [showCelebration, setShowCelebration] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Detectar cuando se completan todos los días y manejar el reset automático
+  useEffect(() => {
+    const completedCount = Object.values(completedDays).filter(Boolean).length
+    const totalDays = 7
+    
+    if (completedCount === totalDays && !allDaysCompleted) {
+      setAllDaysCompleted(true)
+      setShowCelebration(true)
+      
+      // Iniciar timer de 3 minutos (180 segundos)
+      const timer = 180
+      setResetTimer(timer)
+      
+      // Mostrar celebración por 2 segundos
+      setTimeout(() => {
+        setShowCelebration(false)
+      }, 2000)
+      
+      // Countdown cada segundo
+      const countdown = setInterval(() => {
+        setResetTimer(prev => {
+          if (prev === null || prev <= 1) {
+            clearInterval(countdown)
+            // Reiniciar todo
+            setCompletedDays({
+              lunes: false,
+              martes: false,
+              miércoles: false,
+              jueves: false,
+              viernes: false,
+              sábado: false,
+              domingo: false
+            })
+            setAllDaysCompleted(false)
+            setResetTimer(null)
+            return null
+          }
+          return prev - 1
+        })
+      }, 1000)
+      
+      return () => clearInterval(countdown)
+    }
+  }, [completedDays, allDaysCompleted])
 
   // Función para manejar el toggle de días completados
   const toggleDayCompleted = (day: string) => {
@@ -90,6 +138,13 @@ export default function GymCoachPage() {
       ...prev,
       [day]: !prev[day]
     }))
+  }
+
+  // Función para formatear el tiempo del countdown
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }
 
   // Calcular progreso basado en objetivo
@@ -1437,6 +1492,29 @@ export default function GymCoachPage() {
                   const stats = getProgressStats()
                   return (
                     <>
+                      {/* Notificación de celebración */}
+                      {showCelebration && (
+                        <div className="text-center p-4 bg-green-500/10 border border-green-500/50 rounded-lg mb-4">
+                          <div className="text-2xl mb-2">🎉</div>
+                          <div className="text-lg font-bold text-green-500">¡Semana Completada!</div>
+                          <div className="text-sm text-muted-foreground">
+                            Has completado todos los días de entrenamiento
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Countdown timer */}
+                      {resetTimer !== null && (
+                        <div className="text-center p-4 bg-orange-500/10 border border-orange-500/50 rounded-lg mb-4">
+                          <div className="text-lg font-bold text-orange-500">
+                            Reinicio en: {formatTime(resetTimer)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            El progreso se reiniciará automáticamente
+                          </div>
+                        </div>
+                      )}
+
                       <div className="text-center">
                         <div className="text-2xl font-bold text-primary">{stats.completedCount}</div>
                         <div className="text-sm text-muted-foreground">Días completados</div>
