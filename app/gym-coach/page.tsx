@@ -71,6 +71,7 @@ export default function GymCoachPage() {
   })
   const [showDataForm, setShowDataForm] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [isSavingData, setIsSavingData] = useState(false)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [completedDays, setCompletedDays] = useState<{[key: string]: boolean}>({
@@ -915,14 +916,30 @@ export default function GymCoachPage() {
   // Función para enviar datos del usuario
   const submitUserData = () => {
     if (userData.weight && userData.height && userData.age) {
-      const aiMessage = {
-        id: Date.now(),
-        type: "ai" as const,
-        content: `¡Perfecto! He recibido tus datos:\n\n📊 **Tu Perfil:**\n• Peso: ${userData.weight} kg\n• Estatura: ${userData.height} cm\n• Edad: ${userData.age} años\n\n${userData.photo ? '📸 También he analizado tu foto corporal.\n\n' : ''}Ahora puedo crear rutinas 100% personalizadas para ti. ¿Cuál es tu objetivo principal? ¿Perder peso, ganar masa muscular, o mantenerte en forma?`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-      setMessages(prev => [...prev, aiMessage])
-      setShowDataForm(false)
+      setIsSavingData(true)
+      
+      // Simular un pequeño delay para mostrar el estado de carga
+      setTimeout(() => {
+        // Mensaje de confirmación de datos
+        const confirmationMessage = {
+          id: Date.now(),
+          type: "ai" as const,
+          content: `¡Perfecto! He recibido tus datos:\n\n📊 **Tu Perfil:**\n• Peso: ${userData.weight} kg\n• Estatura: ${userData.height} cm\n• Edad: ${userData.age} años\n\n${userData.photo ? '📸 También he analizado tu foto corporal.\n\n' : ''}Ahora puedo crear rutinas 100% personalizadas para ti.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+        
+        // Generar rutina personalizada automáticamente
+        const routineMessage = {
+          id: Date.now() + 1,
+          type: "ai" as const,
+          content: generatePersonalizedRoutine(),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+        
+        setMessages(prev => [...prev, confirmationMessage, routineMessage])
+        setShowDataForm(false)
+        setIsSavingData(false)
+      }, 1000)
     }
   }
 
@@ -1493,11 +1510,32 @@ export default function GymCoachPage() {
                     </div>
                   </div>
 
+                  {(!userData.weight || !userData.height || !userData.age) && (
+                    <div className="text-sm text-muted-foreground mb-4 p-3 bg-muted/50 rounded-lg">
+                      ⚠️ Completa todos los campos obligatorios para guardar tus datos
+                    </div>
+                  )}
+                  
                   <div className="flex gap-2 pt-4">
-                    <Button onClick={submitUserData} className="flex-1">
-                      Guardar Datos
+                    <Button 
+                      onClick={submitUserData} 
+                      className="flex-1"
+                      disabled={isSavingData || !userData.weight || !userData.height || !userData.age}
+                    >
+                      {isSavingData ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Guardando...
+                        </>
+                      ) : (
+                        "Guardar Datos"
+                      )}
                     </Button>
-                    <Button variant="outline" onClick={() => setShowDataForm(false)}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowDataForm(false)}
+                      disabled={isSavingData}
+                    >
                       Cancelar
                     </Button>
                   </div>
