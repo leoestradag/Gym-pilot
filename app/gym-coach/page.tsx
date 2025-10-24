@@ -594,14 +594,6 @@ export default function GymCoachPage() {
       routine += "• Calf raises: 4 series x 15-20 reps\n\n"
     }
 
-    // Recomendaciones nutricionales personalizadas
-    routine += "🥗 **PLAN NUTRICIONAL PERSONALIZADO**\n"
-    routine += `• Calorías diarias: ${Math.round(currentWeight * 25)} kcal\n`
-    routine += `• Proteínas: ${Math.round(currentWeight * 1.6)}g por día\n`
-    routine += `• Carbohidratos: ${Math.round(currentWeight * 3)}g por día\n`
-    routine += `• Grasas: ${Math.round(currentWeight * 0.8)}g por día\n`
-    routine += "• Hidratación: 3-4 litros de agua diarios\n"
-    routine += "• Comer cada 3-4 horas\n\n"
 
     // Recomendaciones específicas por edad
     if (currentAge < 25) {
