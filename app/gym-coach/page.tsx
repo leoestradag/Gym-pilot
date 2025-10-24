@@ -511,7 +511,8 @@ export default function GymCoachPage() {
       'primera vez', 'principiante', 'nunca he ido', 'nuevo', 'empezar', 'comenzar', 'máquina', 'maquina',
       'aparato', 'equipo', 'cómo usar', 'como usar', 'peso', 'carga', 'cuánto peso', 'cuanto peso',
       'kg', 'kilos', 'pesas', 'discos', 'press banca', 'leg press', 'pulldown', 'lat pulldown',
-      'smith', 'hack squat', 'prensa', 'extensión', 'curl', 'press', 'remo', 'tirón'
+      'smith', 'hack squat', 'prensa', 'extensión', 'curl', 'press', 'remo', 'tirón',
+      'crear rutina', 'nueva rutina', 'plan de entrenamiento', 'rutina personalizada', 'entrenamiento personalizado'
     ]
     
     const lowerInput = input.toLowerCase()
@@ -712,7 +713,11 @@ export default function GymCoachPage() {
 
     // Respuestas amigables para saludos
     if (lowerInput.includes('hola') || lowerInput.includes('hi') || lowerInput.includes('hello') || lowerInput.includes('buenos días') || lowerInput.includes('buenas tardes') || lowerInput.includes('buenas noches')) {
-      return `¡Hola! 👋 Me da mucho gusto saludarte. Soy tu Gym Coach AI personalizado y estoy aquí para ayudarte a alcanzar tus objetivos fitness.\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n• 🏋️‍♂️ **Técnicas de ejercicios** - Aprende la forma correcta\n\n¿Cuál de estas opciones te interesa más?`
+      if (userData.weight && userData.height && userData.age) {
+        return `¡Hola! 👋 Me da mucho gusto saludarte. Veo que ya tienes tus datos personales completos (Peso: ${userData.weight}kg, Estatura: ${userData.height}cm, Edad: ${userData.age} años). ¡Perfecto! 🎉\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n• 🏋️‍♂️ **Técnicas de ejercicios** - Aprende la forma correcta\n\n¿Cuál de estas opciones te interesa más?`
+      } else {
+        return `¡Hola! 👋 Me da mucho gusto saludarte. Soy tu Gym Coach AI personalizado y estoy aquí para ayudarte a alcanzar tus objetivos fitness.\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n• 🏋️‍♂️ **Técnicas de ejercicios** - Aprende la forma correcta\n\n¿Cuál de estas opciones te interesa más?`
+      }
     }
 
     // Respuestas para preguntas generales
@@ -751,8 +756,10 @@ export default function GymCoachPage() {
     }
 
     // Respuestas específicas basadas en el input
-    if (lowerInput.includes('rutina') || lowerInput.includes('ejercicio') || lowerInput.includes('entrenar')) {
+    if (lowerInput.includes('rutina') || lowerInput.includes('ejercicio') || lowerInput.includes('entrenar') ||
+        lowerInput.includes('crear rutina') || lowerInput.includes('nueva rutina') || lowerInput.includes('plan de entrenamiento')) {
       if (userData.weight && userData.height && userData.age) {
+        // Usuario ya tiene datos, generar rutina automáticamente
         return generatePersonalizedRoutine()
       } else {
         return `¡Perfecto! Me encanta que quieras empezar una rutina. 💪 Para crear la rutina perfecta para ti, necesito conocer algunos datos básicos.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar un plan 100% personalizado para tus objetivos. ¿Te parece bien?`
@@ -760,11 +767,21 @@ export default function GymCoachPage() {
     }
 
     if (lowerInput.includes('peso') || lowerInput.includes('adelgazar') || lowerInput.includes('perder')) {
-      return `¡Excelente objetivo! 🔥 Perder peso de forma saludable es una meta muy importante. Para ayudarte de la mejor manera, necesito conocer tu perfil físico.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré crear un plan personalizado que incluya:\n• 🏃‍♂️ Rutina de cardio y fuerza\n• 🥗 Plan nutricional específico\n• 📅 Cronograma de entrenamiento\n• 🎯 Metas realistas y alcanzables\n\n¿Te parece bien empezar con estos datos?`
+      if (userData.weight && userData.height && userData.age) {
+        // Usuario ya tiene datos, generar rutina de pérdida de peso automáticamente
+        return generatePersonalizedRoutine()
+      } else {
+        return `¡Excelente objetivo! 🔥 Perder peso de forma saludable es una meta muy importante. Para ayudarte de la mejor manera, necesito conocer tu perfil físico.\n\n📊 **¿Podrías compartir conmigo?**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré crear un plan personalizado que incluya:\n• 🏃‍♂️ Rutina de cardio y fuerza\n• 🥗 Plan nutricional específico\n• 📅 Cronograma de entrenamiento\n• 🎯 Metas realistas y alcanzables\n\n¿Te parece bien empezar con estos datos?`
+      }
     }
 
     if (lowerInput.includes('masa') || lowerInput.includes('muscular') || lowerInput.includes('ganar')) {
-      return `¡Fantástico! 💪 Ganar masa muscular es un objetivo increíble. Me encanta ayudarte a construir un cuerpo más fuerte y definido.\n\n📊 **Para crear tu plan de hipertrofia, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu nivel de experiencia (principiante/intermedio/avanzado)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar:\n• 🏋️‍♂️ Rutina de fuerza e hipertrofia\n• 🥩 Plan nutricional para ganancia muscular\n• 📈 Progresión de pesos y repeticiones\n• 🎯 Ejercicios específicos para tus objetivos\n\n¿Empezamos con tus datos básicos?`
+      if (userData.weight && userData.height && userData.age) {
+        // Usuario ya tiene datos, generar rutina de ganancia muscular automáticamente
+        return generatePersonalizedRoutine()
+      } else {
+        return `¡Fantástico! 💪 Ganar masa muscular es un objetivo increíble. Me encanta ayudarte a construir un cuerpo más fuerte y definido.\n\n📊 **Para crear tu plan de hipertrofia, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu nivel de experiencia (principiante/intermedio/avanzado)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar:\n• 🏋️‍♂️ Rutina de fuerza e hipertrofia\n• 🥩 Plan nutricional para ganancia muscular\n• 📈 Progresión de pesos y repeticiones\n• 🎯 Ejercicios específicos para tus objetivos\n\n¿Empezamos con tus datos básicos?`
+      }
     }
 
 
