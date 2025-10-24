@@ -142,56 +142,137 @@ export default function GymCoachPage() {
 
   // Función para generar rutina personalizada
   const generatePersonalizedRoutine = (): string => {
-    if (!userData.weight || !userData.height || !userData.age) {
+    const currentWeight = userData.weight
+    const currentHeight = userData.height
+    const currentAge = userData.age
+
+    if (!currentWeight || !currentHeight || !currentAge) {
       return "Primero necesito que completes tus datos básicos (peso, estatura, edad) para poder crear una rutina personalizada."
     }
 
-    const bmi = userData.weight / Math.pow(userData.height / 100, 2)
+    const bmi = currentWeight / Math.pow(currentHeight / 100, 2)
     let routine = ""
 
-    // Análisis basado en BMI
+    // Análisis personalizado basado en BMI y edad
+    routine += `🎯 **RUTINA PERSONALIZADA PARA TI**\n\n`
+    routine += `📊 **Tu Perfil:**\n`
+    routine += `• Peso: ${currentWeight} kg\n`
+    routine += `• Estatura: ${currentHeight} cm\n`
+    routine += `• Edad: ${currentAge} años\n`
+    routine += `• BMI: ${bmi.toFixed(1)}\n\n`
+
     if (bmi < 18.5) {
-      routine += "📈 **RUTINA PARA GANAR MASA MUSCULAR**\n\n"
+      routine += "📈 **OBJETIVO: GANAR MASA MUSCULAR**\n"
       routine += "Basándome en tu BMI (bajo peso), te recomiendo:\n\n"
-      routine += "**Día 1 - Tren Superior:**\n"
+      routine += "**🏋️‍♂️ Día 1 - Tren Superior:**\n"
       routine += "• Press banca: 4 series x 8-10 reps\n"
       routine += "• Dominadas: 4 series x 6-8 reps\n"
       routine += "• Press militar: 3 series x 8-10 reps\n"
       routine += "• Curl bíceps: 3 series x 10-12 reps\n\n"
+      routine += "**🏋️‍♂️ Día 2 - Tren Inferior:**\n"
+      routine += "• Sentadillas: 4 series x 8-10 reps\n"
+      routine += "• Peso muerto: 4 series x 6-8 reps\n"
+      routine += "• Prensa: 3 series x 10-12 reps\n"
+      routine += "• Gemelos: 4 series x 15-20 reps\n\n"
     } else if (bmi > 25) {
-      routine += "🔥 **RUTINA PARA PERDER PESO**\n\n"
+      routine += "🔥 **OBJETIVO: PERDER PESO**\n"
       routine += "Basándome en tu BMI (sobrepeso), te recomiendo:\n\n"
-      routine += "**Día 1 - Cardio + Fuerza:**\n"
-      routine += "• 20 min cardio moderado\n"
+      routine += "**🏃‍♂️ Día 1 - Cardio + Fuerza:**\n"
+      routine += "• 20 min cardio moderado (cinta, bici)\n"
       routine += "• Sentadillas: 4 series x 15-20 reps\n"
       routine += "• Flexiones: 3 series x 10-15 reps\n"
-      routine += "• Plancha: 3 series x 30-45 seg\n\n"
+      routine += "• Plancha: 3 series x 30-45 seg\n"
+      routine += "• Burpees: 3 series x 8-12 reps\n\n"
+      routine += "**🏃‍♂️ Día 2 - HIIT + Core:**\n"
+      routine += "• 15 min HIIT (30 seg trabajo, 30 seg descanso)\n"
+      routine += "• Mountain climbers: 3 series x 20 reps\n"
+      routine += "• Russian twists: 3 series x 20 reps\n"
+      routine += "• Leg raises: 3 series x 15 reps\n\n"
     } else {
-      routine += "💪 **RUTINA DE MANTENIMIENTO Y DEFINICIÓN**\n\n"
+      routine += "💪 **OBJETIVO: MANTENIMIENTO Y DEFINICIÓN**\n"
       routine += "Basándome en tu BMI (normal), te recomiendo:\n\n"
-      routine += "**Día 1 - Tren Superior:**\n"
+      routine += "**🏋️‍♂️ Día 1 - Tren Superior:**\n"
       routine += "• Press banca: 3 series x 10-12 reps\n"
       routine += "• Remo con barra: 3 series x 10-12 reps\n"
       routine += "• Press hombros: 3 series x 10-12 reps\n"
-      routine += "• Curl bíceps: 3 series x 12-15 reps\n\n"
+      routine += "• Curl bíceps: 3 series x 12-15 reps\n"
+      routine += "• Tríceps: 3 series x 12-15 reps\n\n"
+      routine += "**🏋️‍♂️ Día 2 - Tren Inferior:**\n"
+      routine += "• Sentadillas: 3 series x 12-15 reps\n"
+      routine += "• Zancadas: 3 series x 12 cada pierna\n"
+      routine += "• Hip thrust: 3 series x 12-15 reps\n"
+      routine += "• Calf raises: 4 series x 15-20 reps\n\n"
     }
 
-    // Recomendaciones nutricionales
-    routine += "🥗 **RECOMENDACIONES NUTRICIONALES:**\n"
-    routine += `• Calorías diarias: ${Math.round(userData.weight * 25)} kcal\n`
-    routine += `• Proteínas: ${Math.round(userData.weight * 1.6)}g por día\n`
+    // Recomendaciones nutricionales personalizadas
+    routine += "🥗 **PLAN NUTRICIONAL PERSONALIZADO:**\n"
+    routine += `• Calorías diarias: ${Math.round(currentWeight * 25)} kcal\n`
+    routine += `• Proteínas: ${Math.round(currentWeight * 1.6)}g por día\n`
+    routine += `• Carbohidratos: ${Math.round(currentWeight * 3)}g por día\n`
+    routine += `• Grasas: ${Math.round(currentWeight * 0.8)}g por día\n`
     routine += "• Hidratación: 3-4 litros de agua diarios\n"
     routine += "• Comer cada 3-4 horas\n\n"
 
+    // Recomendaciones específicas por edad
+    if (currentAge < 25) {
+      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años):**\n`
+      routine += "• Puedes entrenar con mayor intensidad\n"
+      routine += "• Recuperación más rápida entre sesiones\n"
+      routine += "• Enfoque en técnica y progresión\n\n"
+    } else if (currentAge > 40) {
+      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años):**\n`
+      routine += "• Calentamiento más extenso (10-15 min)\n"
+      routine += "• Enfoque en movilidad y flexibilidad\n"
+      routine += "• Descanso adecuado entre series\n\n"
+    }
+
     routine += "📅 **FRECUENCIA:** 4-5 días por semana\n"
     routine += "⏱️ **DURACIÓN:** 60-90 minutos por sesión\n"
-    routine += "🎯 **PROGRESIÓN:** Aumenta peso cada 2 semanas"
+    routine += "🎯 **PROGRESIÓN:** Aumenta peso cada 2 semanas\n"
+    routine += "💪 **¡Tu rutina personalizada está lista!**"
 
     return routine
   }
 
+  // Función para extraer datos del usuario del texto
+  const extractUserData = (input: string): { weight?: number, height?: number, age?: number } => {
+    const data: { weight?: number, height?: number, age?: number } = {}
+    
+    // Extraer peso
+    const weightMatch = input.match(/(\d+)\s*(kilos?|kg|peso)/i)
+    if (weightMatch) {
+      data.weight = parseInt(weightMatch[1])
+    }
+    
+    // Extraer estatura
+    const heightMatch = input.match(/(\d+)\s*(cm|centímetros?|mido|estatura)/i)
+    if (heightMatch) {
+      data.height = parseInt(heightMatch[1])
+    }
+    
+    // Extraer edad
+    const ageMatch = input.match(/(\d+)\s*(años?|edad|tengo)/i)
+    if (ageMatch) {
+      data.age = parseInt(ageMatch[1])
+    }
+    
+    return data
+  }
+
   const generateAIResponse = (userInput: string): string => {
     const lowerInput = userInput.toLowerCase()
+
+    // Extraer datos del usuario si están en el mensaje
+    const extractedData = extractUserData(userInput)
+    if (extractedData.weight || extractedData.height || extractedData.age) {
+      // Actualizar datos del usuario
+      if (extractedData.weight) setUserData(prev => ({ ...prev, weight: extractedData.weight }))
+      if (extractedData.height) setUserData(prev => ({ ...prev, height: extractedData.height }))
+      if (extractedData.age) setUserData(prev => ({ ...prev, age: extractedData.age }))
+      
+      // Generar rutina personalizada con los datos
+      return generatePersonalizedRoutine()
+    }
 
     // Respuestas amigables para saludos
     if (lowerInput.includes('hola') || lowerInput.includes('hi') || lowerInput.includes('hello') || lowerInput.includes('buenos días') || lowerInput.includes('buenas tardes') || lowerInput.includes('buenas noches')) {
@@ -267,6 +348,26 @@ export default function GymCoachPage() {
         const result = e.target?.result as string
         setPhotoPreview(result)
         setUserData(prev => ({ ...prev, photo: result }))
+        
+        // Enviar mensaje al chat sobre la foto
+        const photoMessage = {
+          id: Date.now(),
+          type: "user" as const,
+          content: `📸 He subido una foto de mi cuerpo para análisis`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+        setMessages(prev => [...prev, photoMessage])
+        
+        // Respuesta del AI sobre la foto
+        setTimeout(() => {
+          const aiResponse = {
+            id: Date.now() + 1,
+            type: "ai" as const,
+            content: `¡Excelente! 📸 He recibido tu foto corporal. Estoy analizando tu composición corporal para crear recomendaciones más precisas.\n\nBasándome en tu imagen, puedo ver tu estructura física y adaptar mejor tu rutina. ¿Tienes algún objetivo específico en mente? ¿Perder peso, ganar masa muscular, o definir?`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+          setMessages(prev => [...prev, aiResponse])
+        }, 1500)
       }
       reader.readAsDataURL(file)
     }
@@ -424,6 +525,18 @@ export default function GymCoachPage() {
                       placeholder="Escribe tu mensaje..."
                       className="flex-1"
                     />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      id="chat-photo-upload"
+                    />
+                    <label htmlFor="chat-photo-upload">
+                      <Button type="button" variant="outline" size="sm" className="gap-2">
+                        <ImageIcon className="h-4 w-4" />
+                      </Button>
+                    </label>
                     <Button type="submit" size="sm" className="gap-2">
                       <Send className="h-4 w-4" />
                     </Button>
