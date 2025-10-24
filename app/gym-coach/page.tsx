@@ -97,20 +97,22 @@ export default function GymCoachPage() {
       setShowCelebration(true)
       
       // Iniciar timer de 3 minutos (180 segundos)
-      const timer = 180
-      setResetTimer(timer)
+      setResetTimer(180)
       
       // Mostrar celebración por 2 segundos
       setTimeout(() => {
         setShowCelebration(false)
       }, 2000)
-      
-      // Countdown cada segundo
+    }
+  }, [completedDays, allDaysCompleted])
+
+  // Timer countdown separado
+  useEffect(() => {
+    if (resetTimer !== null && resetTimer > 0) {
       const countdown = setInterval(() => {
         setResetTimer(prev => {
           if (prev === null || prev <= 1) {
-            clearInterval(countdown)
-            // Reiniciar todo
+            // Reiniciar todo cuando llegue a 0
             setCompletedDays({
               lunes: false,
               martes: false,
@@ -130,7 +132,7 @@ export default function GymCoachPage() {
       
       return () => clearInterval(countdown)
     }
-  }, [completedDays, allDaysCompleted])
+  }, [resetTimer])
 
   // Función para manejar el toggle de días completados
   const toggleDayCompleted = (day: string) => {
