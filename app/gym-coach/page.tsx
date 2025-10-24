@@ -494,11 +494,21 @@ export default function GymCoachPage() {
     const fitnessKeywords = [
       'ejercicio', 'entrenar', 'gym', 'gimnasio', 'pesas', 'cardio', 'rutina', 'musculo', 'músculo',
       'fuerza', 'resistencia', 'flexibilidad', 'peso', 'adelgazar', 'engordar', 'definir', 'volumen',
-      'proteína', 'carbohidratos', 'calorías', 'dieta', 'nutrición', 'suplementos', 'creatina',
-      'sentadilla', 'press', 'dominadas', 'flexiones', 'plancha', 'burpees', 'squat', 'deadlift',
+      'proteína', 'protein', 'carbohidratos', 'carbs', 'calorías', 'dieta', 'nutrición', 'suplementos', 'creatina',
+      'sentadilla', 'squats', 'press', 'dominadas', 'pull ups', 'flexiones', 'plancha', 'burpees', 'squat', 'deadlift',
       'bench', 'curl', 'extension', 'pulldown', 'row', 'shoulder', 'tricep', 'bicep', 'core',
       'abdomen', 'abdominales', 'espalda', 'pecho', 'hombros', 'brazos', 'piernas', 'glúteos',
-      'fitness', 'workout', 'training', 'bodybuilding', 'crossfit', 'yoga', 'pilates', 'spinning'
+      'fitness', 'workout', 'training', 'bodybuilding', 'crossfit', 'yoga', 'pilates', 'spinning',
+      'motivación', 'motivar', 'desánimo', 'cansado', 'flojo', 'perezoso', 'lesión', 'dolor', 
+      'lastimado', 'molestia', 'injury', 'técnica', 'forma', 'repeticiones', 'series', 'kg', 'kilos',
+      'estatura', 'altura', 'edad', 'años', 'foto', 'cuerpo', 'análisis', 'bmi', 'índice', 'arroz',
+      'pasta', 'pollo', 'pavo', 'pescado', 'huevos', 'lácteos', 'legumbres', 'quinoa', 'avena',
+      'patata', 'frutas', 'verduras', 'mantener', 'mantenimiento', 'estable', 'no cambiar', 'como estoy',
+      'duda', 'pregunta', 'ayuda', 'no sé', 'cómo', 'qué', 'explícame', 'enseña', 'técnicas', 'planes',
+      'cálculos', 'estrategias', 'principiante', 'intermedio', 'avanzado', 'nivel', 'experiencia',
+      'objetivo', 'meta', 'resultado', 'progreso', 'mejorar', 'cambiar', 'transformar', 'salud',
+      'bienestar', 'actividad', 'deporte', 'deportista', 'atleta', 'hipertrofia', 'cutting', 'bulking',
+      'masa', 'ganar', 'perder', 'adelgazar', 'bajar', 'quemar', 'grasa', 'definir', 'mantener'
     ]
     
     const lowerInput = input.toLowerCase()
@@ -758,10 +768,45 @@ export default function GymCoachPage() {
       return `¡Perfecto! 🥗 La nutrición es la base de cualquier objetivo fitness. Me encanta ayudarte a optimizar tu alimentación.\n\n📊 **Para darte recomendaciones precisas, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu objetivo (perder peso/ganar masa/mantener)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré calcular:\n• 🔥 Tus calorías diarias necesarias\n• 🥩 Cantidad de proteínas, carbohidratos y grasas\n• ⏰ Horarios de comida óptimos\n• 🍎 Alimentos específicos para tus objetivos\n• 💧 Hidratación personalizada\n\n¿Te parece bien compartir estos datos?`
     }
 
+    // Respuestas para ejercicios específicos
+    if (lowerInput.includes('sentadillas') || lowerInput.includes('squats')) {
+      return `¡Excelente ejercicio! 🦵 Las sentadillas son fundamentales para el desarrollo de las piernas.\n\n**💪 TÉCNICA CORRECTA:**\n• Pies al ancho de hombros\n• Baja como si te sentaras en una silla\n• Mantén la espalda recta\n• Empuja con los talones al subir\n\n**📊 PROGRESIÓN:**\n• Principiante: 3 series x 10-15 reps\n• Intermedio: 4 series x 12-20 reps\n• Avanzado: 5 series x 15-25 reps\n\n¿Quieres que te ayude con más ejercicios de piernas?`
+    }
+
+    if (lowerInput.includes('press banca') || lowerInput.includes('bench press') || lowerInput.includes('pecho')) {
+      return `¡Genial! 💪 El press banca es el rey de los ejercicios de pecho.\n\n**💪 TÉCNICA CORRECTA:**\n• Acostado en banco plano\n• Agarre ligeramente más ancho que los hombros\n• Baja la barra hasta el pecho\n• Empuja hacia arriba con control\n\n**📊 PROGRESIÓN:**\n• Principiante: 3 series x 8-10 reps\n• Intermedio: 4 series x 6-8 reps\n• Avanzado: 5 series x 4-6 reps\n\n¿Te interesa saber sobre otros ejercicios de pecho?`
+    }
+
+    if (lowerInput.includes('dominadas') || lowerInput.includes('pull ups') || lowerInput.includes('espalda')) {
+      return `¡Perfecto! 🏋️ Las dominadas son excelentes para la espalda.\n\n**💪 TÉCNICA CORRECTA:**\n• Agarre más ancho que los hombros\n• Cuelga completamente estirado\n• Tira hacia arriba hasta que el mentón pase la barra\n• Baja con control\n\n**📊 PROGRESIÓN:**\n• Principiante: 3 series x 3-5 reps\n• Intermedio: 4 series x 6-8 reps\n• Avanzado: 5 series x 8-12 reps\n\n¿Quieres más ejercicios de espalda?`
+    }
+
+    // Respuestas para nutrición específica
+    if (lowerInput.includes('proteína') || lowerInput.includes('protein')) {
+      return `¡Excelente pregunta! 🥩 La proteína es fundamental para el desarrollo muscular.\n\n**📊 CANTIDADES RECOMENDADAS:**\n• Sedentario: 0.8g por kg de peso\n• Activo: 1.2-1.4g por kg de peso\n• Deportista: 1.6-2.2g por kg de peso\n\n**🍖 MEJORES FUENTES:**\n• Pollo, pavo, pescado\n• Huevos, lácteos\n• Legumbres, quinoa\n• Suplementos (whey protein)\n\n¿Quieres que calcule tu ingesta de proteína personalizada?`
+    }
+
+    if (lowerInput.includes('carbohidratos') || lowerInput.includes('carbs') || lowerInput.includes('arroz') || lowerInput.includes('pasta')) {
+      return `¡Muy bien! 🍚 Los carbohidratos son tu fuente de energía principal.\n\n**📊 CANTIDADES RECOMENDADAS:**\n• Mantenimiento: 3-5g por kg de peso\n• Pérdida de peso: 2-3g por kg de peso\n• Ganancia de masa: 4-7g por kg de peso\n\n**🌾 MEJORES FUENTES:**\n• Arroz integral, quinoa\n• Avena, patata dulce\n• Frutas, verduras\n• Pasta integral\n\n¿Te ayudo a calcular tus carbohidratos según tu objetivo?`
+    }
+
+    // Respuestas para motivación
+    if (lowerInput.includes('motivación') || lowerInput.includes('motivar') || lowerInput.includes('desánimo') || 
+        lowerInput.includes('cansado') || lowerInput.includes('flojo') || lowerInput.includes('perezoso')) {
+      return `¡Entiendo perfectamente! 💪 Todos pasamos por momentos difíciles. Te voy a ayudar a recuperar esa motivación.\n\n**🔥 CONSEJOS PARA MOTIVARTE:**\n• 🎯 Establece metas pequeñas y alcanzables\n• 📱 Haz seguimiento de tu progreso\n• 👥 Entrena con un compañero\n• 🎵 Crea una playlist motivacional\n• 📸 Toma fotos de tu progreso\n\n**💪 RECUERDA:**\n"La disciplina es el puente entre tus metas y tus logros."\n\n¿Quieres que creemos un plan específico para mantener tu motivación?`
+    }
+
+    // Respuestas para lesiones
+    if (lowerInput.includes('lesión') || lowerInput.includes('dolor') || lowerInput.includes('lastimado') || 
+        lowerInput.includes('molestia') || lowerInput.includes('injury')) {
+      return `⚠️ **IMPORTANTE:** Si tienes una lesión, te recomiendo consultar con un médico o fisioterapeuta antes de continuar entrenando.\n\n**🩺 MIENTRAS TANTO:**\n• 🧘‍♂️ Enfócate en ejercicios de movilidad\n• 🏃‍♂️ Mantén el cardio de bajo impacto\n• 💪 Trabaja otras partes del cuerpo\n• 🥗 Mantén una buena nutrición\n\n**💡 CONSEJO:**\nLa prevención es mejor que la curación. Siempre calienta bien y usa la técnica correcta.\n\n¿Hay alguna zona específica que te molesta?`
+    }
+
     // Respuestas para dudas o preguntas adicionales
     if (lowerInput.includes('duda') || lowerInput.includes('pregunta') || lowerInput.includes('ayuda') ||
-        lowerInput.includes('no sé') || lowerInput.includes('cómo') || lowerInput.includes('qué')) {
-      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte 💪`
+        lowerInput.includes('no sé') || lowerInput.includes('cómo') || lowerInput.includes('qué') ||
+        lowerInput.includes('explícame') || lowerInput.includes('enseña')) {
+      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte con:\n\n• 💪 Técnicas de ejercicios\n• 🥗 Planes nutricionales\n• 📊 Cálculos de macros\n• 🎯 Estrategias de entrenamiento\n• 🏃‍♂️ Planes de cardio\n• 💪 Rutinas de fuerza\n\n¿Sobre qué tema específico te gustaría saber más?`
     }
 
     // Respuesta genérica para preguntas de fitness
