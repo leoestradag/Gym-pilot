@@ -91,37 +91,37 @@ const amenities = [
     name: "Wi-Fi Gratuito", 
     icon: <Wifi className="h-5 w-5" />, 
     description: "Internet de alta velocidad en toda la instalación",
-    image: "/wifi-gym.jpg"
+    image: "/fitness-center-equipment.jpg"
   },
   { 
     name: "Estacionamiento", 
     icon: <Car className="h-5 w-5" />, 
     description: "Estacionamiento gratuito para todos los miembros",
-    image: "/parking-gym.jpg"
+    image: "/modern-gym-interior.png"
   },
   { 
     name: "Lockers", 
     icon: <Shield className="h-5 w-5" />, 
     description: "Casilleros seguros con cerradura digital",
-    image: "/lockers-gym.jpg"
+    image: "/gym-training-area.jpg"
   },
   { 
     name: "Vestidores", 
     icon: <Users className="h-5 w-5" />, 
     description: "Vestidores amplios con duchas y regaderas",
-    image: "/changing-rooms-gym.jpg"
+    image: "/people-training-in-modern-gym.jpg"
   },
   { 
     name: "Spa", 
     icon: <Heart className="h-5 w-5" />, 
     description: "Área de relajación con sauna y jacuzzi",
-    image: "/spa-gym.jpg"
+    image: "/fitness-center-equipment.jpg"
   },
   { 
     name: "Cafetería", 
     icon: <Dumbbell className="h-5 w-5" />, 
     description: "Cafetería saludable con opciones nutritivas",
-    image: "/cafeteria-gym.jpg"
+    image: "/gym-training-area.jpg"
   }
 ]
 
