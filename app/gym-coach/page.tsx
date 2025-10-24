@@ -166,40 +166,48 @@ export default function GymCoachPage() {
     if (bmi < 18.5) {
       routine += "📈 **OBJETIVO: GANAR MASA MUSCULAR**\n"
       routine += "Basándome en tu BMI (bajo peso), te recomiendo:\n\n"
-      routine += "**🏋️‍♂️ Día 1 - Tren Superior:**\n"
+      
+      routine += "**🏋️‍♂️ DÍA 1 - TREN SUPERIOR**\n"
       routine += "• Press banca: 4 series x 8-10 reps\n"
       routine += "• Dominadas: 4 series x 6-8 reps\n"
       routine += "• Press militar: 3 series x 8-10 reps\n"
       routine += "• Curl bíceps: 3 series x 10-12 reps\n\n"
-      routine += "**🏋️‍♂️ Día 2 - Tren Inferior:**\n"
+      
+      routine += "**🏋️‍♂️ DÍA 2 - TREN INFERIOR**\n"
       routine += "• Sentadillas: 4 series x 8-10 reps\n"
       routine += "• Peso muerto: 4 series x 6-8 reps\n"
       routine += "• Prensa: 3 series x 10-12 reps\n"
       routine += "• Gemelos: 4 series x 15-20 reps\n\n"
+      
     } else if (bmi > 25) {
       routine += "🔥 **OBJETIVO: PERDER PESO**\n"
       routine += "Basándome en tu BMI (sobrepeso), te recomiendo:\n\n"
-      routine += "**🏃‍♂️ Día 1 - Cardio + Fuerza:**\n"
+      
+      routine += "**🏃‍♂️ DÍA 1 - CARDIO + FUERZA**\n"
       routine += "• 20 min cardio moderado (cinta, bici)\n"
       routine += "• Sentadillas: 4 series x 15-20 reps\n"
       routine += "• Flexiones: 3 series x 10-15 reps\n"
       routine += "• Plancha: 3 series x 30-45 seg\n"
       routine += "• Burpees: 3 series x 8-12 reps\n\n"
-      routine += "**🏃‍♂️ Día 2 - HIIT + Core:**\n"
+      
+      routine += "**🏃‍♂️ DÍA 2 - HIIT + CORE**\n"
       routine += "• 15 min HIIT (30 seg trabajo, 30 seg descanso)\n"
       routine += "• Mountain climbers: 3 series x 20 reps\n"
       routine += "• Russian twists: 3 series x 20 reps\n"
       routine += "• Leg raises: 3 series x 15 reps\n\n"
+      
     } else {
       routine += "💪 **OBJETIVO: MANTENIMIENTO Y DEFINICIÓN**\n"
       routine += "Basándome en tu BMI (normal), te recomiendo:\n\n"
-      routine += "**🏋️‍♂️ Día 1 - Tren Superior:**\n"
+      
+      routine += "**🏋️‍♂️ DÍA 1 - TREN SUPERIOR**\n"
       routine += "• Press banca: 3 series x 10-12 reps\n"
       routine += "• Remo con barra: 3 series x 10-12 reps\n"
       routine += "• Press hombros: 3 series x 10-12 reps\n"
       routine += "• Curl bíceps: 3 series x 12-15 reps\n"
       routine += "• Tríceps: 3 series x 12-15 reps\n\n"
-      routine += "**🏋️‍♂️ Día 2 - Tren Inferior:**\n"
+      
+      routine += "**🏋️‍♂️ DÍA 2 - TREN INFERIOR**\n"
       routine += "• Sentadillas: 3 series x 12-15 reps\n"
       routine += "• Zancadas: 3 series x 12 cada pierna\n"
       routine += "• Hip thrust: 3 series x 12-15 reps\n"
@@ -207,7 +215,7 @@ export default function GymCoachPage() {
     }
 
     // Recomendaciones nutricionales personalizadas
-    routine += "🥗 **PLAN NUTRICIONAL PERSONALIZADO:**\n"
+    routine += "🥗 **PLAN NUTRICIONAL PERSONALIZADO**\n"
     routine += `• Calorías diarias: ${Math.round(currentWeight * 25)} kcal\n`
     routine += `• Proteínas: ${Math.round(currentWeight * 1.6)}g por día\n`
     routine += `• Carbohidratos: ${Math.round(currentWeight * 3)}g por día\n`
@@ -217,12 +225,12 @@ export default function GymCoachPage() {
 
     // Recomendaciones específicas por edad
     if (currentAge < 25) {
-      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años):**\n`
+      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años)**\n`
       routine += "• Puedes entrenar con mayor intensidad\n"
       routine += "• Recuperación más rápida entre sesiones\n"
       routine += "• Enfoque en técnica y progresión\n\n"
     } else if (currentAge > 40) {
-      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años):**\n`
+      routine += `🎯 **RECOMENDACIONES PARA TU EDAD (${currentAge} años)**\n`
       routine += "• Calentamiento más extenso (10-15 min)\n"
       routine += "• Enfoque en movilidad y flexibilidad\n"
       routine += "• Descanso adecuado entre series\n\n"
@@ -230,7 +238,7 @@ export default function GymCoachPage() {
 
     routine += "📅 **FRECUENCIA:** 4-5 días por semana\n"
     routine += "⏱️ **DURACIÓN:** 60-90 minutos por sesión\n"
-    routine += "🎯 **PROGRESIÓN:** Aumenta peso cada 2 semanas\n"
+    routine += "🎯 **PROGRESIÓN:** Aumenta peso cada 2 semanas\n\n"
     routine += "💪 **¡Tu rutina personalizada está lista!**"
 
     return routine
