@@ -346,14 +346,23 @@ export default function GymCoachPage() {
       return `¡Hola! 😊 Me da mucho gusto que me escribas. Aunque me encanta conversar contigo, me especializo únicamente en temas de fitness, gimnasio, ejercicios y nutrición deportiva.\n\n🎯 **¿En qué puedo ayudarte con tu fitness?**\n\n• 💪 Crear una rutina personalizada\n• 🏃‍♂️ Plan para perder peso\n• 💪 Ganar masa muscular\n• 🥗 Consejos nutricionales\n• 📸 Análisis de tu composición corporal\n\n¿Hay algo específico sobre tu entrenamiento en lo que pueda ayudarte?`
     }
 
-    // Respuestas para agradecimientos
-    if (lowerInput.includes('gracias') || lowerInput.includes('thanks') || lowerInput.includes('thank you')) {
-      return `¡De nada! 😊 Es un placer ayudarte con tu fitness. Estoy aquí para apoyarte en todo tu journey de salud y bienestar.\n\n¿Hay algo más en lo que pueda ayudarte? Puedo crear más rutinas, dar consejos nutricionales o resolver cualquier duda sobre entrenamiento.`
+    // Respuestas para agradecimientos y confirmaciones
+    if (lowerInput.includes('gracias') || lowerInput.includes('thanks') || lowerInput.includes('thank you') || 
+        lowerInput.includes('perfecto') || lowerInput.includes('ok') || lowerInput.includes('okay') ||
+        lowerInput.includes('genial') || lowerInput.includes('excelente') || lowerInput.includes('bueno') ||
+        lowerInput.includes('vale') || lowerInput.includes('bien') || lowerInput.includes('está bien')) {
+      return `¡De nada! 😊 Me da mucho gusto haberte ayudado con tu rutina personalizada. Estoy aquí para apoyarte en todo tu journey de salud y bienestar.\n\n🎯 **¿En qué más puedo ayudarte?**\n\n• 💪 **Modificar tu rutina** - Ajustar ejercicios o intensidad\n• 🥗 **Consejos nutricionales** - Alimentación específica para tus objetivos\n• 📅 **Plan de progresión** - Cómo avanzar semana a semana\n• 🏃‍♂️ **Cardio complementario** - Ejercicios cardiovasculares\n• 📸 **Análisis de progreso** - Sube fotos para evaluar cambios\n• 🎯 **Nuevos retos** - 20 Day Challenge o metas específicas\n\n¡Estoy aquí para lo que necesites! 💪`
     }
 
     // Respuestas para despedidas
     if (lowerInput.includes('adiós') || lowerInput.includes('bye') || lowerInput.includes('hasta luego') || lowerInput.includes('nos vemos')) {
       return `¡Hasta luego! 👋 Ha sido un placer ayudarte. Recuerda que estoy aquí siempre que necesites consejos de fitness, rutinas personalizadas o motivación.\n\n💪 **¡Sigue entrenando y alcanzando tus objetivos!**\n\n¡Nos vemos pronto!`
+    }
+
+    // Respuestas para cuando el usuario está satisfecho con la rutina
+    if (lowerInput.includes('me gusta') || lowerInput.includes('me encanta') || lowerInput.includes('está genial') ||
+        lowerInput.includes('perfecto') || lowerInput.includes('excelente') || lowerInput.includes('muy bien')) {
+      return `¡Me alegra mucho que te guste tu rutina! 🎉 Es genial saber que estás motivado para empezar tu journey fitness.\n\n💪 **Consejos para el éxito:**\n• Empieza con pesos cómodos y enfócate en la técnica\n• Descansa bien entre sesiones (48-72 horas)\n• Mantén constancia - la clave está en la disciplina\n• Hidrátate bien durante y después del entrenamiento\n\n🎯 **¿Quieres que te ayude con algo más?**\n• Plan nutricional específico\n• Técnicas de ejercicios\n• Progresión de pesos\n• Motivación diaria\n\n¡Estoy aquí para acompañarte en todo el proceso! 💪`
     }
 
     // Respuestas específicas basadas en el input
@@ -375,6 +384,12 @@ export default function GymCoachPage() {
 
     if (lowerInput.includes('nutrición') || lowerInput.includes('dieta') || lowerInput.includes('comer')) {
       return `¡Perfecto! 🥗 La nutrición es la base de cualquier objetivo fitness. Me encanta ayudarte a optimizar tu alimentación.\n\n📊 **Para darte recomendaciones precisas, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu objetivo (perder peso/ganar masa/mantener)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré calcular:\n• 🔥 Tus calorías diarias necesarias\n• 🥩 Cantidad de proteínas, carbohidratos y grasas\n• ⏰ Horarios de comida óptimos\n• 🍎 Alimentos específicos para tus objetivos\n• 💧 Hidratación personalizada\n\n¿Te parece bien compartir estos datos?`
+    }
+
+    // Respuestas para dudas o preguntas adicionales
+    if (lowerInput.includes('duda') || lowerInput.includes('pregunta') || lowerInput.includes('ayuda') ||
+        lowerInput.includes('no sé') || lowerInput.includes('cómo') || lowerInput.includes('qué')) {
+      return `¡Por supuesto! 😊 Me encanta resolver tus dudas y ayudarte con cualquier pregunta sobre fitness.\n\n🎯 **¿Sobre qué te gustaría saber más?**\n\n• 💪 **Técnicas de ejercicios** - Cómo hacer correctamente cada movimiento\n• 🥗 **Alimentación** - Qué comer antes y después del entrenamiento\n• 📅 **Frecuencia de entrenamiento** - Cuántas veces por semana\n• ⚖️ **Progresión de pesos** - Cuándo y cómo aumentar\n• 🏃‍♂️ **Cardio vs Fuerza** - Balance ideal para tus objetivos\n• 📸 **Seguimiento de progreso** - Cómo medir tus avances\n• 🎯 **Motivación** - Consejos para mantener la constancia\n\n¡Pregúntame lo que necesites! Estoy aquí para ayudarte 💪`
     }
 
     // Respuesta genérica para preguntas de fitness
