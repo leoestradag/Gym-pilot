@@ -346,13 +346,6 @@ export default function GymCoachPage() {
       return `¡Hola! 😊 Me da mucho gusto que me escribas. Aunque me encanta conversar contigo, me especializo únicamente en temas de fitness, gimnasio, ejercicios y nutrición deportiva.\n\n🎯 **¿En qué puedo ayudarte con tu fitness?**\n\n• 💪 Crear una rutina personalizada\n• 🏃‍♂️ Plan para perder peso\n• 💪 Ganar masa muscular\n• 🥗 Consejos nutricionales\n• 📸 Análisis de tu composición corporal\n\n¿Hay algo específico sobre tu entrenamiento en lo que pueda ayudarte?`
     }
 
-    // Respuestas para agradecimientos y confirmaciones
-    if (lowerInput.includes('gracias') || lowerInput.includes('thanks') || lowerInput.includes('thank you') || 
-        lowerInput.includes('perfecto') || lowerInput.includes('ok') || lowerInput.includes('okay') ||
-        lowerInput.includes('genial') || lowerInput.includes('excelente') || lowerInput.includes('bueno') ||
-        lowerInput.includes('vale') || lowerInput.includes('bien') || lowerInput.includes('está bien')) {
-      return `¡De nada! 😊 Claro, para servirte. Aquí estoy para cualquier otra ayuda que necesites. 💪`
-    }
 
     // Respuestas para despedidas
     if (lowerInput.includes('adiós') || lowerInput.includes('bye') || lowerInput.includes('hasta luego') || lowerInput.includes('nos vemos')) {
@@ -361,7 +354,15 @@ export default function GymCoachPage() {
 
     // Respuestas para cuando el usuario está satisfecho con la rutina
     if (lowerInput.includes('me gusta') || lowerInput.includes('me encanta') || lowerInput.includes('está genial') ||
-        lowerInput.includes('perfecto') || lowerInput.includes('excelente') || lowerInput.includes('muy bien')) {
+        lowerInput.includes('perfecto') || lowerInput.includes('excelente') || lowerInput.includes('muy bien') ||
+        lowerInput.includes('gracias') || lowerInput.includes('thanks') || lowerInput.includes('thank you') ||
+        lowerInput.includes('ok') || lowerInput.includes('okay') || lowerInput.includes('genial') ||
+        lowerInput.includes('bueno') || lowerInput.includes('vale') || lowerInput.includes('bien') ||
+        lowerInput.includes('está bien') || lowerInput.includes('muchas gracias') || 
+        lowerInput.includes('thank you so much') || lowerInput.includes('te agradezco') ||
+        lowerInput.includes('mil gracias') || lowerInput.includes('gracias por todo') ||
+        lowerInput.includes('se agradece') || lowerInput.includes('appreciate it') ||
+        lowerInput.includes('thanks a lot') || lowerInput.includes('thank you very much')) {
       return `¡Me alegra que te guste! 🎉 ¡Estoy aquí para lo que necesites! 💪`
     }
 
