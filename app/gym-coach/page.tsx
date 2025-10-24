@@ -30,7 +30,11 @@ import {
   ArrowDown,
   Heart,
   Users,
-  Activity
+  Activity,
+  X,
+  Timer,
+  Repeat,
+  Play
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/user-avatar"
@@ -68,7 +72,261 @@ export default function GymCoachPage() {
   const [showDataForm, setShowDataForm] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [showScrollButton, setShowScrollButton] = useState(false)
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Datos detallados de cada día de entrenamiento
+  const weeklyWorkoutData = {
+    "lunes": {
+      title: "PECHO Y TRÍCEPS",
+      icon: Dumbbell,
+      color: "primary",
+      exercises: [
+        {
+          name: "Press banca",
+          sets: 4,
+          reps: "8-10",
+          rest: "2-3 min",
+          description: "Acostado en banco, baja la barra hasta el pecho y empuja hacia arriba",
+          equipment: "Banco plano + barra + discos"
+        },
+        {
+          name: "Aperturas con mancuernas",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "Acostado en banco, abre los brazos con mancuernas hasta sentir el estiramiento",
+          equipment: "Banco plano + mancuernas"
+        },
+        {
+          name: "Fondos en paralelas",
+          sets: 3,
+          reps: "8-12",
+          rest: "2 min",
+          description: "Suspéndete en las barras paralelas y baja el cuerpo flexionando los brazos",
+          equipment: "Barras paralelas"
+        },
+        {
+          name: "Extensión de tríceps",
+          sets: 3,
+          reps: "10-12",
+          rest: "1-2 min",
+          description: "Sentado o de pie, extiende los brazos con mancuerna por encima de la cabeza",
+          equipment: "Mancuerna"
+        }
+      ]
+    },
+    "martes": {
+      title: "ESPALDA Y BÍCEPS",
+      icon: Heart,
+      color: "accent",
+      exercises: [
+        {
+          name: "Dominadas/Remo con barra",
+          sets: 4,
+          reps: "6-8",
+          rest: "2-3 min",
+          description: "Tira de tu cuerpo hacia arriba hasta que el mentón pase la barra",
+          equipment: "Barra de dominadas"
+        },
+        {
+          name: "Jalón al pecho",
+          sets: 3,
+          reps: "10-12",
+          rest: "2 min",
+          description: "Sentado en polea, tira hacia abajo hasta el pecho",
+          equipment: "Máquina de polea"
+        },
+        {
+          name: "Curl de bíceps",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "De pie, flexiona los brazos llevando las mancuernas hacia los hombros",
+          equipment: "Mancuernas"
+        },
+        {
+          name: "Martillo con mancuernas",
+          sets: 3,
+          reps: "10-12",
+          rest: "1-2 min",
+          description: "Curl con agarre neutro, manteniendo las mancuernas paralelas",
+          equipment: "Mancuernas"
+        }
+      ]
+    },
+    "miércoles": {
+      title: "PIERNAS",
+      icon: Activity,
+      color: "green-500",
+      exercises: [
+        {
+          name: "Sentadillas",
+          sets: 4,
+          reps: "12-15",
+          rest: "2-3 min",
+          description: "Pies al ancho de hombros, baja como si te sentaras en una silla",
+          equipment: "Barra + discos (opcional)"
+        },
+        {
+          name: "Peso muerto",
+          sets: 4,
+          reps: "8-10",
+          rest: "3 min",
+          description: "Levanta la barra desde el suelo manteniendo la espalda recta",
+          equipment: "Barra + discos"
+        },
+        {
+          name: "Prensa de piernas",
+          sets: 3,
+          reps: "15-20",
+          rest: "2 min",
+          description: "Sentado en la máquina, empuja el peso con las piernas",
+          equipment: "Máquina de prensa"
+        },
+        {
+          name: "Gemelos",
+          sets: 4,
+          reps: "15-20",
+          rest: "1-2 min",
+          description: "De pie, eleva los talones lo más alto posible",
+          equipment: "Máquina de gemelos o peso libre"
+        }
+      ]
+    },
+    "jueves": {
+      title: "HOMBROS Y CORE",
+      icon: Users,
+      color: "orange-500",
+      exercises: [
+        {
+          name: "Press militar",
+          sets: 4,
+          reps: "8-10",
+          rest: "2-3 min",
+          description: "De pie o sentado, presiona la barra por encima de la cabeza",
+          equipment: "Barra + discos"
+        },
+        {
+          name: "Elevaciones laterales",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "Con mancuernas, eleva los brazos lateralmente hasta la altura de los hombros",
+          equipment: "Mancuernas"
+        },
+        {
+          name: "Plancha abdominal",
+          sets: 3,
+          reps: "30-45 seg",
+          rest: "1 min",
+          description: "Mantén posición de flexión apoyado en antebrazos",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Crunches",
+          sets: 3,
+          reps: "20-25",
+          rest: "1 min",
+          description: "Acostado, levanta el torso hacia las rodillas",
+          equipment: "Solo peso corporal"
+        }
+      ]
+    },
+    "viernes": {
+      title: "CARDIO Y FUNCIONAL",
+      icon: Zap,
+      color: "purple-500",
+      exercises: [
+        {
+          name: "Cardio moderado",
+          sets: 1,
+          reps: "30 min",
+          rest: "0",
+          description: "Mantén ritmo constante en cinta, bici o elíptica",
+          equipment: "Cinta, bici o elíptica"
+        },
+        {
+          name: "Burpees",
+          sets: 3,
+          reps: "10-15",
+          rest: "1-2 min",
+          description: "Flexión + salto + flexión completa del cuerpo",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Mountain climbers",
+          sets: 3,
+          reps: "20-30",
+          rest: "1 min",
+          description: "En posición de plancha, alterna las rodillas hacia el pecho",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Estiramientos",
+          sets: 1,
+          reps: "10-15 min",
+          rest: "0",
+          description: "Estira todos los grupos musculares trabajados",
+          equipment: "Colchoneta"
+        }
+      ]
+    },
+    "sábado": {
+      title: "ENTRENAMIENTO LIBRE",
+      icon: Clock,
+      color: "blue-500",
+      exercises: [
+        {
+          name: "Ejercicios de preferencia",
+          sets: "Variable",
+          reps: "Variable",
+          rest: "Variable",
+          description: "Realiza los ejercicios que más te gusten",
+          equipment: "Variable"
+        },
+        {
+          name: "Actividades recreativas",
+          sets: 1,
+          reps: "30-60 min",
+          rest: "Variable",
+          description: "Natación, caminata, deportes, etc.",
+          equipment: "Variable"
+        },
+        {
+          name: "Yoga o Pilates",
+          sets: 1,
+          reps: "45-60 min",
+          rest: "0",
+          description: "Mejora flexibilidad y relajación",
+          equipment: "Colchoneta"
+        }
+      ]
+    },
+    "domingo": {
+      title: "DESCANSO",
+      icon: Heart,
+      color: "gray-500",
+      exercises: [
+        {
+          name: "Recuperación activa",
+          sets: 1,
+          reps: "20-30 min",
+          rest: "0",
+          description: "Caminata ligera o estiramientos suaves",
+          equipment: "Ninguno"
+        },
+        {
+          name: "Hidratación extra",
+          sets: 1,
+          reps: "3-4 litros",
+          rest: "0",
+          description: "Bebe más agua de lo normal para recuperación",
+          equipment: "Agua"
+        }
+      ]
+    }
+  }
 
   const quickActions = [
     {
@@ -682,7 +940,10 @@ export default function GymCoachPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {/* Lunes */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-primary/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+                    onClick={() => setSelectedDay("lunes")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Dumbbell className="h-5 w-5 text-primary" />
                       <span className="font-semibold">LUNES</span>
@@ -694,10 +955,16 @@ export default function GymCoachPage() {
                       <div>• Fondos en paralelas</div>
                       <div>• Extensión de tríceps</div>
                     </div>
+                    <div className="mt-3 text-xs text-primary font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Martes */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-accent/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-accent/5 cursor-pointer hover:bg-accent/10 transition-colors"
+                    onClick={() => setSelectedDay("martes")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Heart className="h-5 w-5 text-accent" />
                       <span className="font-semibold">MARTES</span>
@@ -709,10 +976,16 @@ export default function GymCoachPage() {
                       <div>• Curl de bíceps</div>
                       <div>• Martillo con mancuernas</div>
                     </div>
+                    <div className="mt-3 text-xs text-accent font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Miércoles */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-green-500/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-green-500/5 cursor-pointer hover:bg-green-500/10 transition-colors"
+                    onClick={() => setSelectedDay("miércoles")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Activity className="h-5 w-5 text-green-500" />
                       <span className="font-semibold">MIÉRCOLES</span>
@@ -724,10 +997,16 @@ export default function GymCoachPage() {
                       <div>• Prensa de piernas</div>
                       <div>• Gemelos (máquina)</div>
                     </div>
+                    <div className="mt-3 text-xs text-green-500 font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Jueves */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-orange-500/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-orange-500/5 cursor-pointer hover:bg-orange-500/10 transition-colors"
+                    onClick={() => setSelectedDay("jueves")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Users className="h-5 w-5 text-orange-500" />
                       <span className="font-semibold">JUEVES</span>
@@ -739,10 +1018,16 @@ export default function GymCoachPage() {
                       <div>• Plancha abdominal</div>
                       <div>• Crunches y abdominales</div>
                     </div>
+                    <div className="mt-3 text-xs text-orange-500 font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Viernes */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-purple-500/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-purple-500/5 cursor-pointer hover:bg-purple-500/10 transition-colors"
+                    onClick={() => setSelectedDay("viernes")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Zap className="h-5 w-5 text-purple-500" />
                       <span className="font-semibold">VIERNES</span>
@@ -754,10 +1039,16 @@ export default function GymCoachPage() {
                       <div>• Circuito funcional</div>
                       <div>• Estiramientos</div>
                     </div>
+                    <div className="mt-3 text-xs text-purple-500 font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Sábado */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-blue-500/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-blue-500/5 cursor-pointer hover:bg-blue-500/10 transition-colors"
+                    onClick={() => setSelectedDay("sábado")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Clock className="h-5 w-5 text-blue-500" />
                       <span className="font-semibold">SÁBADO</span>
@@ -769,10 +1060,16 @@ export default function GymCoachPage() {
                       <div>• Yoga o pilates</div>
                       <div>• Descanso activo</div>
                     </div>
+                    <div className="mt-3 text-xs text-blue-500 font-medium">
+                      Click para ver detalles →
+                    </div>
                   </div>
 
                   {/* Domingo */}
-                  <div className="border border-border/50 rounded-lg p-4 bg-gray-500/5">
+                  <div 
+                    className="border border-border/50 rounded-lg p-4 bg-gray-500/5 cursor-pointer hover:bg-gray-500/10 transition-colors"
+                    onClick={() => setSelectedDay("domingo")}
+                  >
                     <div className="flex items-center gap-2 mb-3">
                       <Heart className="h-5 w-5 text-gray-500" />
                       <span className="font-semibold">DOMINGO</span>
@@ -783,6 +1080,9 @@ export default function GymCoachPage() {
                       <div>• Estiramientos suaves</div>
                       <div>• Caminata ligera</div>
                       <div>• Hidratación extra</div>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500 font-medium">
+                      Click para ver detalles →
                     </div>
                   </div>
                 </div>
@@ -987,6 +1287,89 @@ export default function GymCoachPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Detalles del Día */}
+      {selectedDay && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-background border-b border-border/50 p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const dayData = weeklyWorkoutData[selectedDay as keyof typeof weeklyWorkoutData]
+                  const IconComponent = dayData.icon
+                  return (
+                    <>
+                      <IconComponent className={`h-6 w-6 text-${dayData.color}`} />
+                      <div>
+                        <h2 className="text-xl font-bold">{selectedDay.toUpperCase()}</h2>
+                        <p className="text-sm text-muted-foreground">{dayData.title}</p>
+                      </div>
+                    </>
+                  )
+                })()}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedDay(null)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="p-6">
+              <div className="grid gap-6">
+                {weeklyWorkoutData[selectedDay as keyof typeof weeklyWorkoutData].exercises.map((exercise, index) => (
+                  <Card key={index} className="border border-border/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Play className="h-5 w-5 text-primary" />
+                        {exercise.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <div className="flex items-center gap-2">
+                          <Repeat className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Series</div>
+                            <div className="text-lg font-bold text-primary">{exercise.sets}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Target className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Repeticiones</div>
+                            <div className="text-lg font-bold text-primary">{exercise.reps}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Timer className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Descanso</div>
+                            <div className="text-lg font-bold text-primary">{exercise.rest}</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium">Descripción del ejercicio:</div>
+                        <p className="text-sm text-muted-foreground">{exercise.description}</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium">Equipamiento necesario:</div>
+                        <p className="text-sm text-muted-foreground">{exercise.equipment}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
