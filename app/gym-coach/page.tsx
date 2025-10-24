@@ -26,7 +26,8 @@ import {
   Weight,
   Ruler,
   Calendar as CalendarIcon,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowDown
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/user-avatar"
@@ -63,6 +64,7 @@ export default function GymCoachPage() {
   })
   const [showDataForm, setShowDataForm] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [showScrollButton, setShowScrollButton] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const quickActions = [
@@ -392,14 +394,44 @@ export default function GymCoachPage() {
     }
   }
 
-  // Auto scroll to bottom when new messages arrive
+  // Función para verificar si el usuario está cerca del final del chat
+  const isNearBottom = () => {
+    const messagesContainer = messagesEndRef.current?.parentElement
+    if (!messagesContainer) return true
+    
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainer
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+    return distanceFromBottom < 100 // Si está a menos de 100px del final
+  }
+
+  // Auto scroll solo si el usuario está cerca del final
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (isNearBottom()) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }
 
   useEffect(() => {
+    // Solo hacer scroll automático si el usuario está viendo los mensajes más recientes
     scrollToBottom()
   }, [messages, isTyping])
+
+  // Listener para detectar scroll del usuario
+  useEffect(() => {
+    const messagesContainer = messagesEndRef.current?.parentElement
+    if (!messagesContainer) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainer
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+      
+      // Mostrar botón si no está cerca del final
+      setShowScrollButton(distanceFromBottom > 100)
+    }
+
+    messagesContainer.addEventListener('scroll', handleScroll)
+    return () => messagesContainer.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -460,7 +492,7 @@ export default function GymCoachPage() {
                 </p>
               </CardHeader>
               
-              <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+              <CardContent className="flex-1 flex flex-col p-0 min-h-0 relative">
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
                   {messages.map((message) => (
@@ -515,6 +547,20 @@ export default function GymCoachPage() {
                   {/* Scroll anchor */}
                   <div ref={messagesEndRef} />
                 </div>
+
+                {/* Floating scroll to bottom button */}
+                {showScrollButton && (
+                  <Button
+                    onClick={() => {
+                      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+                      setShowScrollButton(false)
+                    }}
+                    className="absolute bottom-20 right-4 z-10 rounded-full w-12 h-12 shadow-lg"
+                    size="sm"
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
+                )}
 
                 {/* Input */}
                 <div className="border-t border-border/50 p-4 flex-shrink-0">
