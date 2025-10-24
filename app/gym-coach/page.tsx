@@ -494,16 +494,15 @@ export default function GymCoachPage() {
     const fitnessKeywords = [
       'ejercicio', 'entrenar', 'gym', 'gimnasio', 'pesas', 'cardio', 'rutina', 'musculo', 'músculo',
       'fuerza', 'resistencia', 'flexibilidad', 'peso', 'adelgazar', 'engordar', 'definir', 'volumen',
-      'proteína', 'protein', 'carbohidratos', 'carbs', 'calorías', 'dieta', 'nutrición', 'suplementos', 'creatina',
+      'suplementos', 'creatina',
       'sentadilla', 'squats', 'press', 'dominadas', 'pull ups', 'flexiones', 'plancha', 'burpees', 'squat', 'deadlift',
       'bench', 'curl', 'extension', 'pulldown', 'row', 'shoulder', 'tricep', 'bicep', 'core',
       'abdomen', 'abdominales', 'espalda', 'pecho', 'hombros', 'brazos', 'piernas', 'glúteos',
       'fitness', 'workout', 'training', 'bodybuilding', 'crossfit', 'yoga', 'pilates', 'spinning',
       'motivación', 'motivar', 'desánimo', 'cansado', 'flojo', 'perezoso', 'lesión', 'dolor', 
       'lastimado', 'molestia', 'injury', 'técnica', 'forma', 'repeticiones', 'series', 'kg', 'kilos',
-      'estatura', 'altura', 'edad', 'años', 'foto', 'cuerpo', 'análisis', 'bmi', 'índice', 'arroz',
-      'pasta', 'pollo', 'pavo', 'pescado', 'huevos', 'lácteos', 'legumbres', 'quinoa', 'avena',
-      'patata', 'frutas', 'verduras', 'mantener', 'mantenimiento', 'estable', 'no cambiar', 'como estoy',
+      'estatura', 'altura', 'edad', 'años', 'foto', 'cuerpo', 'análisis', 'bmi', 'índice',
+      'mantener', 'mantenimiento', 'estable', 'no cambiar', 'como estoy',
       'duda', 'pregunta', 'ayuda', 'no sé', 'cómo', 'qué', 'explícame', 'enseña', 'técnicas', 'planes',
       'cálculos', 'estrategias', 'principiante', 'intermedio', 'avanzado', 'nivel', 'experiencia',
       'objetivo', 'meta', 'resultado', 'progreso', 'mejorar', 'cambiar', 'transformar', 'salud',
@@ -709,22 +708,22 @@ export default function GymCoachPage() {
 
     // Respuestas amigables para saludos
     if (lowerInput.includes('hola') || lowerInput.includes('hi') || lowerInput.includes('hello') || lowerInput.includes('buenos días') || lowerInput.includes('buenas tardes') || lowerInput.includes('buenas noches')) {
-      return `¡Hola! 👋 Me da mucho gusto saludarte. Soy tu Gym Coach AI personalizado y estoy aquí para ayudarte a alcanzar tus objetivos fitness.\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y alimentación\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 🥗 **Consejos nutricionales** - Alimentación para tus objetivos\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n\n¿Cuál de estas opciones te interesa más?`
+      return `¡Hola! 👋 Me da mucho gusto saludarte. Soy tu Gym Coach AI personalizado y estoy aquí para ayudarte a alcanzar tus objetivos fitness.\n\n🎯 **¿En qué puedo ayudarte hoy?**\n\n• 💪 **Crear una rutina personalizada** - Basada en tus datos físicos\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Ganar masa muscular** - Hipertrofia y fuerza\n• 📸 **Análisis corporal** - Sube una foto para evaluación\n• 🎯 **20 Day Challenge** - Reto personalizado\n• 🏋️‍♂️ **Técnicas de ejercicios** - Aprende la forma correcta\n\n¿Cuál de estas opciones te interesa más?`
     }
 
     // Respuestas para preguntas generales
     if (lowerInput.includes('cómo estás') || lowerInput.includes('qué tal') || lowerInput.includes('cómo te va')) {
-      return `¡Excelente! 😊 Estoy muy bien y listo para ayudarte con tu fitness. Me encanta trabajar con personas que quieren mejorar su salud y condición física.\n\n¿Hay algo específico en lo que pueda ayudarte hoy? Puedo crear rutinas, dar consejos nutricionales o ayudarte con cualquier duda sobre entrenamiento.`
+      return `¡Excelente! 😊 Estoy muy bien y listo para ayudarte con tu fitness. Me encanta trabajar con personas que quieren mejorar su salud y condición física.\n\n¿Hay algo específico en lo que pueda ayudarte hoy? Puedo crear rutinas, enseñar técnicas de ejercicios o ayudarte con cualquier duda sobre entrenamiento.`
     }
 
     // Respuestas para preguntas sobre qué puede hacer
     if (lowerInput.includes('qué puedes hacer') || lowerInput.includes('qué haces') || lowerInput.includes('ayudar') || lowerInput.includes('funciones')) {
-      return `¡Genial pregunta! 🚀 Como tu Gym Coach AI, puedo ayudarte con:\n\n**🏋️‍♂️ ENTRENAMIENTO:**\n• Crear rutinas personalizadas según tu peso, estatura y edad\n• Diseñar planes de pérdida de peso o ganancia muscular\n• Adaptar ejercicios a tu nivel de experiencia\n• Crear retos de 20 días personalizados\n\n**🥗 NUTRICIÓN:**\n• Calcular tus calorías diarias necesarias\n• Recomendar macronutrientes (proteínas, carbohidratos, grasas)\n• Sugerir horarios de comida\n• Crear planes alimenticios\n\n**📊 ANÁLISIS:**\n• Evaluar tu composición corporal con foto\n• Calcular tu BMI y estado físico\n• Recomendar intensidad de entrenamiento\n\n¿Con cuál de estas áreas te gustaría empezar?`
+      return `¡Genial pregunta! 🚀 Como tu Gym Coach AI, puedo ayudarte con:\n\n**🏋️‍♂️ ENTRENAMIENTO:**\n• Crear rutinas personalizadas según tu peso, estatura y edad\n• Diseñar planes de pérdida de peso o ganancia muscular\n• Adaptar ejercicios a tu nivel de experiencia\n• Crear retos de 20 días personalizados\n• Enseñar técnicas correctas de ejercicios\n\n**📊 ANÁLISIS:**\n• Evaluar tu composición corporal con foto\n• Calcular tu BMI y estado físico\n• Recomendar intensidad de entrenamiento\n• Progresión de pesos y repeticiones\n\n**💪 MOTIVACIÓN:**\n• Consejos para mantener la disciplina\n• Estrategias para superar el desánimo\n• Planes de seguimiento de progreso\n\n¿Con cuál de estas áreas te gustaría empezar?`
     }
 
     // Verificar si es sobre fitness
     if (!isFitnessRelated(userInput)) {
-      return `¡Hola! 😊 Me da mucho gusto que me escribas. Aunque me encanta conversar contigo, me especializo únicamente en temas de fitness, gimnasio, ejercicios y nutrición deportiva.\n\n🎯 **¿En qué puedo ayudarte con tu fitness?**\n\n• 💪 Crear una rutina personalizada\n• 🏃‍♂️ Plan para perder peso\n• 💪 Ganar masa muscular\n• 🥗 Consejos nutricionales\n• 📸 Análisis de tu composición corporal\n\n¿Hay algo específico sobre tu entrenamiento en lo que pueda ayudarte?`
+      return `¡Hola! 😊 Me da mucho gusto que me escribas. Aunque me encanta conversar contigo, me especializo únicamente en temas de fitness, gimnasio y ejercicios.\n\n🎯 **¿En qué puedo ayudarte con tu fitness?**\n\n• 💪 Crear una rutina personalizada\n• 🏃‍♂️ Plan para perder peso\n• 💪 Ganar masa muscular\n• 🏋️‍♂️ Técnicas de ejercicios\n• 📸 Análisis de tu composición corporal\n\n¿Hay algo específico sobre tu entrenamiento en lo que pueda ayudarte?`
     }
 
 
@@ -764,9 +763,6 @@ export default function GymCoachPage() {
       return `¡Fantástico! 💪 Ganar masa muscular es un objetivo increíble. Me encanta ayudarte a construir un cuerpo más fuerte y definido.\n\n📊 **Para crear tu plan de hipertrofia, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu nivel de experiencia (principiante/intermedio/avanzado)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré diseñar:\n• 🏋️‍♂️ Rutina de fuerza e hipertrofia\n• 🥩 Plan nutricional para ganancia muscular\n• 📈 Progresión de pesos y repeticiones\n• 🎯 Ejercicios específicos para tus objetivos\n\n¿Empezamos con tus datos básicos?`
     }
 
-    if (lowerInput.includes('nutrición') || lowerInput.includes('dieta') || lowerInput.includes('comer')) {
-      return `¡Perfecto! 🥗 La nutrición es la base de cualquier objetivo fitness. Me encanta ayudarte a optimizar tu alimentación.\n\n📊 **Para darte recomendaciones precisas, necesito:**\n• Tu peso actual (kg)\n• Tu estatura (cm)\n• Tu edad\n• Tu objetivo (perder peso/ganar masa/mantener)\n• Una foto de tu cuerpo (opcional)\n\nCon esta información podré calcular:\n• 🔥 Tus calorías diarias necesarias\n• 🥩 Cantidad de proteínas, carbohidratos y grasas\n• ⏰ Horarios de comida óptimos\n• 🍎 Alimentos específicos para tus objetivos\n• 💧 Hidratación personalizada\n\n¿Te parece bien compartir estos datos?`
-    }
 
     // Respuestas para ejercicios específicos
     if (lowerInput.includes('sentadillas') || lowerInput.includes('squats')) {
@@ -781,14 +777,6 @@ export default function GymCoachPage() {
       return `¡Perfecto! 🏋️ Las dominadas son excelentes para la espalda.\n\n**💪 TÉCNICA CORRECTA:**\n• Agarre más ancho que los hombros\n• Cuelga completamente estirado\n• Tira hacia arriba hasta que el mentón pase la barra\n• Baja con control\n\n**📊 PROGRESIÓN:**\n• Principiante: 3 series x 3-5 reps\n• Intermedio: 4 series x 6-8 reps\n• Avanzado: 5 series x 8-12 reps\n\n¿Quieres más ejercicios de espalda?`
     }
 
-    // Respuestas para nutrición específica
-    if (lowerInput.includes('proteína') || lowerInput.includes('protein')) {
-      return `¡Excelente pregunta! 🥩 La proteína es fundamental para el desarrollo muscular.\n\n**📊 CANTIDADES RECOMENDADAS:**\n• Sedentario: 0.8g por kg de peso\n• Activo: 1.2-1.4g por kg de peso\n• Deportista: 1.6-2.2g por kg de peso\n\n**🍖 MEJORES FUENTES:**\n• Pollo, pavo, pescado\n• Huevos, lácteos\n• Legumbres, quinoa\n• Suplementos (whey protein)\n\n¿Quieres que calcule tu ingesta de proteína personalizada?`
-    }
-
-    if (lowerInput.includes('carbohidratos') || lowerInput.includes('carbs') || lowerInput.includes('arroz') || lowerInput.includes('pasta')) {
-      return `¡Muy bien! 🍚 Los carbohidratos son tu fuente de energía principal.\n\n**📊 CANTIDADES RECOMENDADAS:**\n• Mantenimiento: 3-5g por kg de peso\n• Pérdida de peso: 2-3g por kg de peso\n• Ganancia de masa: 4-7g por kg de peso\n\n**🌾 MEJORES FUENTES:**\n• Arroz integral, quinoa\n• Avena, patata dulce\n• Frutas, verduras\n• Pasta integral\n\n¿Te ayudo a calcular tus carbohidratos según tu objetivo?`
-    }
 
     // Respuestas para motivación
     if (lowerInput.includes('motivación') || lowerInput.includes('motivar') || lowerInput.includes('desánimo') || 
@@ -806,7 +794,7 @@ export default function GymCoachPage() {
     if (lowerInput.includes('duda') || lowerInput.includes('pregunta') || lowerInput.includes('ayuda') ||
         lowerInput.includes('no sé') || lowerInput.includes('cómo') || lowerInput.includes('qué') ||
         lowerInput.includes('explícame') || lowerInput.includes('enseña')) {
-      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte con:\n\n• 💪 Técnicas de ejercicios\n• 🥗 Planes nutricionales\n• 📊 Cálculos de macros\n• 🎯 Estrategias de entrenamiento\n• 🏃‍♂️ Planes de cardio\n• 💪 Rutinas de fuerza\n\n¿Sobre qué tema específico te gustaría saber más?`
+      return `¡Por supuesto! 😊 Pregúntame lo que necesites sobre fitness. Estoy aquí para ayudarte con:\n\n• 💪 Técnicas de ejercicios\n• 🏋️‍♂️ Rutinas de fuerza\n• 🎯 Estrategias de entrenamiento\n• 🏃‍♂️ Planes de cardio\n• 📊 Progresión de pesos\n• 💪 Ejercicios específicos\n\n¿Sobre qué tema específico te gustaría saber más?`
     }
 
     // Respuesta genérica para preguntas de fitness
