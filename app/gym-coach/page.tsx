@@ -73,7 +73,52 @@ export default function GymCoachPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [completedDays, setCompletedDays] = useState<{[key: string]: boolean}>({
+    lunes: false,
+    martes: false,
+    miércoles: false,
+    jueves: false,
+    viernes: false,
+    sábado: false,
+    domingo: false
+  })
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Función para manejar el toggle de días completados
+  const toggleDayCompleted = (day: string) => {
+    setCompletedDays(prev => ({
+      ...prev,
+      [day]: !prev[day]
+    }))
+  }
+
+  // Calcular progreso basado en objetivo
+  const getProgressStats = () => {
+    const completedCount = Object.values(completedDays).filter(Boolean).length
+    const totalDays = 7
+    const completionPercentage = Math.round((completedCount / totalDays) * 100)
+    
+    // Determinar objetivo basado en BMI si está disponible
+    let targetDays = 5 // Objetivo por defecto
+    if (userData.weight && userData.height && userData.age) {
+      const bmi = userData.weight / Math.pow(userData.height / 100, 2)
+      if (bmi < 18.5) {
+        targetDays = 4 // Ganar masa - menos cardio
+      } else if (bmi > 25) {
+        targetDays = 6 // Perder peso - más entrenamiento
+      } else {
+        targetDays = 5 // Mantenimiento
+      }
+    }
+
+    return {
+      completedCount,
+      totalDays,
+      targetDays,
+      completionPercentage,
+      isOnTrack: completedCount >= targetDays
+    }
+  }
 
   // Datos detallados de cada día de entrenamiento
   const weeklyWorkoutData = {
@@ -941,12 +986,29 @@ export default function GymCoachPage() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {/* Lunes */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-primary/10 transition-colors ${
+                      completedDays.lunes ? 'bg-green-500/10 border-green-500/50' : 'bg-primary/5'
+                    }`}
                     onClick={() => setSelectedDay("lunes")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Dumbbell className="h-5 w-5 text-primary" />
-                      <span className="font-semibold">LUNES</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Dumbbell className="h-5 w-5 text-primary" />
+                        <span className="font-semibold">LUNES</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("lunes")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.lunes 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-primary hover:bg-primary/10'
+                        }`}
+                      >
+                        {completedDays.lunes && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">PECHO Y TRÍCEPS</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -962,12 +1024,29 @@ export default function GymCoachPage() {
 
                   {/* Martes */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-accent/5 cursor-pointer hover:bg-accent/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-accent/10 transition-colors ${
+                      completedDays.martes ? 'bg-green-500/10 border-green-500/50' : 'bg-accent/5'
+                    }`}
                     onClick={() => setSelectedDay("martes")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Heart className="h-5 w-5 text-accent" />
-                      <span className="font-semibold">MARTES</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-accent" />
+                        <span className="font-semibold">MARTES</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("martes")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.martes 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-accent hover:bg-accent/10'
+                        }`}
+                      >
+                        {completedDays.martes && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">ESPALDA Y BÍCEPS</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -983,12 +1062,29 @@ export default function GymCoachPage() {
 
                   {/* Miércoles */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-green-500/5 cursor-pointer hover:bg-green-500/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-green-500/10 transition-colors ${
+                      completedDays.miércoles ? 'bg-green-500/10 border-green-500/50' : 'bg-green-500/5'
+                    }`}
                     onClick={() => setSelectedDay("miércoles")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Activity className="h-5 w-5 text-green-500" />
-                      <span className="font-semibold">MIÉRCOLES</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-green-500" />
+                        <span className="font-semibold">MIÉRCOLES</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("miércoles")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.miércoles 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-green-500 hover:bg-green-500/10'
+                        }`}
+                      >
+                        {completedDays.miércoles && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">PIERNAS</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -1004,12 +1100,29 @@ export default function GymCoachPage() {
 
                   {/* Jueves */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-orange-500/5 cursor-pointer hover:bg-orange-500/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-orange-500/10 transition-colors ${
+                      completedDays.jueves ? 'bg-green-500/10 border-green-500/50' : 'bg-orange-500/5'
+                    }`}
                     onClick={() => setSelectedDay("jueves")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Users className="h-5 w-5 text-orange-500" />
-                      <span className="font-semibold">JUEVES</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-orange-500" />
+                        <span className="font-semibold">JUEVES</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("jueves")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.jueves 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-orange-500 hover:bg-orange-500/10'
+                        }`}
+                      >
+                        {completedDays.jueves && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">HOMBROS Y CORE</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -1025,12 +1138,29 @@ export default function GymCoachPage() {
 
                   {/* Viernes */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-purple-500/5 cursor-pointer hover:bg-purple-500/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-purple-500/10 transition-colors ${
+                      completedDays.viernes ? 'bg-green-500/10 border-green-500/50' : 'bg-purple-500/5'
+                    }`}
                     onClick={() => setSelectedDay("viernes")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Zap className="h-5 w-5 text-purple-500" />
-                      <span className="font-semibold">VIERNES</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-purple-500" />
+                        <span className="font-semibold">VIERNES</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("viernes")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.viernes 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-purple-500 hover:bg-purple-500/10'
+                        }`}
+                      >
+                        {completedDays.viernes && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">CARDIO Y FUNCIONAL</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -1046,12 +1176,29 @@ export default function GymCoachPage() {
 
                   {/* Sábado */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-blue-500/5 cursor-pointer hover:bg-blue-500/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-blue-500/10 transition-colors ${
+                      completedDays.sábado ? 'bg-green-500/10 border-green-500/50' : 'bg-blue-500/5'
+                    }`}
                     onClick={() => setSelectedDay("sábado")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock className="h-5 w-5 text-blue-500" />
-                      <span className="font-semibold">SÁBADO</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-blue-500" />
+                        <span className="font-semibold">SÁBADO</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("sábado")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.sábado 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-blue-500 hover:bg-blue-500/10'
+                        }`}
+                      >
+                        {completedDays.sábado && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">ENTRENAMIENTO LIBRE</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -1067,12 +1214,29 @@ export default function GymCoachPage() {
 
                   {/* Domingo */}
                   <div 
-                    className="border border-border/50 rounded-lg p-4 bg-gray-500/5 cursor-pointer hover:bg-gray-500/10 transition-colors"
+                    className={`border border-border/50 rounded-lg p-4 cursor-pointer hover:bg-gray-500/10 transition-colors ${
+                      completedDays.domingo ? 'bg-green-500/10 border-green-500/50' : 'bg-gray-500/5'
+                    }`}
                     onClick={() => setSelectedDay("domingo")}
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <Heart className="h-5 w-5 text-gray-500" />
-                      <span className="font-semibold">DOMINGO</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-gray-500" />
+                        <span className="font-semibold">DOMINGO</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleDayCompleted("domingo")
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          completedDays.domingo 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'border-gray-500 hover:bg-gray-500/10'
+                        }`}
+                      >
+                        {completedDays.domingo && <CheckCircle className="h-4 w-4" />}
+                      </button>
                     </div>
                     <div className="text-sm font-medium mb-2">DESCANSO</div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -1269,18 +1433,37 @@ export default function GymCoachPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">0</div>
-                  <div className="text-sm text-muted-foreground">Días consecutivos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">0</div>
-                  <div className="text-sm text-muted-foreground">Rutinas completadas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">0</div>
-                  <div className="text-sm text-muted-foreground">Calorías quemadas</div>
-                </div>
+                {(() => {
+                  const stats = getProgressStats()
+                  return (
+                    <>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{stats.completedCount}</div>
+                        <div className="text-sm text-muted-foreground">Días completados</div>
+                        <div className="text-xs text-muted-foreground">de {stats.totalDays} esta semana</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{stats.completionPercentage}%</div>
+                        <div className="text-sm text-muted-foreground">Progreso semanal</div>
+                        <div className="text-xs text-muted-foreground">Objetivo: {stats.targetDays} días</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`text-2xl font-bold ${stats.isOnTrack ? 'text-green-500' : 'text-orange-500'}`}>
+                          {stats.isOnTrack ? '🎯' : '📈'}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {stats.isOnTrack ? '¡En el camino!' : 'Sigue así'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {stats.isOnTrack 
+                            ? 'Cumpliendo tu objetivo' 
+                            : `${stats.targetDays - stats.completedCount} días más para tu objetivo`
+                          }
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
               </CardContent>
             </Card>
 
