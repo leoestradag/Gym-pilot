@@ -87,12 +87,42 @@ const facilities = [
 ]
 
 const amenities = [
-  { name: "Wi-Fi Gratuito", icon: <Wifi className="h-5 w-5" />, description: "Internet de alta velocidad en toda la instalación" },
-  { name: "Estacionamiento", icon: <Car className="h-5 w-5" />, description: "Estacionamiento gratuito para todos los miembros" },
-  { name: "Lockers", icon: <Shield className="h-5 w-5" />, description: "Casilleros seguros con cerradura digital" },
-  { name: "Vestidores", icon: <Users className="h-5 w-5" />, description: "Vestidores amplios con duchas y regaderas" },
-  { name: "Spa", icon: <Heart className="h-5 w-5" />, description: "Área de relajación con sauna y jacuzzi" },
-  { name: "Cafetería", icon: <Dumbbell className="h-5 w-5" />, description: "Cafetería saludable con opciones nutritivas" }
+  { 
+    name: "Wi-Fi Gratuito", 
+    icon: <Wifi className="h-5 w-5" />, 
+    description: "Internet de alta velocidad en toda la instalación",
+    image: "/wifi-gym.jpg"
+  },
+  { 
+    name: "Estacionamiento", 
+    icon: <Car className="h-5 w-5" />, 
+    description: "Estacionamiento gratuito para todos los miembros",
+    image: "/parking-gym.jpg"
+  },
+  { 
+    name: "Lockers", 
+    icon: <Shield className="h-5 w-5" />, 
+    description: "Casilleros seguros con cerradura digital",
+    image: "/lockers-gym.jpg"
+  },
+  { 
+    name: "Vestidores", 
+    icon: <Users className="h-5 w-5" />, 
+    description: "Vestidores amplios con duchas y regaderas",
+    image: "/changing-rooms-gym.jpg"
+  },
+  { 
+    name: "Spa", 
+    icon: <Heart className="h-5 w-5" />, 
+    description: "Área de relajación con sauna y jacuzzi",
+    image: "/spa-gym.jpg"
+  },
+  { 
+    name: "Cafetería", 
+    icon: <Dumbbell className="h-5 w-5" />, 
+    description: "Cafetería saludable con opciones nutritivas",
+    image: "/cafeteria-gym.jpg"
+  }
 ]
 
 export default function InstalacionesPage({ params }: { params: { gymId: string } }) {
@@ -185,13 +215,14 @@ export default function InstalacionesPage({ params }: { params: { gymId: string 
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {amenities.map((amenity) => (
-              <Card key={amenity.name} className="text-center border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300">
+              <Card key={amenity.name} className="border-2 border-border/60 bg-card/90 backdrop-blur overflow-hidden hover:border-primary/60 hover:shadow-lg transition-all duration-300">
+                <img src={amenity.image} alt={amenity.name} className="w-full h-48 object-cover" />
                 <CardContent className="pt-6">
                   <div className="text-primary mb-4 flex justify-center">
                     {amenity.icon}
                   </div>
-                  <h3 className="font-semibold mb-2">{amenity.name}</h3>
-                  <p className="text-sm text-muted-foreground">{amenity.description}</p>
+                  <h3 className="font-semibold mb-2 text-center">{amenity.name}</h3>
+                  <p className="text-sm text-muted-foreground text-center">{amenity.description}</p>
                 </CardContent>
               </Card>
             ))}
