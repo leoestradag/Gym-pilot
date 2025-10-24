@@ -512,7 +512,9 @@ export default function GymCoachPage() {
       'aparato', 'equipo', 'cómo usar', 'como usar', 'peso', 'carga', 'cuánto peso', 'cuanto peso',
       'kg', 'kilos', 'pesas', 'discos', 'press banca', 'leg press', 'pulldown', 'lat pulldown',
       'smith', 'hack squat', 'prensa', 'extensión', 'curl', 'press', 'remo', 'tirón',
-      'crear rutina', 'nueva rutina', 'plan de entrenamiento', 'rutina personalizada', 'entrenamiento personalizado'
+      'crear rutina', 'nueva rutina', 'plan de entrenamiento', 'rutina personalizada', 'entrenamiento personalizado',
+      'motivación para entrenar', 'motivar para entrenar', 'necesito motivación', 'motivación hoy',
+      'motivación para el gym', 'motivar para el gym', 'motivación para ir al gym'
     ]
     
     const lowerInput = input.toLowerCase()
@@ -755,6 +757,15 @@ export default function GymCoachPage() {
       return `¡Me alegra que te guste! 🎉 ¡Estoy aquí para lo que necesites! 💪`
     }
 
+    // Respuestas para motivación (prioridad alta)
+    if (lowerInput.includes('motivación') || lowerInput.includes('motivar') || lowerInput.includes('desánimo') || 
+        lowerInput.includes('cansado') || lowerInput.includes('flojo') || lowerInput.includes('perezoso') ||
+        lowerInput.includes('motivación para entrenar') || lowerInput.includes('motivar para entrenar') ||
+        lowerInput.includes('necesito motivación') || lowerInput.includes('motivación hoy') ||
+        lowerInput.includes('motivación para el gym') || lowerInput.includes('motivar para el gym')) {
+      return `¡Entiendo perfectamente! 💪 Todos pasamos por momentos difíciles. Te voy a ayudar a recuperar esa motivación.\n\n**🔥 CONSEJOS PARA MOTIVARTE:**\n• 🎯 Establece metas pequeñas y alcanzables\n• 📱 Haz seguimiento de tu progreso\n• 👥 Entrena con un compañero\n• 🎵 Crea una playlist motivacional\n• 📸 Toma fotos de tu progreso\n\n**💪 RECUERDA:**\n"La disciplina es el puente entre tus metas y tus logros."\n\n¿Quieres que creemos un plan específico para mantener tu motivación?`
+    }
+
     // Respuestas específicas basadas en el input
     if (lowerInput.includes('rutina') || lowerInput.includes('ejercicio') || lowerInput.includes('entrenar') ||
         lowerInput.includes('crear rutina') || lowerInput.includes('nueva rutina') || lowerInput.includes('plan de entrenamiento')) {
@@ -798,12 +809,6 @@ export default function GymCoachPage() {
       return `¡Perfecto! 🏋️ Las dominadas son excelentes para la espalda.\n\n**💪 TÉCNICA CORRECTA:**\n• Agarre más ancho que los hombros\n• Cuelga completamente estirado\n• Tira hacia arriba hasta que el mentón pase la barra\n• Baja con control\n\n**📊 PROGRESIÓN:**\n• Principiante: 3 series x 3-5 reps\n• Intermedio: 4 series x 6-8 reps\n• Avanzado: 5 series x 8-12 reps\n\n¿Quieres más ejercicios de espalda?`
     }
 
-
-    // Respuestas para motivación
-    if (lowerInput.includes('motivación') || lowerInput.includes('motivar') || lowerInput.includes('desánimo') || 
-        lowerInput.includes('cansado') || lowerInput.includes('flojo') || lowerInput.includes('perezoso')) {
-      return `¡Entiendo perfectamente! 💪 Todos pasamos por momentos difíciles. Te voy a ayudar a recuperar esa motivación.\n\n**🔥 CONSEJOS PARA MOTIVARTE:**\n• 🎯 Establece metas pequeñas y alcanzables\n• 📱 Haz seguimiento de tu progreso\n• 👥 Entrena con un compañero\n• 🎵 Crea una playlist motivacional\n• 📸 Toma fotos de tu progreso\n\n**💪 RECUERDA:**\n"La disciplina es el puente entre tus metas y tus logros."\n\n¿Quieres que creemos un plan específico para mantener tu motivación?`
-    }
 
     // Respuestas para lesiones
     if (lowerInput.includes('lesión') || lowerInput.includes('dolor') || lowerInput.includes('lastimado') || 
