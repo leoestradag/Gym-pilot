@@ -91,7 +91,7 @@ const amenities = [
     name: "Wi-Fi Gratuito", 
     icon: <Wifi className="h-5 w-5" />, 
     description: "Internet de alta velocidad en toda la instalación",
-    image: "/wifi-icon.png"
+    image: "/fitness-center-equipment.jpg"
   },
   { 
     name: "Estacionamiento", 
