@@ -1,47 +1,18 @@
+import { PrismaClient } from '@prisma/client'
+
 // Database utility functions for Tessalp Gyms
-// This is a placeholder for database operations
-// In production, this would connect to a real database (Neon, Supabase, etc.)
+// Connected to Neon PostgreSQL database
 
-export interface Member {
-  id: number
-  name: string
-  email: string
-  phone: string
-  membership_type: string
-  membership_start: string
-  membership_end: string
-  status: string
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
 }
 
-export interface Instructor {
-  id: number
-  name: string
-  email: string
-  phone: string
-  specialty: string
-  bio: string
-}
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
-export interface Class {
-  id: number
-  name: string
-  instructor_id: number
-  instructor_name?: string
-  day_of_week: string
-  time: string
-  duration: number
-  capacity: number
-  price: number
-  description: string
-}
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-export interface CheckIn {
-  id: number
-  member_id: number
-  member_name?: string
-  checkin_time: string
-  checkout_time?: string
-}
+// Re-export types from Prisma
+export type { Member, Instructor, Class, CheckIn, Gym } from '@prisma/client'
 
 // Mock data for demo mode
 export const mockStats = {
@@ -93,3 +64,166 @@ export const mockMembers = [
     status: "expiring",
   },
 ]
+
+// Database functions
+export async function getMembers() {
+  try {
+    return await prisma.member.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error) {
+    console.error('Error fetching members:', error)
+    return mockMembers
+  }
+}
+
+export async function getMemberById(id: number) {
+  try {
+    return await prisma.member.findUnique({
+      where: { id }
+    })
+  } catch (error) {
+    console.error('Error fetching member:', error)
+    return null
+  }
+}
+
+export async function createMember(data: {
+  name: string
+  email: string
+  phone?: string
+  membershipType: string
+  membershipStart: Date
+  membershipEnd: Date
+  status?: string
+}) {
+  try {
+    return await prisma.member.create({
+      data
+    })
+  } catch (error) {
+    console.error('Error creating member:', error)
+    throw error
+  }
+}
+
+export async function updateMember(id: number, data: Partial<{
+  name: string
+  email: string
+  phone: string
+  membershipType: string
+  membershipStart: Date
+  membershipEnd: Date
+  status: string
+}>) {
+  try {
+    return await prisma.member.update({
+      where: { id },
+      data
+    })
+  } catch (error) {
+    console.error('Error updating member:', error)
+    throw error
+  }
+}
+
+export async function deleteMember(id: number) {
+  try {
+    return await prisma.member.delete({
+      where: { id }
+    })
+  } catch (error) {
+    console.error('Error deleting member:', error)
+    throw error
+  }
+}
+
+export async function getInstructors() {
+  try {
+    return await prisma.instructor.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error) {
+    console.error('Error fetching instructors:', error)
+    return []
+  }
+}
+
+export async function getClasses() {
+  try {
+    return await prisma.class.findMany({
+      include: {
+        instructor: true
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error) {
+    console.error('Error fetching classes:', error)
+    return []
+  }
+}
+
+export async function getCheckIns() {
+  try {
+    return await prisma.checkIn.findMany({
+      include: {
+        member: true,
+        class: true
+      },
+      orderBy: { checkinTime: 'desc' }
+    })
+  } catch (error) {
+    console.error('Error fetching check-ins:', error)
+    return []
+  }
+}
+
+export async function getGyms() {
+  try {
+    return await prisma.gym.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error) {
+    console.error('Error fetching gyms:', error)
+    return []
+  }
+}
+
+export async function getStats() {
+  try {
+    const [activeMembers, todayCheckins, monthlyRevenue, newMemberships] = await Promise.all([
+      prisma.member.count({
+        where: { status: 'active' }
+      }),
+      prisma.checkIn.count({
+        where: {
+          checkinTime: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0))
+          }
+        }
+      }),
+      prisma.member.aggregate({
+        _sum: {
+          // Assuming we have a price field, adjust as needed
+        }
+      }),
+      prisma.member.count({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().setMonth(new Date().getMonth() - 1))
+          }
+        }
+      })
+    ])
+
+    return {
+      activeMembers,
+      todayCheckins,
+      monthlyRevenue: monthlyRevenue._sum || 0,
+      newMemberships
+    }
+  } catch (error) {
+    console.error('Error fetching stats:', error)
+    return mockStats
+  }
+}

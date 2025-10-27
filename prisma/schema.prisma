@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id               Int      @id @default(autoincrement())
+  name             String
+  email            String   @unique
+  phone            String?
+  membershipType   String   @map("membership_type")
+  membershipStart  DateTime @map("membership_start")
+  membershipEnd    DateTime @map("membership_end")
+  status           String   @default("active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  
+  checkIns         CheckIn[]
+  
+  @@map("members")
+}
+
+model Instructor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  specialty String
+  bio       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  classes   Class[]
+  
+  @@map("instructors")
+}
+
+model Class {
+  id          Int      @id @default(autoincrement())
+  name        String
+  instructorId Int      @map("instructor_id")
+  dayOfWeek   String   @map("day_of_week")
+  time        String
+  duration    Int
+  capacity    Int
+  price       Float
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  instructor  Instructor @relation(fields: [instructorId], references: [id])
+  checkIns    CheckIn[]
+  
+  @@map("classes")
+}
+
+model CheckIn {
+  id         Int      @id @default(autoincrement())
+  memberId   Int      @map("member_id")
+  classId    Int?     @map("class_id")
+  checkinTime DateTime @map("checkin_time")
+  checkoutTime DateTime? @map("checkout_time")
+  createdAt  DateTime @default(now()) @map("created_at")
+  
+  member     Member    @relation(fields: [memberId], references: [id])
+  class      Class?    @relation(fields: [classId], references: [id])
+  
+  @@map("check_ins")
+}
+
+model Gym {
+  id          Int      @id @default(autoincrement())
+  name        String
+  location    String
+  phone       String
+  email       String
+  hours       String
+  image       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@map("gyms")
+}
