@@ -1,8 +1,12 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Check, Star, Users, Clock, Shield, Zap } from "lucide-react"
+import { ArrowLeft, Check, Star, Users, Clock, Shield, Zap, ShoppingCart } from "lucide-react"
 import Link from "next/link"
+import { ShoppingCart as ShoppingCartComponent } from "@/components/shopping-cart"
 
 const gymsData = {
   "tessalp-centro": {
@@ -57,8 +61,10 @@ const gymsData = {
 
 const memberships = [
   {
+    id: "basico",
     name: "Básico",
-    price: "$599",
+    price: 599,
+    displayPrice: "$599",
     period: "/mes",
     description: "Perfecto para comenzar tu viaje fitness",
     features: [
@@ -73,8 +79,10 @@ const memberships = [
     color: "border-gray-300"
   },
   {
+    id: "premium",
     name: "Premium",
-    price: "$899",
+    price: 899,
+    displayPrice: "$899",
     period: "/mes",
     description: "La opción más popular para resultados serios",
     features: [
@@ -90,8 +98,10 @@ const memberships = [
     color: "border-primary"
   },
   {
+    id: "elite",
     name: "Elite",
-    price: "$1,299",
+    price: 1299,
+    displayPrice: "$1,299",
     period: "/mes",
     description: "Experiencia premium completa",
     features: [
@@ -132,15 +142,62 @@ const benefits = [
   }
 ]
 
+interface CartItem {
+  id: string
+  name: string
+  price: number
+  type: "membership"
+  plan: string
+  gymId: string
+  gymName: string
+}
+
 export default function MembresiasPage({ params }: { params: { gymId: string } }) {
   const gym = gymsData[params.gymId as keyof typeof gymsData]
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
 
   if (!gym) {
     return <div>Gimnasio no encontrado</div>
   }
 
+  const addToCart = (membership: typeof memberships[0]) => {
+    const cartItem: CartItem = {
+      id: `${params.gymId}-${membership.id}`,
+      name: `Membresía ${membership.name}`,
+      price: membership.price,
+      type: "membership",
+      plan: membership.name,
+      gymId: params.gymId,
+      gymName: gym.name
+    }
+
+    setCartItems(prev => {
+      // Verificar si ya existe en el carrito
+      const existingItem = prev.find(item => item.id === cartItem.id)
+      if (existingItem) {
+        return prev // No agregar duplicados
+      }
+      return [...prev, cartItem]
+    })
+  }
+
+  const removeFromCart = (id: string) => {
+    setCartItems(prev => prev.filter(item => item.id !== id))
+  }
+
+  const clearCart = () => {
+    setCartItems([])
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Shopping Cart */}
+      <ShoppingCartComponent 
+        items={cartItems}
+        onRemoveItem={removeFromCart}
+        onClearCart={clearCart}
+      />
+
       {/* Header */}
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
@@ -195,7 +252,7 @@ export default function MembresiasPage({ params }: { params: { gymId: string } }
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                   <p className="text-muted-foreground">{plan.description}</p>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-4xl font-bold">{plan.displayPrice}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </CardHeader>
@@ -211,7 +268,9 @@ export default function MembresiasPage({ params }: { params: { gymId: string } }
                   <Button 
                     className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
                     variant={plan.popular ? "default" : "outline"}
+                    onClick={() => addToCart(plan)}
                   >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
                     {plan.popular ? "Elegir Plan Premium" : `Elegir Plan ${plan.name}`}
                   </Button>
                 </CardContent>
