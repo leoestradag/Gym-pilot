@@ -440,11 +440,18 @@ export default function GymCoachPage() {
       prompt: "Quiero crear una rutina de ejercicios personalizada"
     },
     {
-      id: "challenge",
-      title: "20 Day Challenge",
-      description: "Inicia un reto de 20 días",
+      id: "75hard",
+      title: "75 Hard Challenge",
+      description: "75 días de disciplina extrema",
       icon: <Calendar className="h-5 w-5" />,
-      prompt: "Quiero empezar un reto de 20 días"
+      prompt: "Quiero empezar el 75 Hard Challenge - 75 días de disciplina extrema"
+    },
+    {
+      id: "30shred",
+      title: "30 Day Shred",
+      description: "Transformación en 30 días",
+      icon: <Zap className="h-5 w-5" />,
+      prompt: "Quiero empezar el 30 Day Shred - Transformación en 30 días"
     },
     {
       id: "nutrition",
@@ -452,13 +459,6 @@ export default function GymCoachPage() {
       description: "Obtén tips de alimentación",
       icon: <Dumbbell className="h-5 w-5" />,
       prompt: "Dame consejos de nutrición para mi entrenamiento"
-    },
-    {
-      id: "motivation",
-      title: "Motivación",
-      description: "Recibe palabras de aliento",
-      icon: <Sparkles className="h-5 w-5" />,
-      prompt: "Necesito motivación para entrenar hoy"
     }
   ]
 
@@ -805,6 +805,15 @@ export default function GymCoachPage() {
       }
       
       return `¡Perfecto! 📋 Puedo ayudarte a crear diferentes tipos de planes:\n\n• 💪 **Plan de entrenamiento** - Rutinas personalizadas\n• 🔥 **Plan de motivación** - Estrategias para mantenerte motivado\n• 🏃‍♂️ **Plan de pérdida de peso** - Cardio y fuerza\n• 💪 **Plan de ganancia muscular** - Hipertrofia\n• 🎯 **Plan de 20 días** - Reto personalizado\n\n¿Qué tipo de plan te interesa más?`
+    }
+
+    // Respuestas específicas para retos populares
+    if (lowerInput.includes('75 hard challenge') || lowerInput.includes('75 hard') || lowerInput.includes('75 días')) {
+      return `¡EXCELENTE! 🔥 El 75 Hard Challenge es uno de los retos más intensos y transformadores que existen. Te explico todo:\n\n**💪 ¿QUÉ ES EL 75 HARD?**\nEs un reto de 75 días de disciplina extrema que transforma tu mentalidad y cuerpo.\n\n**📋 REGLAS OBLIGATORIAS (75 DÍAS CONSECUTIVOS):**\n• 🏃‍♂️ **2 entrenamientos de 45 min** (separados por 3+ horas)\n• 📖 **Leer 10 páginas** de un libro de desarrollo personal\n• 📸 **1 foto de progreso** diaria\n• 💧 **1 galón de agua** (3.8 litros)\n• 🥗 **Dieta estricta** (sin cheat meals)\n• 📱 **Sin alcohol** durante todo el reto\n\n**⚠️ IMPORTANTE:**\n• Si fallas 1 día, EMPIEZAS DE NUEVO desde el día 1\n• No hay excusas, no hay excepciones\n• Es un reto mental más que físico\n\n**🎯 BENEFICIOS:**\n• Disciplina extrema\n• Confianza inquebrantable\n• Transformación física\n• Mentalidad de acero\n\n¿Estás listo para el reto más difícil de tu vida? 💪`
+    }
+
+    if (lowerInput.includes('30 day shred') || lowerInput.includes('30 shred') || lowerInput.includes('transformación en 30 días')) {
+      return `¡PERFECTO! ⚡ El 30 Day Shred es ideal para una transformación rápida y efectiva. Te explico todo:\n\n**🔥 ¿QUÉ ES EL 30 DAY SHRED?**\nUn programa de 30 días diseñado para quemar grasa, tonificar músculos y transformar tu cuerpo.\n\n**📅 ESTRUCTURA DEL PROGRAMA:**\n• **Días 1-10:** Fase de adaptación (cardio + fuerza básica)\n• **Días 11-20:** Fase de intensificación (HIIT + pesas)\n• **Días 21-30:** Fase de definición (circuitos + cardio intenso)\n\n**💪 RUTINA DIARIA (45-60 min):**\n• 🏃‍♂️ **Cardio:** 20-30 min (cinta, elíptica, bicicleta)\n• 🏋️‍♂️ **Fuerza:** 20-25 min (circuitos de 3-4 ejercicios)\n• 🧘‍♀️ **Estiramientos:** 5-10 min\n\n**🥗 PLAN NUTRICIONAL:**\n• **Desayuno:** Proteína + carbohidratos complejos\n• **Almuerzo:** Proteína + vegetales + grasa saludable\n• **Cena:** Proteína + vegetales\n• **Snacks:** Frutas, nueces, yogurt griego\n\n**📊 PROGRESIÓN SEMANAL:**\n• **Semana 1:** Adaptación (intensidad 60%)\n• **Semana 2:** Intensificación (intensidad 75%)\n• **Semana 3:** Máximo esfuerzo (intensidad 90%)\n• **Semana 4:** Definición final (intensidad 100%)\n\n**🎯 RESULTADOS ESPERADOS:**\n• Pérdida de 3-5 kg de grasa\n• Tonificación muscular visible\n• Aumento de energía\n• Mejora de resistencia\n\n¿Estás listo para tu transformación de 30 días? 💪`
     }
 
     // Respuestas específicas basadas en el input
