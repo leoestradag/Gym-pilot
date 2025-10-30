@@ -1699,58 +1699,53 @@ export default function GymCoachPage() {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        {/* Indicador circular de progreso */}
-                        <div className="flex items-center justify-center">
-                          {(() => {
-                            const size = 120
-                            const strokeWidth = 10
-                            const radius = (size - strokeWidth) / 2
-                            const circumference = 2 * Math.PI * radius
-                            const progress = Math.max(0, Math.min(100, stats.completionPercentage))
-                            const offset = circumference * (1 - progress / 100)
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        {(() => {
+                          const size = 160
+                          const strokeWidth = 18
+                          const radius = (size - strokeWidth) / 2
+                          const circumference = 2 * Math.PI * radius
+                          const progress = Math.max(0, Math.min(100, stats.completionPercentage))
+                          const offset = circumference * (1 - progress / 100)
+                          const color = progress < 40 ? '#ef4444' : progress < 70 ? '#f59e0b' : '#22c55e' // rojo, ámbar, verde
 
-                            return (
-                              <div className="relative" style={{ width: size, height: size }}>
-                                <svg width={size} height={size} className="-rotate-90">
-                                  <circle
-                                    cx={size / 2}
-                                    cy={size / 2}
-                                    r={radius}
-                                    stroke="hsl(var(--muted-foreground))"
-                                    strokeWidth={strokeWidth}
-                                    fill="transparent"
-                                    opacity={0.2}
-                                  />
-                                  <circle
-                                    cx={size / 2}
-                                    cy={size / 2}
-                                    r={radius}
-                                    stroke="hsl(var(--primary))"
-                                    strokeWidth={strokeWidth}
-                                    fill="transparent"
-                                    strokeLinecap="round"
-                                    strokeDasharray={circumference}
-                                    strokeDashoffset={offset}
-                                  />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-primary">{progress}%</div>
-                                    <div className="text-xs text-muted-foreground">Progreso</div>
-                                  </div>
+                          return (
+                            <div className="relative" style={{ width: size, height: size }}>
+                              <svg width={size} height={size} className="-rotate-90">
+                                <circle
+                                  cx={size / 2}
+                                  cy={size / 2}
+                                  r={radius}
+                                  stroke="#9ca3af"
+                                  strokeWidth={strokeWidth}
+                                  fill="transparent"
+                                  opacity={0.35}
+                                />
+                                <circle
+                                  cx={size / 2}
+                                  cy={size / 2}
+                                  r={radius}
+                                  stroke={color}
+                                  strokeWidth={strokeWidth}
+                                  fill="transparent"
+                                  strokeLinecap="round"
+                                  strokeDasharray={circumference}
+                                  strokeDashoffset={offset}
+                                  style={{ transition: 'stroke-dashoffset 600ms ease, stroke 300ms ease' }}
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                  <div className="text-4xl font-extrabold" style={{ color }}>{progress}%</div>
                                 </div>
                               </div>
-                            )
-                          })()}
-                        </div>
-
-                        {/* Texto de días completados */}
+                            </div>
+                          )
+                        })()}
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-primary">{stats.completedCount}</div>
                           <div className="text-sm text-muted-foreground">Días completados</div>
-                          <div className="text-xs text-muted-foreground">de {stats.totalDays} esta semana</div>
-                          <div className="text-xs text-muted-foreground mt-2">Objetivo: {stats.targetDays} días</div>
+                          <div className="text-base font-semibold">{stats.completedCount} / {stats.totalDays}</div>
+                          <div className="text-xs text-muted-foreground">Objetivo semanal: {stats.targetDays} días</div>
                         </div>
                       </div>
                       <div className="text-center">
