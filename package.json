@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npm install --legacy-peer-deps && npm run build:next",
+    "build": "npm install --legacy-peer-deps && npm run db:generate && npm run build:next",
     "build:next": "next build",
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
+    "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",

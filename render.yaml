@@ -3,8 +3,10 @@ services:
     name: tessalp-gyms
     env: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm run build
     startCommand: npm start
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_AY0P6hXyDTQd@ep-calm-tooth-ahh8mdr1-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://tessalp-gyms.onrender.com

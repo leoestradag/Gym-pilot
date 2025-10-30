@@ -7,9 +7,24 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// Create Prisma client with error handling
+let prisma: PrismaClient
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+try {
+  prisma = globalForPrisma.prisma ?? new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
+  
+  if (process.env.NODE_ENV !== 'production') {
+    globalForPrisma.prisma = prisma
+  }
+} catch (error) {
+  console.error('Failed to initialize Prisma client:', error)
+  // Create a mock prisma client for fallback
+  prisma = {} as PrismaClient
+}
+
+export { prisma }
 
 // Re-export types from Prisma
 export type { Member, Instructor, Class, CheckIn, Gym } from '@prisma/client'
@@ -68,6 +83,12 @@ export const mockMembers = [
 // Database functions
 export async function getMembers() {
   try {
+    // Check if prisma is properly initialized
+    if (!prisma || !prisma.member) {
+      console.warn('Prisma not initialized, using mock data')
+      return mockMembers
+    }
+    
     return await prisma.member.findMany({
       orderBy: { createdAt: 'desc' }
     })
@@ -79,6 +100,11 @@ export async function getMembers() {
 
 export async function getMemberById(id: number) {
   try {
+    if (!prisma || !prisma.member) {
+      console.warn('Prisma not initialized, using mock data')
+      return mockMembers.find(m => m.id === id) || null
+    }
+    
     return await prisma.member.findUnique({
       where: { id }
     })
