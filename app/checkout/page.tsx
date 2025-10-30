@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +30,6 @@ interface UserProfile {
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: "",
