@@ -81,10 +81,10 @@ export default function FinanzasPage() {
 
       <div className="p-6 space-y-6">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard title="Ingresos del Mes" value="$67,000" change="+12.5%" trend="up" icon={DollarSign} />
-          <StatsCard title="Gastos del Mes" value="$33,000" change="+3.2%" trend="up" icon={TrendingDown} />
-          <StatsCard title="Ganancia Neta" value="$34,000" change="+41.7%" trend="up" icon={TrendingUp} />
-          <StatsCard title="Margen de Ganancia" value="50.7%" change="+8.3%" trend="up" icon={CreditCard} />
+          <StatsCard title="Ingresos del Mes" value="$67,000" trend={{ value: 12.5, isPositive: true }} icon={DollarSign} />
+          <StatsCard title="Gastos del Mes" value="$33,000" trend={{ value: 3.2, isPositive: true }} icon={TrendingDown} />
+          <StatsCard title="Ganancia Neta" value="$34,000" trend={{ value: 41.7, isPositive: true }} icon={TrendingUp} />
+          <StatsCard title="Margen de Ganancia" value="50.7%" trend={{ value: 8.3, isPositive: true }} icon={CreditCard} />
         </div>
 
         <Tabs defaultValue="resumen" className="space-y-4">
