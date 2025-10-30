@@ -179,7 +179,7 @@ export default function LandingPage() {
               </div>
               <CardTitle className="text-3xl">Crea tu rutina con AI</CardTitle>
               <CardDescription className="text-base">
-                Diseña un plan de entrenamiento personalizado en segundos con nuestra IA
+                Diseña un plan de entrenamiento personalizado en segundos con nuestra ayuda de IA
               </CardDescription>
             </CardHeader>
             <CardContent>
