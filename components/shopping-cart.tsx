@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ShoppingCart, X, Trash2, CreditCard } from "lucide-react"
+import { ShoppingCart as ShoppingCartIcon, X, Trash2, CreditCard } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 interface CartItem {
@@ -48,7 +48,7 @@ export function ShoppingCart({ items, onRemoveItem, onClearCart }: ShoppingCartP
             size="sm"
             className="relative bg-background/80 backdrop-blur border-border/50 hover:bg-background/90"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCartIcon className="h-4 w-4" />
             {items.length > 0 && (
               <Badge 
                 variant="destructive" 
@@ -63,7 +63,7 @@ export function ShoppingCart({ items, onRemoveItem, onClearCart }: ShoppingCartP
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCartIcon className="h-5 w-5" />
               Carrito de Compras
             </DialogTitle>
           </DialogHeader>
@@ -71,7 +71,7 @@ export function ShoppingCart({ items, onRemoveItem, onClearCart }: ShoppingCartP
           <div className="space-y-4">
             {items.length === 0 ? (
               <div className="text-center py-8">
-                <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <ShoppingCartIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">Tu carrito está vacío</p>
                 <p className="text-sm text-muted-foreground">Agrega un plan de membresía para comenzar</p>
               </div>
