@@ -59,8 +59,9 @@ const gymsData = {
 
 
 
-export default function GymPage({ params }: { params: { gymId: string } }) {
-  const gym = gymsData[params.gymId as keyof typeof gymsData]
+export default async function GymPage({ params }: { params: Promise<{ gymId: string }> }) {
+  const { gymId } = await params
+  const gym = gymsData[gymId as keyof typeof gymsData]
 
   if (!gym) {
     return <div>Gimnasio no encontrado</div>
@@ -69,7 +70,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <GymNavigation gymId={params.gymId} />
+      <GymNavigation gymId={gymId} />
       
       {/* Hero Section */}
       <section id="inicio" className="relative h-[500px] flex items-center justify-center overflow-hidden">
@@ -149,7 +150,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            <Link href={`/gym/${params.gymId}/membresias`}>
+               <Link href={`/gym/${gymId}/membresias`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -168,7 +169,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
               </Card>
             </Link>
 
-            <Link href={`/gym/${params.gymId}/clases`}>
+            <Link href={`/gym/${gymId}/clases`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -187,7 +188,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
               </Card>
             </Link>
 
-            <Link href={`/gym/${params.gymId}/instalaciones`}>
+            <Link href={`/gym/${gymId}/instalaciones`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -206,7 +207,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
               </Card>
             </Link>
 
-            <Link href={`/gym/${params.gymId}/horarios`}>
+            <Link href={`/gym/${gymId}/horarios`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -225,7 +226,7 @@ export default function GymPage({ params }: { params: { gymId: string } }) {
               </Card>
             </Link>
 
-            <Link href={`/gym/${params.gymId}/contacto`}>
+            <Link href={`/gym/${gymId}/contacto`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">

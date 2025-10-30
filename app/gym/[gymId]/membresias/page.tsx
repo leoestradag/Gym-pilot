@@ -152,22 +152,28 @@ interface CartItem {
   gymName: string
 }
 
-export default function MembresiasPage({ params }: { params: { gymId: string } }) {
-  const gym = gymsData[params.gymId as keyof typeof gymsData]
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+export default async function MembresiasPage({ params }: { params: Promise<{ gymId: string }> }) {
+  const { gymId } = await params
+  const gym = gymsData[gymId as keyof typeof gymsData]
 
   if (!gym) {
     return <div>Gimnasio no encontrado</div>
   }
 
+  return <MembresiasPageClient gymId={gymId} gym={gym} />
+}
+
+function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+
   const addToCart = (membership: typeof memberships[0]) => {
     const cartItem: CartItem = {
-      id: `${params.gymId}-${membership.id}`,
+      id: `${gymId}-${membership.id}`,
       name: `Membresía ${membership.name}`,
       price: membership.price,
       type: "membership",
       plan: membership.name,
-      gymId: params.gymId,
+      gymId: gymId,
       gymName: gym.name
     }
 
@@ -202,7 +208,7 @@ export default function MembresiasPage({ params }: { params: { gymId: string } }
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4">
-            <Link href={`/gym/${params.gymId}`}>
+            <Link href={`/gym/${gymId}`}>
               <Button variant="ghost" size="sm" className="gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver al Gimnasio

@@ -125,8 +125,9 @@ const amenities = [
   }
 ]
 
-export default function InstalacionesPage({ params }: { params: { gymId: string } }) {
-  const gym = gymsData[params.gymId as keyof typeof gymsData]
+export default async function InstalacionesPage({ params }: { params: Promise<{ gymId: string }> }) {
+  const { gymId } = await params
+  const gym = gymsData[gymId as keyof typeof gymsData]
 
   if (!gym) {
     return <div>Gimnasio no encontrado</div>
@@ -138,7 +139,7 @@ export default function InstalacionesPage({ params }: { params: { gymId: string 
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4">
-            <Link href={`/gym/${params.gymId}`}>
+            <Link href={`/gym/${gymId}`}>
               <Button variant="ghost" size="sm" className="gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver al Gimnasio
