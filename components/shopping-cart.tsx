@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart as ShoppingCartIcon, X, Trash2, CreditCard } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import Link from "next/link"
 
 interface CartItem {
   id: string
@@ -30,7 +31,17 @@ export function ShoppingCart({ items, onRemoveItem, onClearCart }: ShoppingCartP
   useEffect(() => {
     const totalPrice = items.reduce((sum, item) => sum + item.price, 0)
     setTotal(totalPrice)
+    
+    // Guardar en localStorage
+    localStorage.setItem('gym-cart', JSON.stringify(items))
   }, [items])
+
+  const handleCheckout = () => {
+    // Guardar items en localStorage antes de ir al checkout
+    localStorage.setItem('gym-cart', JSON.stringify(items))
+    setIsOpen(false)
+    // La redirección se manejará con el Link
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -109,10 +120,12 @@ export function ShoppingCart({ items, onRemoveItem, onClearCart }: ShoppingCartP
                   </div>
                   
                   <div className="space-y-2">
-                    <Button className="w-full" size="lg">
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      Proceder al Pago
-                    </Button>
+                    <Link href="/checkout" onClick={handleCheckout}>
+                      <Button className="w-full" size="lg">
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Proceder al Pago
+                      </Button>
+                    </Link>
                     <Button 
                       variant="outline" 
                       size="sm" 

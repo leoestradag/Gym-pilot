@@ -166,6 +166,14 @@ export default async function MembresiasPage({ params }: { params: Promise<{ gym
 function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
+  // Cargar carrito desde localStorage al inicio
+  useEffect(() => {
+    const savedCart = localStorage.getItem('gym-cart')
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart))
+    }
+  }, [])
+
   const addToCart = (membership: typeof memberships[0]) => {
     const cartItem: CartItem = {
       id: `${gymId}-${membership.id}`,
@@ -183,16 +191,26 @@ function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
       if (existingItem) {
         return prev // No agregar duplicados
       }
-      return [...prev, cartItem]
+      const newItems = [...prev, cartItem]
+      
+      // Guardar en localStorage
+      localStorage.setItem('gym-cart', JSON.stringify(newItems))
+      
+      return newItems
     })
   }
 
   const removeFromCart = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id))
+    setCartItems(prev => {
+      const newItems = prev.filter(item => item.id !== id)
+      localStorage.setItem('gym-cart', JSON.stringify(newItems))
+      return newItems
+    })
   }
 
   const clearCart = () => {
     setCartItems([])
+    localStorage.removeItem('gym-cart')
   }
 
   return (

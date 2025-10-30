@@ -142,6 +142,16 @@ export function UserAvatar() {
 
                 {/* Actions */}
                 <div className="space-y-2 pt-4 border-t border-border/50">
+                  <Link href="/profile" onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2"
+                    >
+                      <User className="h-4 w-4" />
+                      Mi Perfil
+                    </Button>
+                  </Link>
+                  
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
