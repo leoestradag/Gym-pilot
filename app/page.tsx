@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Users, Star, ArrowRight, Dumbbell } from "lucide-react"
+import { MapPin, Users, Star, ArrowRight, Dumbbell, Brain, Wand2 } from "lucide-react"
 import Link from "next/link"
 import { GymCoachPreview } from "@/components/gym-coach-preview"
 import { UserAvatar } from "@/components/user-avatar"
@@ -166,6 +166,63 @@ export default function LandingPage() {
           </div>
           
           <GymCoachPreview />
+        </div>
+      </section>
+
+      {/* Crea tu rutina con AI */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Card className="border-2 border-border/60 bg-card/90 backdrop-blur overflow-hidden">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Brain className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-3xl">Crea tu rutina con AI</CardTitle>
+              <CardDescription className="text-base">
+                Diseña un plan de entrenamiento personalizado en segundos con nuestra IA
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-3">
+                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
+                  <div className="flex items-center gap-2 font-medium mb-1">
+                    <Wand2 className="h-4 w-4 text-primary" />
+                    Rutinas a tu medida
+                  </div>
+                  <p className="text-sm text-muted-foreground">Basadas en tu peso, estatura, edad y objetivo.</p>
+                </div>
+                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
+                  <div className="flex items-center gap-2 font-medium mb-1">
+                    <Wand2 className="h-4 w-4 text-primary" />
+                    Progresión inteligente
+                  </div>
+                  <p className="text-sm text-muted-foreground">Ajustes automáticos semana a semana.</p>
+                </div>
+                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
+                  <div className="flex items-center gap-2 font-medium mb-1">
+                    <Wand2 className="h-4 w-4 text-primary" />
+                    Guía de ejercicios
+                  </div>
+                  <p className="text-sm text-muted-foreground">Técnica, series, repeticiones y descanso.</p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/gym-coach">
+                  <Button size="lg" className="gap-2">
+                    Empezar ahora
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/auth">
+                  <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+                    Crear cuenta gratis
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
