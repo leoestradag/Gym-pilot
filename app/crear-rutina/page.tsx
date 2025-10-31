@@ -1,32 +1,365 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { ArrowLeft, Brain, Weight, Ruler, Calendar, Sparkles } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { 
+  ArrowLeft, 
+  Brain, 
+  Weight, 
+  Ruler, 
+  Calendar, 
+  Sparkles,
+  Dumbbell,
+  Heart,
+  Activity,
+  Users,
+  Zap,
+  Clock,
+  CheckCircle,
+  X,
+  Target,
+  Timer,
+  Repeat,
+  Play
+} from "lucide-react"
 import Link from "next/link"
 
+interface UserData {
+  weight: number | null
+  height: number | null
+  age: number | null
+}
+
+interface Exercise {
+  name: string
+  sets: number | string
+  reps: string
+  rest: string
+  description: string
+  equipment: string
+}
+
+interface DayData {
+  title: string
+  icon: any
+  color: string
+  exercises: Exercise[]
+}
+
 export default function CrearRutinaPage() {
-  const router = useRouter()
   const [weight, setWeight] = useState([70])
   const [height, setHeight] = useState([175])
   const [age, setAge] = useState([25])
+  const [routineGenerated, setRoutineGenerated] = useState(false)
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [completedDays, setCompletedDays] = useState<{[key: string]: boolean}>({
+    lunes: false,
+    martes: false,
+    miércoles: false,
+    jueves: false,
+    viernes: false,
+    sábado: false,
+    domingo: false
+  })
+
+  const weeklyWorkoutData: {[key: string]: DayData} = {
+    "lunes": {
+      title: "PECHO Y TRÍCEPS",
+      icon: Dumbbell,
+      color: "primary",
+      exercises: [
+        {
+          name: "Press banca",
+          sets: 4,
+          reps: "8-10",
+          rest: "2-3 min",
+          description: "Acostado en banco, baja la barra hasta el pecho y empuja hacia arriba",
+          equipment: "Banco plano + barra + discos"
+        },
+        {
+          name: "Aperturas con mancuernas",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "Acostado en banco inclinado, abre los brazos hasta el pecho",
+          equipment: "Banco inclinado + mancuernas"
+        },
+        {
+          name: "Fondos en paralelas",
+          sets: 3,
+          reps: "8-12",
+          rest: "1-2 min",
+          description: "Apoya las manos en las barras paralelas y baja el cuerpo",
+          equipment: "Barras paralelas"
+        },
+        {
+          name: "Extensión de tríceps",
+          sets: 3,
+          reps: "10-12",
+          rest: "1-2 min",
+          description: "Sentado o de pie, extiende los brazos con mancuerna por encima de la cabeza",
+          equipment: "Mancuerna"
+        }
+      ]
+    },
+    "martes": {
+      title: "ESPALDA Y BÍCEPS",
+      icon: Heart,
+      color: "accent",
+      exercises: [
+        {
+          name: "Dominadas/Remo con barra",
+          sets: 4,
+          reps: "6-8",
+          rest: "2-3 min",
+          description: "Tira de tu cuerpo hacia arriba hasta que el mentón pase la barra",
+          equipment: "Barra de dominadas"
+        },
+        {
+          name: "Jalón al pecho",
+          sets: 3,
+          reps: "10-12",
+          rest: "2 min",
+          description: "Sentado en polea, tira hacia abajo hasta el pecho",
+          equipment: "Máquina de polea"
+        },
+        {
+          name: "Curl de bíceps",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "De pie, flexiona los brazos llevando las mancuernas hacia los hombros",
+          equipment: "Mancuernas"
+        },
+        {
+          name: "Martillo con mancuernas",
+          sets: 3,
+          reps: "10-12",
+          rest: "1-2 min",
+          description: "Curl con agarre neutro, manteniendo las mancuernas paralelas",
+          equipment: "Mancuernas"
+        }
+      ]
+    },
+    "miércoles": {
+      title: "PIERNAS",
+      icon: Activity,
+      color: "green-500",
+      exercises: [
+        {
+          name: "Sentadillas",
+          sets: 4,
+          reps: "12-15",
+          rest: "2-3 min",
+          description: "Pies al ancho de hombros, baja como si te sentaras en una silla",
+          equipment: "Barra + discos (opcional)"
+        },
+        {
+          name: "Peso muerto",
+          sets: 4,
+          reps: "8-10",
+          rest: "3 min",
+          description: "Levanta la barra desde el suelo manteniendo la espalda recta",
+          equipment: "Barra + discos"
+        },
+        {
+          name: "Prensa de piernas",
+          sets: 3,
+          reps: "15-20",
+          rest: "2 min",
+          description: "Sentado en la máquina, empuja el peso con las piernas",
+          equipment: "Máquina de prensa"
+        },
+        {
+          name: "Gemelos",
+          sets: 4,
+          reps: "15-20",
+          rest: "1-2 min",
+          description: "De pie, eleva los talones lo más alto posible",
+          equipment: "Máquina de gemelos o peso libre"
+        }
+      ]
+    },
+    "jueves": {
+      title: "HOMBROS Y CORE",
+      icon: Users,
+      color: "orange-500",
+      exercises: [
+        {
+          name: "Press militar",
+          sets: 4,
+          reps: "8-10",
+          rest: "2-3 min",
+          description: "De pie o sentado, presiona la barra por encima de la cabeza",
+          equipment: "Barra + discos"
+        },
+        {
+          name: "Elevaciones laterales",
+          sets: 3,
+          reps: "12-15",
+          rest: "1-2 min",
+          description: "Con mancuernas, eleva los brazos lateralmente hasta la altura de los hombros",
+          equipment: "Mancuernas"
+        },
+        {
+          name: "Plancha abdominal",
+          sets: 3,
+          reps: "30-45 seg",
+          rest: "1 min",
+          description: "Mantén posición de flexión apoyado en antebrazos",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Crunches",
+          sets: 3,
+          reps: "20-25",
+          rest: "1 min",
+          description: "Acostado, levanta el torso hacia las rodillas",
+          equipment: "Solo peso corporal"
+        }
+      ]
+    },
+    "viernes": {
+      title: "CARDIO Y FUNCIONAL",
+      icon: Zap,
+      color: "purple-500",
+      exercises: [
+        {
+          name: "Cardio moderado",
+          sets: 1,
+          reps: "30 min",
+          rest: "0",
+          description: "Mantén ritmo constante en cinta, bici o elíptica",
+          equipment: "Cinta, bici o elíptica"
+        },
+        {
+          name: "Burpees",
+          sets: 3,
+          reps: "10-15",
+          rest: "1-2 min",
+          description: "Flexión + salto + flexión completa del cuerpo",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Mountain climbers",
+          sets: 3,
+          reps: "20-30",
+          rest: "1 min",
+          description: "En posición de plancha, alterna las rodillas hacia el pecho",
+          equipment: "Solo peso corporal"
+        },
+        {
+          name: "Estiramientos",
+          sets: 1,
+          reps: "10-15 min",
+          rest: "0",
+          description: "Estira todos los grupos musculares trabajados",
+          equipment: "Colchoneta"
+        }
+      ]
+    },
+    "sábado": {
+      title: "ENTRENAMIENTO LIBRE",
+      icon: Clock,
+      color: "blue-500",
+      exercises: [
+        {
+          name: "Ejercicios de preferencia",
+          sets: "Variable",
+          reps: "Variable",
+          rest: "Variable",
+          description: "Realiza los ejercicios que más te gusten",
+          equipment: "Variable"
+        },
+        {
+          name: "Actividades recreativas",
+          sets: 1,
+          reps: "30-60 min",
+          rest: "Variable",
+          description: "Natación, caminata, deportes, etc.",
+          equipment: "Variable"
+        },
+        {
+          name: "Yoga o Pilates",
+          sets: 1,
+          reps: "45-60 min",
+          rest: "0",
+          description: "Mejora flexibilidad y relajación",
+          equipment: "Colchoneta"
+        }
+      ]
+    },
+    "domingo": {
+      title: "DESCANSO",
+      icon: Heart,
+      color: "gray-500",
+      exercises: [
+        {
+          name: "Recuperación activa",
+          sets: 1,
+          reps: "20-30 min",
+          rest: "0",
+          description: "Caminata ligera o estiramientos suaves",
+          equipment: "Ninguno"
+        },
+        {
+          name: "Hidratación extra",
+          sets: 1,
+          reps: "3-4 litros",
+          rest: "0",
+          description: "Bebe más agua de lo normal para recuperación",
+          equipment: "Agua"
+        }
+      ]
+    }
+  }
+
+  const toggleDayCompleted = (day: string) => {
+    setCompletedDays(prev => ({
+      ...prev,
+      [day]: !prev[day]
+    }))
+  }
+
+  const getProgressStats = () => {
+    const completedCount = Object.values(completedDays).filter(Boolean).length
+    const totalDays = 7
+    const targetDays = 5
+    const completionPercentage = Math.round((completedCount / totalDays) * 100)
+    
+    return {
+      completedCount,
+      totalDays,
+      targetDays,
+      completionPercentage
+    }
+  }
 
   const handleGenerateRoutine = () => {
-    // Guardar datos en localStorage
-    const userData = {
-      weight: weight[0],
-      height: height[0],
-      age: age[0]
-    }
-    
-    localStorage.setItem('user-routine-data', JSON.stringify(userData))
-    
-    // Redirigir a gym-coach con los datos
-    router.push('/gym-coach')
+    setRoutineGenerated(true)
+    // Scroll suave hacia el calendario
+    setTimeout(() => {
+      const calendarElement = document.getElementById('rutina-calendario')
+      if (calendarElement) {
+        calendarElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }
+
+  const stats = getProgressStats()
+  const dayNames: {[key: string]: string} = {
+    lunes: "LUNES",
+    martes: "MARTES",
+    miércoles: "MIÉRCOLES",
+    jueves: "JUEVES",
+    viernes: "VIERNES",
+    sábado: "SÁBADO",
+    domingo: "DOMINGO"
   }
 
   return (
@@ -52,7 +385,8 @@ export default function CrearRutinaPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Formulario */}
         <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -149,43 +483,224 @@ export default function CrearRutinaPage() {
                 <Sparkles className="h-5 w-5" />
                 Generar mi Rutina Personalizada
               </Button>
-              <p className="text-xs text-center text-muted-foreground mt-3">
-                Al hacer clic, serás redirigido al Gym Coach AI con tus datos configurados
-              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Información adicional */}
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <Card className="border border-border/50 bg-card/50">
-            <CardContent className="pt-6 text-center">
-              <Weight className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold mb-1">Rutina Personalizada</h3>
-              <p className="text-xs text-muted-foreground">
-                Basada en tus características físicas
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border border-border/50 bg-card/50">
-            <CardContent className="pt-6 text-center">
-              <Ruler className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold mb-1">Plan Semanal</h3>
-              <p className="text-xs text-muted-foreground">
-                Distribución de ejercicios por días
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border border-border/50 bg-card/50">
-            <CardContent className="pt-6 text-center">
-              <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold mb-1">Progresión Inteligente</h3>
-              <p className="text-xs text-muted-foreground">
-                Ajustes automáticos semana a semana
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Calendario y Progreso - Solo se muestra después de generar */}
+        {routineGenerated && (
+          <div id="rutina-calendario" className="mt-12 space-y-8">
+            {/* Progreso */}
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  Tu Progreso
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center justify-center gap-3">
+                  {(() => {
+                    const size = 160
+                    const strokeWidth = 18
+                    const radius = (size - strokeWidth) / 2
+                    const circumference = 2 * Math.PI * radius
+                    const progress = Math.max(0, Math.min(100, stats.completionPercentage))
+                    const offset = circumference * (1 - progress / 100)
+                    const color = progress < 40 ? '#ef4444' : progress < 70 ? '#f59e0b' : '#22c55e'
+
+                    return (
+                      <div className="relative" style={{ width: size, height: size }}>
+                        <svg width={size} height={size} className="-rotate-90">
+                          <circle
+                            cx={size / 2}
+                            cy={size / 2}
+                            r={radius}
+                            stroke="#9ca3af"
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                            opacity={0.35}
+                          />
+                          <circle
+                            cx={size / 2}
+                            cy={size / 2}
+                            r={radius}
+                            stroke={color}
+                            strokeWidth={strokeWidth}
+                            fill="transparent"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            style={{ transition: 'stroke-dashoffset 600ms ease, stroke 300ms ease' }}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-4xl font-extrabold" style={{ color }}>{progress}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })()}
+                  <div className="text-center">
+                    <div className="text-sm text-muted-foreground">Días completados</div>
+                    <div className="text-base font-semibold">{stats.completedCount} / {stats.totalDays}</div>
+                    <div className="text-xs text-muted-foreground">Objetivo semanal: {stats.targetDays} días</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Calendario Semanal */}
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Calendario Semanal
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Plan de entrenamiento por días de la semana
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {Object.entries(weeklyWorkoutData).map(([day, dayData]) => {
+                    const IconComponent = dayData.icon
+                    const isCompleted = completedDays[day]
+
+                    const colorClasses: {[key: string]: {bg: string, hover: string, text: string, border: string}} = {
+                      lunes: { bg: 'bg-primary/5', hover: 'hover:bg-primary/10', text: 'text-primary', border: 'border-primary' },
+                      martes: { bg: 'bg-accent/5', hover: 'hover:bg-accent/10', text: 'text-accent', border: 'border-accent' },
+                      miércoles: { bg: 'bg-green-500/5', hover: 'hover:bg-green-500/10', text: 'text-green-500', border: 'border-green-500' },
+                      jueves: { bg: 'bg-orange-500/5', hover: 'hover:bg-orange-500/10', text: 'text-orange-500', border: 'border-orange-500' },
+                      viernes: { bg: 'bg-purple-500/5', hover: 'hover:bg-purple-500/10', text: 'text-purple-500', border: 'border-purple-500' },
+                      sábado: { bg: 'bg-blue-500/5', hover: 'hover:bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500' },
+                      domingo: { bg: 'bg-gray-500/5', hover: 'hover:bg-gray-500/10', text: 'text-gray-500', border: 'border-gray-500' }
+                    }
+                    const dayColors = colorClasses[day]
+
+                    return (
+                      <div
+                        key={day}
+                        className={`border border-border/50 rounded-lg p-4 cursor-pointer ${dayColors.hover} transition-colors ${
+                          isCompleted ? 'bg-green-500/10 border-green-500/50' : dayColors.bg
+                        }`}
+                        onClick={() => setSelectedDay(day)}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <IconComponent className={`h-5 w-5 ${dayColors.text}`} />
+                            <span className="font-semibold">{dayNames[day]}</span>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              toggleDayCompleted(day)
+                            }}
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              isCompleted 
+                                ? 'bg-green-500 border-green-500 text-white' 
+                                : `${dayColors.border} ${dayColors.hover}`
+                            }`}
+                          >
+                            {isCompleted && <CheckCircle className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        <div className="text-sm font-medium mb-2">{dayData.title}</div>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          {dayData.exercises.slice(0, 4).map((exercise, idx) => (
+                            <div key={idx}>• {exercise.name}</div>
+                          ))}
+                        </div>
+                        <div className="mt-3 text-xs text-primary font-medium">
+                          Click para ver detalles →
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Modal de Detalles del Día */}
+        {selectedDay && (
+          <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-3">
+                  {(() => {
+                    const dayData = weeklyWorkoutData[selectedDay]
+                    const IconComponent = dayData.icon
+                    const colorMap: {[key: string]: string} = {
+                      lunes: 'text-primary',
+                      martes: 'text-accent',
+                      miércoles: 'text-green-500',
+                      jueves: 'text-orange-500',
+                      viernes: 'text-purple-500',
+                      sábado: 'text-blue-500',
+                      domingo: 'text-gray-500'
+                    }
+                    return (
+                      <>
+                        <IconComponent className={`h-6 w-6 ${colorMap[selectedDay] || 'text-primary'}`} />
+                        <div>
+                          <div className="text-xl font-bold">{dayNames[selectedDay]}</div>
+                          <p className="text-sm text-muted-foreground">{dayData.title}</p>
+                        </div>
+                      </>
+                    )
+                  })()}
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="grid gap-6 mt-4">
+                {weeklyWorkoutData[selectedDay].exercises.map((exercise, index) => (
+                  <Card key={index} className="border border-border/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Play className="h-5 w-5 text-primary" />
+                        {exercise.name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <div className="flex items-center gap-2">
+                          <Repeat className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Series</div>
+                            <div className="text-lg font-bold text-primary">{exercise.sets}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Target className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Repeticiones</div>
+                            <div className="text-lg font-bold text-primary">{exercise.reps}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Timer className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="text-sm font-medium">Descanso</div>
+                            <div className="text-lg font-bold text-primary">{exercise.rest}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2 pt-2 border-t border-border/50">
+                        <p className="text-sm text-muted-foreground">{exercise.description}</p>
+                        <Badge variant="outline" className="text-xs">
+                          {exercise.equipment}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   )
