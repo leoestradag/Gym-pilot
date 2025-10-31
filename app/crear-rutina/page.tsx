@@ -27,7 +27,10 @@ import {
   Target,
   Timer,
   Repeat,
-  Play
+  Play,
+  UtensilsCrossed,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 import Link from "next/link"
 
@@ -53,12 +56,33 @@ interface DayData {
   exercises: Exercise[]
 }
 
+interface Meal {
+  name: string
+  time: string
+  description: string
+  calories: number
+}
+
+interface WeeklyDiet {
+  week: number
+  dailyCalories: number
+  macronutrients: {
+    protein: number
+    carbs: number
+    fats: number
+  }
+  meals: {
+    [key: string]: Meal[]
+  }
+}
+
 export default function CrearRutinaPage() {
   const [weight, setWeight] = useState([70])
   const [height, setHeight] = useState([175])
   const [age, setAge] = useState([25])
   const [goal, setGoal] = useState<string>("")
   const [customGoal, setCustomGoal] = useState<string>("")
+  const [currentWeek, setCurrentWeek] = useState(1)
   const [routineGenerated, setRoutineGenerated] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [completedDays, setCompletedDays] = useState<{[key: string]: boolean}>({
@@ -344,6 +368,193 @@ export default function CrearRutinaPage() {
     }
   }
 
+  const calculateBMR = () => {
+    // Fórmula de Harris-Benedict (aproximada)
+    const weightKg = weight[0]
+    const heightCm = height[0]
+    const ageYears = age[0]
+    
+    // BMR base (aproximado para hombres, se puede mejorar con género)
+    const bmr = 88.362 + (13.397 * weightKg) + (4.799 * heightCm) - (5.677 * ageYears)
+    
+    // TDEE (Total Daily Energy Expenditure) - multiplicador de actividad moderada
+    const tdee = bmr * 1.55
+    
+    return { bmr, tdee }
+  }
+
+  const generateWeeklyDiet = (week: number): WeeklyDiet => {
+    const { tdee } = calculateBMR()
+    const userGoal = goal || "definir"
+    
+    // Ajustar calorías según objetivo y semana
+    let baseCalories = tdee
+    
+    if (userGoal === "bajar-peso") {
+      // Déficit calórico: semana 1-2 déficit moderado, semana 3+ déficit más agresivo
+      baseCalories = week <= 2 ? tdee - 300 : tdee - 500
+    } else if (userGoal === "subir-peso") {
+      // Superávit calórico: semana 1-2 moderado, semana 3+ más agresivo
+      baseCalories = week <= 2 ? tdee + 300 : tdee + 500
+    } else if (userGoal === "definir") {
+      // Déficit ligero para definir
+      baseCalories = week <= 2 ? tdee - 200 : tdee - 300
+    } else {
+      // Para "otro", mantener balanceado
+      baseCalories = tdee
+    }
+    
+    // Variar ligeramente según semana para evitar meseta
+    const weeklyVariation = week % 2 === 0 ? 50 : -50
+    const dailyCalories = Math.round(baseCalories + weeklyVariation)
+    
+    // Calcular macronutrientes
+    let protein, carbs, fats
+    
+    if (userGoal === "bajar-peso") {
+      protein = Math.round((dailyCalories * 0.35) / 4) // 35% proteína
+      carbs = Math.round((dailyCalories * 0.35) / 4) // 35% carbohidratos
+      fats = Math.round((dailyCalories * 0.30) / 9) // 30% grasas
+    } else if (userGoal === "subir-peso") {
+      protein = Math.round((dailyCalories * 0.30) / 4) // 30% proteína
+      carbs = Math.round((dailyCalories * 0.45) / 4) // 45% carbohidratos
+      fats = Math.round((dailyCalories * 0.25) / 9) // 25% grasas
+    } else {
+      // Definir u otro
+      protein = Math.round((dailyCalories * 0.30) / 4) // 30% proteína
+      carbs = Math.round((dailyCalories * 0.40) / 4) // 40% carbohidratos
+      fats = Math.round((dailyCalories * 0.30) / 9) // 30% grasas
+    }
+    
+    // Generar menús por día
+    const meals: {[key: string]: Meal[]} = {}
+    const days = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+    
+    const mealTemplates = {
+      bajarPeso: {
+        desayuno: [
+          { name: "Avena con frutas y yogur griego", calories: 350 },
+          { name: "Tostadas integrales con huevo y aguacate", calories: 320 },
+          { name: "Batido de proteína con espinacas", calories: 280 }
+        ],
+        almuerzo: [
+          { name: "Pechuga de pollo a la plancha con quinoa", calories: 450 },
+          { name: "Salmón al horno con verduras al vapor", calories: 420 },
+          { name: "Ensalada de atún con legumbres", calories: 380 }
+        ],
+        cena: [
+          { name: "Pescado blanco con espárragos", calories: 350 },
+          { name: "Tortilla de claras con vegetales", calories: 280 },
+          { name: "Sopa de verduras con pollo", calories: 320 }
+        ],
+        snacks: [
+          { name: "Yogur griego con frutos secos", calories: 150 },
+          { name: "Manzana con mantequilla de almendras", calories: 180 },
+          { name: "Barra de proteína", calories: 200 }
+        ]
+      },
+      subirPeso: {
+        desayuno: [
+          { name: "Pan integral con mantequilla de maní y plátano", calories: 550 },
+          { name: "Avena con proteína y frutos secos", calories: 600 },
+          { name: "Huevos revueltos con aguacate y pan", calories: 580 }
+        ],
+        almuerzo: [
+          { name: "Arroz con pollo y frijoles", calories: 650 },
+          { name: "Pasta integral con salmón y verduras", calories: 680 },
+          { name: "Batata con carne molida y vegetales", calories: 620 }
+        ],
+        cena: [
+          { name: "Pechuga de pollo con arroz y aguacate", calories: 600 },
+          { name: "Atún con patata al horno", calories: 580 },
+          { name: "Carne a la plancha con pasta", calories: 620 }
+        ],
+        snacks: [
+          { name: "Batido de proteína con avena", calories: 350 },
+          { name: "Frutos secos y frutas", calories: 400 },
+          { name: "Sándwich de pollo", calories: 450 }
+        ]
+      },
+      definir: {
+        desayuno: [
+          { name: "Avena con proteína en polvo", calories: 400 },
+          { name: "Tostadas con huevo, aguacate y tomate", calories: 380 },
+          { name: "Yogur griego con granola y frutas", calories: 420 }
+        ],
+        almuerzo: [
+          { name: "Pechuga de pollo con arroz integral", calories: 500 },
+          { name: "Salmón con camote y brócoli", calories: 480 },
+          { name: "Ensalada de pollo con quinoa", calories: 460 }
+        ],
+        cena: [
+          { name: "Pescado con verduras al vapor", calories: 380 },
+          { name: "Pollo a la plancha con ensalada", calories: 360 },
+          { name: "Tofu salteado con vegetales", calories: 350 }
+        ],
+        snacks: [
+          { name: "Yogur griego con frutas", calories: 200 },
+          { name: "Batido de proteína", calories: 220 },
+          { name: "Frutos secos (porción controlada)", calories: 180 }
+        ]
+      }
+    }
+    
+    const selectedTemplate = userGoal === "bajar-peso" ? mealTemplates.bajarPeso :
+                             userGoal === "subir-peso" ? mealTemplates.subirPeso :
+                             mealTemplates.definir
+    
+    days.forEach((day, dayIndex) => {
+      const dayMeals: Meal[] = []
+      
+      // Desayuno
+      const breakfast = selectedTemplate.desayuno[(week + dayIndex) % selectedTemplate.desayuno.length]
+      dayMeals.push({
+        name: breakfast.name,
+        time: "08:00",
+        description: breakfast.name,
+        calories: breakfast.calories
+      })
+      
+      // Almuerzo
+      const lunch = selectedTemplate.almuerzo[(week + dayIndex) % selectedTemplate.almuerzo.length]
+      dayMeals.push({
+        name: lunch.name,
+        time: "13:00",
+        description: lunch.name,
+        calories: lunch.calories
+      })
+      
+      // Snack (opcional según calorías)
+      if (dailyCalories > 2000) {
+        const snack = selectedTemplate.snacks[(week + dayIndex) % selectedTemplate.snacks.length]
+        dayMeals.push({
+          name: snack.name,
+          time: "16:00",
+          description: snack.name,
+          calories: snack.calories
+        })
+      }
+      
+      // Cena
+      const dinner = selectedTemplate.cena[(week + dayIndex) % selectedTemplate.cena.length]
+      dayMeals.push({
+        name: dinner.name,
+        time: "20:00",
+        description: dinner.name,
+        calories: dinner.calories
+      })
+      
+      meals[day] = dayMeals
+    })
+    
+    return {
+      week,
+      dailyCalories,
+      macronutrients: { protein, carbs, fats },
+      meals
+    }
+  }
+
   const handleGenerateRoutine = () => {
     setRoutineGenerated(true)
     // Scroll suave hacia el calendario
@@ -542,6 +753,114 @@ export default function CrearRutinaPage() {
         {/* Calendario y Progreso - Solo se muestra después de generar */}
         {routineGenerated && (
           <div id="rutina-calendario" className="mt-12 space-y-8">
+            {/* Dieta Semana a Semana */}
+            {goal && (
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <UtensilsCrossed className="h-5 w-5 text-primary" />
+                      Dieta Semana a Semana
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
+                        disabled={currentWeek === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm font-medium px-2">
+                        Semana {currentWeek}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentWeek(currentWeek + 1)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Plan nutricional personalizado basado en tus datos y objetivo
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const diet = generateWeeklyDiet(currentWeek)
+                    const dayNames: {[key: string]: string} = {
+                      lunes: "Lunes",
+                      martes: "Martes",
+                      miércoles: "Miércoles",
+                      jueves: "Jueves",
+                      viernes: "Viernes",
+                      sábado: "Sábado",
+                      domingo: "Domingo"
+                    }
+                    
+                    return (
+                      <div className="space-y-6">
+                        {/* Resumen de calorías y macronutrientes */}
+                        <div className="grid gap-4 md:grid-cols-4 p-4 bg-primary/5 rounded-lg">
+                          <div className="text-center">
+                            <div className="text-sm text-muted-foreground">Calorías Diarias</div>
+                            <div className="text-2xl font-bold text-primary">{diet.dailyCalories}</div>
+                            <div className="text-xs text-muted-foreground">kcal</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm text-muted-foreground">Proteína</div>
+                            <div className="text-2xl font-bold text-primary">{diet.macronutrients.protein}g</div>
+                            <div className="text-xs text-muted-foreground">{(diet.macronutrients.protein * 4 / diet.dailyCalories * 100).toFixed(0)}%</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm text-muted-foreground">Carbohidratos</div>
+                            <div className="text-2xl font-bold text-primary">{diet.macronutrients.carbs}g</div>
+                            <div className="text-xs text-muted-foreground">{(diet.macronutrients.carbs * 4 / diet.dailyCalories * 100).toFixed(0)}%</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm text-muted-foreground">Grasas</div>
+                            <div className="text-2xl font-bold text-primary">{diet.macronutrients.fats}g</div>
+                            <div className="text-xs text-muted-foreground">{(diet.macronutrients.fats * 9 / diet.dailyCalories * 100).toFixed(0)}%</div>
+                          </div>
+                        </div>
+
+                        {/* Menú semanal */}
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                          {Object.entries(diet.meals).map(([day, meals]) => (
+                            <Card key={day} className="border border-border/50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-base">{dayNames[day]}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-3">
+                                {meals.map((meal, index) => (
+                                  <div key={index} className="border-b border-border/30 pb-2 last:border-0 last:pb-0">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <div className="text-sm font-medium">{meal.name}</div>
+                                        <div className="text-xs text-muted-foreground">{meal.time}</div>
+                                      </div>
+                                      <Badge variant="outline" className="text-xs">
+                                        {meal.calories} kcal
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                ))}
+                                <div className="pt-2 text-xs text-muted-foreground">
+                                  Total: {meals.reduce((sum, m) => sum + m.calories, 0)} kcal
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Progreso */}
             <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
               <CardHeader>
