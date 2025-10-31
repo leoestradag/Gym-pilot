@@ -827,9 +827,17 @@ export default function CrearRutinaPage() {
                       </Button>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Plan nutricional personalizado basado en tus datos y objetivo
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Plan nutricional personalizado basado en tus datos y objetivo
+                    </p>
+                    <Badge 
+                      variant={goal === "definir" || goal === "bajar-peso" ? "destructive" : "default"}
+                      className="text-xs"
+                    >
+                      {goal === "definir" || goal === "bajar-peso" ? "Dieta Estricta" : "Dieta Flexible"}
+                    </Badge>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {(() => {
