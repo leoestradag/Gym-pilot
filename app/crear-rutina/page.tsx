@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
   ArrowLeft, 
   Brain, 
@@ -55,6 +57,8 @@ export default function CrearRutinaPage() {
   const [weight, setWeight] = useState([70])
   const [height, setHeight] = useState([175])
   const [age, setAge] = useState([25])
+  const [goal, setGoal] = useState<string>("")
+  const [customGoal, setCustomGoal] = useState<string>("")
   const [routineGenerated, setRoutineGenerated] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [completedDays, setCompletedDays] = useState<{[key: string]: boolean}>({
@@ -471,6 +475,54 @@ export default function CrearRutinaPage() {
                 <span>14 años</span>
                 <span>80 años</span>
               </div>
+            </div>
+
+            {/* Objetivo */}
+            <div className="space-y-4">
+              <Label className="text-lg font-semibold flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                Objetivo
+              </Label>
+              <RadioGroup value={goal} onValueChange={setGoal} className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="definir" id="definir" />
+                  <Label htmlFor="definir" className="cursor-pointer font-normal">
+                    Definir
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="subir-peso" id="subir-peso" />
+                  <Label htmlFor="subir-peso" className="cursor-pointer font-normal">
+                    Subir de peso
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="bajar-peso" id="bajar-peso" />
+                  <Label htmlFor="bajar-peso" className="cursor-pointer font-normal">
+                    Bajar de peso
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="otro" id="otro" />
+                  <Label htmlFor="otro" className="cursor-pointer font-normal">
+                    Otro
+                  </Label>
+                </div>
+              </RadioGroup>
+              {goal === "otro" && (
+                <div className="mt-4 space-y-2">
+                  <Label htmlFor="custom-goal" className="text-sm text-muted-foreground">
+                    Describe tu objetivo personalizado
+                  </Label>
+                  <Input
+                    id="custom-goal"
+                    placeholder="Ej: Mejorar resistencia, aumentar masa muscular..."
+                    value={customGoal}
+                    onChange={(e) => setCustomGoal(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Botón de generar */}
