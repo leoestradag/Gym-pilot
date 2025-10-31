@@ -87,6 +87,43 @@ export default function GymCoachPage() {
   const [resetTimer, setResetTimer] = useState<number | null>(null)
   const [showCelebration, setShowCelebration] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [hasLoadedFromForm, setHasLoadedFromForm] = useState(false)
+
+  // Cargar datos del formulario al inicio y generar rutina automáticamente
+  // Este useEffect se ejecutará después de que todas las funciones estén definidas
+  useEffect(() => {
+    if (hasLoadedFromForm) return
+    
+    const savedData = localStorage.getItem('user-routine-data')
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData)
+        if (data.weight && data.height && data.age) {
+          const newUserData = {
+            weight: data.weight,
+            height: data.height,
+            age: data.age,
+            photo: null,
+            goals: [],
+            experience: "",
+            availableTime: 0
+          }
+          
+          setUserData(newUserData)
+          setHasLoadedFromForm(true)
+          
+          // Marcar que se cargaron los datos, la rutina se generará más abajo
+          // Esto se manejará en otro useEffect que detecta cambios en userData
+          
+          // Limpiar datos del formulario para no cargarlos de nuevo
+          localStorage.removeItem('user-routine-data')
+        }
+      } catch (error) {
+        console.error('Error loading form data:', error)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Detectar cuando se completan todos los días y manejar el reset automático
   useEffect(() => {
@@ -620,6 +657,28 @@ export default function GymCoachPage() {
   const generatePersonalizedRoutine = (): string => {
     return generatePersonalizedRoutineWithData(userData)
   }
+
+  // Generar rutina automáticamente cuando se cargan datos del formulario
+  useEffect(() => {
+    if (hasLoadedFromForm && userData.weight && userData.height && userData.age) {
+      // Verificar que no se haya generado ya una rutina con estos datos
+      const lastMessage = messages[messages.length - 1]
+      const hasRoutineMessage = lastMessage && lastMessage.type === 'ai' && 
+        lastMessage.content.includes('DÍA 1') || lastMessage.content.includes('RUTINA PERSONALIZADA')
+      
+      if (!hasRoutineMessage) {
+        const routineMessage = generatePersonalizedRoutineWithData(userData)
+        const aiMessage = {
+          id: Date.now(),
+          type: "ai" as const,
+          content: routineMessage,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+        setMessages(prev => [...prev, aiMessage])
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasLoadedFromForm, userData.weight, userData.height, userData.age])
 
   // Función para extraer datos del usuario del texto
   const extractUserData = (input: string): { weight?: number, height?: number, age?: number } => {

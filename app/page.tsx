@@ -208,7 +208,7 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/gym-coach">
+                <Link href="/crear-rutina">
                   <Button size="lg" className="gap-2">
                     Empezar ahora
                     <ArrowRight className="h-4 w-4" />
