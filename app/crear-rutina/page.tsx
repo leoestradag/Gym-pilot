@@ -82,6 +82,7 @@ export default function CrearRutinaPage() {
   const [age, setAge] = useState([25])
   const [goal, setGoal] = useState<string>("")
   const [customGoal, setCustomGoal] = useState<string>("")
+  const [allergies, setAllergies] = useState<string>("")
   const [currentWeek, setCurrentWeek] = useState(1)
   const [routineGenerated, setRoutineGenerated] = useState(false)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
@@ -383,6 +384,19 @@ export default function CrearRutinaPage() {
     return { bmr, tdee }
   }
 
+  const containsAllergen = (foodName: string, allergens: string): boolean => {
+    if (!allergens || allergens.trim() === "") return false
+    
+    const allergenList = allergens.toLowerCase().split(/[,;]/).map(a => a.trim())
+    const foodLower = foodName.toLowerCase()
+    
+    return allergenList.some(allergen => foodLower.includes(allergen))
+  }
+
+  const filterMealsByAllergens = (meals: { name: string; calories: number }[], allergens: string) => {
+    return meals.filter(meal => !containsAllergen(meal.name, allergens))
+  }
+
   const generateWeeklyDiet = (week: number): WeeklyDiet => {
     const { tdee } = calculateBMR()
     const userGoal = goal || "definir"
@@ -503,11 +517,23 @@ export default function CrearRutinaPage() {
                              userGoal === "subir-peso" ? mealTemplates.subirPeso :
                              mealTemplates.definir
     
+    // Filtrar alimentos según alergias
+    const filteredDesayuno = filterMealsByAllergens(selectedTemplate.desayuno, allergies)
+    const filteredAlmuerzo = filterMealsByAllergens(selectedTemplate.almuerzo, allergies)
+    const filteredCena = filterMealsByAllergens(selectedTemplate.cena, allergies)
+    const filteredSnacks = filterMealsByAllergens(selectedTemplate.snacks, allergies)
+    
+    // Asegurar que hay al menos una opción disponible
+    const safeDesayuno = filteredDesayuno.length > 0 ? filteredDesayuno : [{ name: "Opción alternativa disponible", calories: 350 }]
+    const safeAlmuerzo = filteredAlmuerzo.length > 0 ? filteredAlmuerzo : [{ name: "Opción alternativa disponible", calories: 450 }]
+    const safeCena = filteredCena.length > 0 ? filteredCena : [{ name: "Opción alternativa disponible", calories: 350 }]
+    const safeSnacks = filteredSnacks.length > 0 ? filteredSnacks : [{ name: "Opción alternativa disponible", calories: 200 }]
+    
     days.forEach((day, dayIndex) => {
       const dayMeals: Meal[] = []
       
       // Desayuno
-      const breakfast = selectedTemplate.desayuno[(week + dayIndex) % selectedTemplate.desayuno.length]
+      const breakfast = safeDesayuno[(week + dayIndex) % safeDesayuno.length]
       dayMeals.push({
         name: breakfast.name,
         time: "08:00",
@@ -516,7 +542,7 @@ export default function CrearRutinaPage() {
       })
       
       // Almuerzo
-      const lunch = selectedTemplate.almuerzo[(week + dayIndex) % selectedTemplate.almuerzo.length]
+      const lunch = safeAlmuerzo[(week + dayIndex) % safeAlmuerzo.length]
       dayMeals.push({
         name: lunch.name,
         time: "13:00",
@@ -526,7 +552,7 @@ export default function CrearRutinaPage() {
       
       // Snack (opcional según calorías)
       if (dailyCalories > 2000) {
-        const snack = selectedTemplate.snacks[(week + dayIndex) % selectedTemplate.snacks.length]
+        const snack = safeSnacks[(week + dayIndex) % safeSnacks.length]
         dayMeals.push({
           name: snack.name,
           time: "16:00",
@@ -536,7 +562,7 @@ export default function CrearRutinaPage() {
       }
       
       // Cena
-      const dinner = selectedTemplate.cena[(week + dayIndex) % selectedTemplate.cena.length]
+      const dinner = safeCena[(week + dayIndex) % safeCena.length]
       dayMeals.push({
         name: dinner.name,
         time: "20:00",
@@ -734,6 +760,24 @@ export default function CrearRutinaPage() {
                   />
                 </div>
               )}
+            </div>
+
+            {/* Alergias o inconvenientes */}
+            <div className="space-y-4">
+              <Label className="text-lg font-semibold flex items-center gap-2">
+                <X className="h-5 w-5 text-primary" />
+                Alergias o inconvenientes
+              </Label>
+              <Input
+                id="allergies"
+                placeholder="Ej: Nuez, mariscos, lactosa, gluten..."
+                value={allergies}
+                onChange={(e) => setAllergies(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">
+                Lista los alimentos o ingredientes que debes evitar. Estos serán excluidos de tu dieta.
+              </p>
             </div>
 
             {/* Botón de generar */}
