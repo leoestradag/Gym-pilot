@@ -11,20 +11,160 @@ datasource db {
 }
 
 model Member {
-  id               Int      @id @default(autoincrement())
-  name             String
-  email            String   @unique
-  phone            String?
-  membershipType   String   @map("membership_type")
-  membershipStart  DateTime @map("membership_start")
-  membershipEnd    DateTime @map("membership_end")
-  status           String   @default("active")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
-  
-  checkIns         CheckIn[]
-  
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  phone           String?
+  membershipType  String   @map("membership_type")
+  membershipStart DateTime @map("membership_start")
+  membershipEnd   DateTime @map("membership_end")
+  status          String   @default("active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  checkIns           CheckIn[]
+  coachAccess        CoachUserAccess[]
+  CoachClassAttendee CoachClassAttendee[]
+
   @@map("members")
+}
+
+model UserAccount {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  role         UserRole @default(MEMBER)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  coachProfile CoachProfile?
+
+  @@map("user_accounts")
+}
+
+model CoachProfile {
+  id              Int         @id @default(autoincrement())
+  userAccountId   Int         @unique @map("user_account_id")
+  role            CoachRole
+  status          CoachStatus @default(PENDING)
+  bio             String?
+  certifications  String?
+  experienceYears Int?        @map("experience_years")
+  specialties     String[]    @default([])
+  gymId           Int?        @map("gym_id")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  userAccount    UserAccount          @relation(fields: [userAccountId], references: [id])
+  gym            Gym?                 @relation(fields: [gymId], references: [id])
+  userAccess     CoachUserAccess[]
+  classTemplates CoachClassTemplate[]
+  classSessions  CoachClassSession[]
+
+  @@map("coach_profiles")
+}
+
+model CoachUserAccess {
+  id          Int                   @id @default(autoincrement())
+  coachId     Int                   @map("coach_id")
+  memberId    Int                   @map("member_id")
+  status      CoachConnectionStatus @default(PENDING)
+  requestedAt DateTime              @default(now()) @map("requested_at")
+  respondedAt DateTime?             @map("responded_at")
+  notes       String?
+
+  coach  CoachProfile @relation(fields: [coachId], references: [id])
+  member Member       @relation(fields: [memberId], references: [id])
+
+  @@unique([coachId, memberId], name: "coach_member_unique")
+  @@map("coach_user_access")
+}
+
+model CoachClassTemplate {
+  id          Int      @id @default(autoincrement())
+  coachId     Int      @map("coach_id")
+  title       String
+  description String?
+  dayOfWeek   String   @map("day_of_week")
+  startTime   String   @map("start_time")
+  duration    Int
+  capacity    Int?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  coach    CoachProfile        @relation(fields: [coachId], references: [id])
+  sessions CoachClassSession[]
+
+  @@map("coach_class_templates")
+}
+
+model CoachClassSession {
+  id          Int      @id @default(autoincrement())
+  templateId  Int?     @map("template_id")
+  coachId     Int      @map("coach_id")
+  title       String
+  description String?
+  location    String?
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  capacity    Int?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  coach     CoachProfile         @relation(fields: [coachId], references: [id])
+  template  CoachClassTemplate?  @relation(fields: [templateId], references: [id])
+  attendees CoachClassAttendee[]
+
+  @@map("coach_class_sessions")
+}
+
+model CoachClassAttendee {
+  id        Int              @id @default(autoincrement())
+  sessionId Int              @map("session_id")
+  memberId  Int              @map("member_id")
+  status    CoachClassStatus @default(REGISTERED)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  session CoachClassSession @relation(fields: [sessionId], references: [id])
+  member  Member            @relation(fields: [memberId], references: [id])
+
+  @@unique([sessionId, memberId], name: "session_member_unique")
+  @@map("coach_class_attendees")
+}
+
+enum UserRole {
+  MEMBER
+  COACH
+  ADMIN
+}
+
+enum CoachRole {
+  STAFF
+  PERSONAL_TRAINER
+  SPINNING
+  PILATES
+  YOGA
+  CROSSFIT
+  NUTRITION
+}
+
+enum CoachStatus {
+  PENDING
+  APPROVED
+  SUSPENDED
+}
+
+enum CoachConnectionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CoachClassStatus {
+  REGISTERED
+  ATTENDED
+  CANCELLED
 }
 
 model Instructor {
@@ -36,55 +176,56 @@ model Instructor {
   bio       String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
-  classes   Class[]
-  
+
+  classes Class[]
+
   @@map("instructors")
 }
 
 model Class {
-  id          Int      @id @default(autoincrement())
-  name        String
+  id           Int      @id @default(autoincrement())
+  name         String
   instructorId Int      @map("instructor_id")
-  dayOfWeek   String   @map("day_of_week")
-  time        String
-  duration    Int
-  capacity    Int
-  price       Float
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
-  instructor  Instructor @relation(fields: [instructorId], references: [id])
-  checkIns    CheckIn[]
-  
+  dayOfWeek    String   @map("day_of_week")
+  time         String
+  duration     Int
+  capacity     Int
+  price        Float
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  instructor Instructor @relation(fields: [instructorId], references: [id])
+  checkIns   CheckIn[]
+
   @@map("classes")
 }
 
 model CheckIn {
-  id         Int      @id @default(autoincrement())
-  memberId   Int      @map("member_id")
-  classId    Int?     @map("class_id")
-  checkinTime DateTime @map("checkin_time")
+  id           Int       @id @default(autoincrement())
+  memberId     Int       @map("member_id")
+  classId      Int?      @map("class_id")
+  checkinTime  DateTime  @map("checkin_time")
   checkoutTime DateTime? @map("checkout_time")
-  createdAt  DateTime @default(now()) @map("created_at")
-  
-  member     Member    @relation(fields: [memberId], references: [id])
-  class      Class?    @relation(fields: [classId], references: [id])
-  
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  member Member @relation(fields: [memberId], references: [id])
+  class  Class? @relation(fields: [classId], references: [id])
+
   @@map("check_ins")
 }
 
 model Gym {
-  id          Int      @id @default(autoincrement())
-  name        String
-  location    String
-  phone       String
-  email       String
-  hours       String
-  image       String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
+  id           Int            @id @default(autoincrement())
+  name         String
+  location     String
+  phone        String
+  email        String
+  hours        String
+  image        String?
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  CoachProfile CoachProfile[]
+
   @@map("gyms")
 }
