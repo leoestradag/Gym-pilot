@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { 
@@ -49,6 +50,19 @@ interface UserData {
   availableTime: number
 }
 
+interface CoachAccessRequest {
+  id: number
+  status: string
+  requestedAt: string
+  respondedAt: string | null
+  notes: string | null
+  member: {
+    id: number
+    name: string | null
+    email: string | null
+  }
+}
+
 export default function GymCoachPage() {
   const [messages, setMessages] = useState([
     {
@@ -88,6 +102,12 @@ export default function GymCoachPage() {
   const [showCelebration, setShowCelebration] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [hasLoadedFromForm, setHasLoadedFromForm] = useState(false)
+  const [coachIdInput, setCoachIdInput] = useState("")
+  const [memberIdForAccess, setMemberIdForAccess] = useState("")
+  const [accessNotes, setAccessNotes] = useState("")
+  const [accessRequests, setAccessRequests] = useState<CoachAccessRequest[]>([])
+  const [isLoadingAccess, setIsLoadingAccess] = useState(false)
+  const [accessFeedback, setAccessFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   // Cargar datos del formulario al inicio y generar rutina automáticamente
   // Este useEffect se ejecutará después de que todas las funciones estén definidas
@@ -178,6 +198,126 @@ export default function GymCoachPage() {
       ...prev,
       [day]: !prev[day]
     }))
+  }
+
+  const formatDateTime = (value: string | null) => {
+    if (!value) return "-"
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+    return date.toLocaleString('es-MX', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'Aprobada'
+      case 'REJECTED':
+        return 'Rechazada'
+      default:
+        return 'Pendiente'
+    }
+  }
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'bg-green-500/10 text-green-600 border-green-500/40'
+      case 'REJECTED':
+        return 'bg-destructive/10 text-destructive border-destructive/40'
+      default:
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/40'
+    }
+  }
+
+  const handleLoadAccessRequests = async () => {
+    setAccessFeedback(null)
+    const parsedCoachId = Number(coachIdInput)
+
+    if (!coachIdInput.trim() || Number.isNaN(parsedCoachId) || parsedCoachId <= 0) {
+      setAccessFeedback({ type: 'error', message: 'Ingresa un ID de coach válido' })
+      return
+    }
+
+    try {
+      setIsLoadingAccess(true)
+      const response = await fetch(`/api/coach/access?coachId=${parsedCoachId}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setAccessRequests([])
+        setAccessFeedback({ type: 'error', message: data.error ?? 'No se pudieron obtener las solicitudes' })
+        return
+      }
+
+      setAccessRequests(data.requests ?? [])
+    } catch (error) {
+      console.error('Error loading coach access requests', error)
+      setAccessFeedback({ type: 'error', message: 'No se pudieron cargar las solicitudes' })
+    } finally {
+      setIsLoadingAccess(false)
+    }
+  }
+
+  const handleSubmitAccessRequest = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setAccessFeedback(null)
+
+    const parsedCoachId = Number(coachIdInput)
+    const parsedMemberId = Number(memberIdForAccess)
+
+    if (!coachIdInput.trim() || Number.isNaN(parsedCoachId) || parsedCoachId <= 0) {
+      setAccessFeedback({ type: 'error', message: 'Debes indicar tu ID de coach' })
+      return
+    }
+
+    if (!memberIdForAccess.trim() || Number.isNaN(parsedMemberId) || parsedMemberId <= 0) {
+      setAccessFeedback({ type: 'error', message: 'Ingresa un ID de usuario válido' })
+      return
+    }
+
+    try {
+      setIsLoadingAccess(true)
+      const response = await fetch('/api/coach/access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          coachId: parsedCoachId,
+          memberId: parsedMemberId,
+          notes: accessNotes.trim() ? accessNotes.trim() : undefined
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setAccessFeedback({ type: 'error', message: data.error ?? 'No se pudo enviar la solicitud' })
+        return
+      }
+
+      setAccessFeedback({ type: 'success', message: 'Solicitud enviada correctamente' })
+      setMemberIdForAccess('')
+      setAccessNotes('')
+
+      const refreshResponse = await fetch(`/api/coach/access?coachId=${parsedCoachId}`)
+      const refreshData = await refreshResponse.json()
+
+      if (refreshResponse.ok) {
+        setAccessRequests(refreshData.requests ?? [])
+      }
+    } catch (error) {
+      console.error('Error creating coach access request', error)
+      setAccessFeedback({ type: 'error', message: 'No se pudo enviar la solicitud' })
+    } finally {
+      setIsLoadingAccess(false)
+    }
   }
 
   // Función para formatear el tiempo del countdown
@@ -1533,6 +1673,135 @@ export default function GymCoachPage() {
 
           {/* Quick Actions */}
           <div className="space-y-6">
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  Gestionar acceso a clientes
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Solicita permiso para ver la rutina y dieta de un usuario y revisa el estado de tus
+                  solicitudes.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <form onSubmit={handleSubmitAccessRequest} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="coachIdInput">Tu ID de coach</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="coachIdInput"
+                        value={coachIdInput}
+                        onChange={(event) => setCoachIdInput(event.target.value)}
+                        placeholder="Ej. 12"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleLoadAccessRequests}
+                        disabled={isLoadingAccess}
+                      >
+                        {isLoadingAccess ? 'Cargando...' : 'Cargar'}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Si aún no conoces tu ID, consúltalo con el administrador del gimnasio.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="memberIdInput">ID del usuario</Label>
+                    <Input
+                      id="memberIdInput"
+                      value={memberIdForAccess}
+                      onChange={(event) => setMemberIdForAccess(event.target.value)}
+                      placeholder="Ej. 45"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="accessNotes">Notas para el usuario (opcional)</Label>
+                    <Textarea
+                      id="accessNotes"
+                      rows={3}
+                      value={accessNotes}
+                      onChange={(event) => setAccessNotes(event.target.value)}
+                      placeholder="Explica por qué quieres acceder a su plan"
+                    />
+                  </div>
+
+                  {accessFeedback && (
+                    <div
+                      className={`rounded-lg border px-3 py-2 text-sm ${
+                        accessFeedback.type === 'success'
+                          ? 'border-green-500/40 bg-green-500/10 text-green-600'
+                          : 'border-destructive/40 bg-destructive/10 text-destructive'
+                      }`}
+                    >
+                      {accessFeedback.message}
+                    </div>
+                  )}
+
+                  <Button type="submit" disabled={isLoadingAccess || !coachIdInput.trim()} className="w-full">
+                    {isLoadingAccess ? 'Procesando...' : 'Enviar solicitud'}
+                  </Button>
+                </form>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold">Solicitudes recientes</span>
+                    <Badge variant="outline" className="text-xs">
+                      {accessRequests.length}
+                    </Badge>
+                  </div>
+                  {isLoadingAccess && accessRequests.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">Cargando solicitudes...</p>
+                  ) : accessRequests.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                      No hay solicitudes registradas todavía.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {accessRequests.map((request) => (
+                        <div
+                          key={request.id}
+                          className="rounded-lg border border-border/50 bg-muted/30 p-3"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="space-y-1">
+                              <p className="text-sm font-semibold">
+                                Usuario #{request.member?.id ?? 'N/A'}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {request.member?.name ?? 'Sin nombre registrado'}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {request.member?.email ?? 'Sin correo'}
+                              </p>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${getStatusBadgeClass(request.status)}`}
+                            >
+                              {translateStatus(request.status)}
+                            </Badge>
+                          </div>
+                          <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+                            <p>Solicitada: {formatDateTime(request.requestedAt)}</p>
+                            {request.respondedAt && (
+                              <p>Respondida: {formatDateTime(request.respondedAt)}</p>
+                            )}
+                            {request.notes && (
+                              <p className="italic text-[11px]">Nota: {request.notes}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
             {/* User Data Form */}
             {showDataForm && (
               <Card className="border-2 border-primary/60 bg-card/95 backdrop-blur">

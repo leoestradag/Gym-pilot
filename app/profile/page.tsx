@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { ArrowLeft, Calendar, MapPin, CreditCard, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
 
@@ -24,8 +26,27 @@ interface Membership {
   status: 'active' | 'expired' | 'cancelled'
 }
 
+interface MemberAccessRequest {
+  id: number
+  status: string
+  requestedAt: string
+  respondedAt: string | null
+  notes: string | null
+  coach: {
+    userAccount: {
+      name: string | null
+      email: string | null
+    } | null
+  }
+}
+
 export default function ProfilePage() {
   const [memberships, setMemberships] = useState<Membership[]>([])
+  const [memberIdInput, setMemberIdInput] = useState("")
+  const [activeMemberId, setActiveMemberId] = useState<number | null>(null)
+  const [accessRequests, setAccessRequests] = useState<MemberAccessRequest[]>([])
+  const [accessFeedback, setAccessFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [isLoadingAccess, setIsLoadingAccess] = useState(false)
 
   useEffect(() => {
     // Obtener membresías desde localStorage
@@ -47,6 +68,19 @@ export default function ProfilePage() {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    })
+  }
+
+  const formatDateTime = (value: string | null) => {
+    if (!value) return '-'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+    return date.toLocaleString('es-MX', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -76,6 +110,94 @@ export default function ProfilePage() {
     }
   }
 
+  const translateAccessStatus = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'Aprobada'
+      case 'REJECTED':
+        return 'Rechazada'
+      default:
+        return 'Pendiente'
+    }
+  }
+
+  const getAccessStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'bg-green-500/10 text-green-600 border-green-500/40'
+      case 'REJECTED':
+        return 'bg-destructive/10 text-destructive border-destructive/40'
+      default:
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/40'
+    }
+  }
+
+  const handleLoadAccessRequests = async () => {
+    setAccessFeedback(null)
+    const parsedMemberId = Number(memberIdInput)
+
+    if (!memberIdInput.trim() || Number.isNaN(parsedMemberId) || parsedMemberId <= 0) {
+      setAccessFeedback({ type: 'error', message: 'Ingresa un ID de usuario válido' })
+      return
+    }
+
+    try {
+      setIsLoadingAccess(true)
+      const response = await fetch(`/api/member/access?memberId=${parsedMemberId}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setAccessRequests([])
+        setAccessFeedback({ type: 'error', message: data.error ?? 'No se pudieron obtener las solicitudes' })
+        return
+      }
+
+      setAccessRequests(data.requests ?? [])
+      setActiveMemberId(parsedMemberId)
+    } catch (error) {
+      console.error('Error loading member access requests', error)
+      setAccessFeedback({ type: 'error', message: 'No se pudieron cargar las solicitudes' })
+    } finally {
+      setIsLoadingAccess(false)
+    }
+  }
+
+  const handleRespondAccessRequest = async (requestId: number, action: 'APPROVE' | 'REJECT') => {
+    setAccessFeedback(null)
+
+    try {
+      setIsLoadingAccess(true)
+      const response = await fetch('/api/member/access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ requestId, action })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setAccessFeedback({ type: 'error', message: data.error ?? 'No se pudo actualizar la solicitud' })
+        return
+      }
+
+      setAccessFeedback({ type: 'success', message: data.message ?? 'Solicitud actualizada' })
+      setAccessRequests(prev =>
+        prev.map(request =>
+          request.id === requestId
+            ? { ...request, status: data.status, respondedAt: new Date().toISOString() }
+            : request
+        )
+      )
+    } catch (error) {
+      console.error('Error responding to member access request', error)
+      setAccessFeedback({ type: 'error', message: 'No se pudo actualizar la solicitud' })
+    } finally {
+      setIsLoadingAccess(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -96,7 +218,119 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-xl">Solicitudes de acceso de coaches</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Autoriza o rechaza las solicitudes de los entrenadores para que puedan revisar tus
+              rutinas y dieta personal.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="memberIdInput">Tu ID de usuario</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="memberIdInput"
+                  value={memberIdInput}
+                  onChange={(event) => setMemberIdInput(event.target.value)}
+                  placeholder="Ej. 45"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleLoadAccessRequests}
+                  disabled={isLoadingAccess}
+                >
+                  {isLoadingAccess ? 'Cargando...' : 'Ver solicitudes'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ingresa tu ID para ver las solicitudes pendientes de aprobación.
+              </p>
+            </div>
+
+            {accessFeedback && (
+              <div
+                className={`rounded-lg border px-3 py-2 text-sm ${
+                  accessFeedback.type === 'success'
+                    ? 'border-green-500/40 bg-green-500/10 text-green-600'
+                    : 'border-destructive/40 bg-destructive/10 text-destructive'
+                }`}
+              >
+                {accessFeedback.message}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold">Solicitudes recibidas</span>
+                <Badge variant="outline" className="text-xs">
+                  {accessRequests.length}
+                </Badge>
+              </div>
+              {isLoadingAccess && accessRequests.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Cargando solicitudes...</p>
+              ) : accessRequests.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Aún no hay solicitudes de entrenadores.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {accessRequests.map((request) => (
+                    <div key={request.id} className="rounded-lg border border-border/50 bg-muted/30 p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <p className="text-sm font-semibold">
+                            {request.coach?.userAccount?.name ?? 'Coach sin nombre'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {request.coach?.userAccount?.email ?? 'Sin correo registrado'}
+                          </p>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${getAccessStatusBadgeClass(request.status)}`}
+                        >
+                          {translateAccessStatus(request.status)}
+                        </Badge>
+                      </div>
+                      <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+                        <p>Solicitada: {formatDateTime(request.requestedAt)}</p>
+                        {request.respondedAt && (
+                          <p>Respondida: {formatDateTime(request.respondedAt)}</p>
+                        )}
+                        {request.notes && <p className="italic text-[11px]">Nota: {request.notes}</p>}
+                      </div>
+                      {request.status === 'PENDING' && (
+                        <div className="mt-3 flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoadingAccess}
+                            onClick={() => handleRespondAccessRequest(request.id, 'APPROVE')}
+                          >
+                            Aprobar
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            disabled={isLoadingAccess}
+                            onClick={() => handleRespondAccessRequest(request.id, 'REJECT')}
+                          >
+                            Rechazar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {memberships.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
