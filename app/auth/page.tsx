@@ -345,6 +345,30 @@ export default function AuthPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card className="border-dashed border-primary/40 bg-card/70 backdrop-blur">
+                <CardContent className="pt-6">
+                  <div className="text-center space-y-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">¿Eres entrenador o coach?</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Crea tu perfil profesional, gestiona rutinas de tus atletas y administra tus
+                      clases desde un panel dedicado.
+                    </p>
+                    <Link href="/coach/register">
+                      <Button className="w-full gap-2">
+                        <Star className="h-4 w-4" />
+                        Registrarme como Coach
+                      </Button>
+                    </Link>
+                    <p className="text-xs text-muted-foreground">
+                      Revisaremos tu información y te avisaremos cuando tu cuenta esté aprobada.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
