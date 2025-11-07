@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
   ArrowLeft, 
@@ -94,6 +95,15 @@ export default function CrearRutinaPage() {
     viernes: false,
     sábado: false,
     domingo: false
+  })
+  const [coachNotes, setCoachNotes] = useState<{[key: string]: string}>({
+    lunes: "",
+    martes: "",
+    miércoles: "",
+    jueves: "",
+    viernes: "",
+    sábado: "",
+    domingo: ""
   })
 
   const weeklyWorkoutData: {[key: string]: DayData} = {
@@ -352,6 +362,13 @@ export default function CrearRutinaPage() {
     setCompletedDays(prev => ({
       ...prev,
       [day]: !prev[day]
+    }))
+  }
+
+  const handleCoachNoteChange = (day: string, value: string) => {
+    setCoachNotes(prev => ({
+      ...prev,
+      [day]: value
     }))
   }
 
@@ -901,6 +918,18 @@ export default function CrearRutinaPage() {
                                 ))}
                                 <div className="pt-2 text-xs text-muted-foreground">
                                   Total: {meals.reduce((sum, m) => sum + m.calories, 0)} kcal
+                                </div>
+                                <div className="pt-3">
+                                  <Label className="text-xs font-medium text-muted-foreground">
+                                    Ajustes del coach
+                                  </Label>
+                                  <Textarea
+                                    value={coachNotes[day] || ""}
+                                    onChange={(event) => handleCoachNoteChange(day, event.target.value)}
+                                    placeholder="Escribe aquí sugerencias o ajustes específicos para este día"
+                                    className="mt-1 text-sm"
+                                    rows={3}
+                                  />
                                 </div>
                               </CardContent>
                             </Card>
