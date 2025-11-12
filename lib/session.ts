@@ -28,7 +28,8 @@ export async function createSession(userId: number) {
     .setExpirationTime(expiresAt)
     .sign(secret)
 
-  cookies().set({
+  const cookieStore = await cookies()
+  cookieStore.set({
     name: SESSION_COOKIE,
     value: token,
     httpOnly: true,
@@ -40,12 +41,14 @@ export async function createSession(userId: number) {
 }
 
 export async function clearSession() {
-  cookies().delete(SESSION_COOKIE)
+  const cookieStore = await cookies()
+  cookieStore.delete(SESSION_COOKIE)
 }
 
 export async function getSessionUser() {
   try {
-    const sessionCookie = cookies().get(SESSION_COOKIE)
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get(SESSION_COOKIE)
     if (!sessionCookie) return null
 
     const secret = getJwtSecret()
