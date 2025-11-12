@@ -70,6 +70,7 @@ export async function POST(request: Request) {
       },
     })
 
+    const secretPresent = Boolean(process.env.AUTH_SECRET && process.env.AUTH_SECRET.length > 0)
     return NextResponse.json(
       {
         message: "Registro completado",
@@ -79,13 +80,20 @@ export async function POST(request: Request) {
           email: user.email,
           role: user.role,
         },
+        debug: {
+          secretPresent,
+        },
       },
       { status: 201 },
     )
   } catch (error) {
     console.error("Error registering user", error)
     return NextResponse.json(
-      { error: "No se pudo completar el registro", details: error instanceof Error ? error.message : String(error) },
+      {
+        error: "No se pudo completar el registro",
+        details: error instanceof Error ? error.message : String(error),
+        secretPresent: Boolean(process.env.AUTH_SECRET && process.env.AUTH_SECRET.length > 0),
+      },
       { status: 500 },
     )
   }
