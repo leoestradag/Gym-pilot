@@ -28,22 +28,117 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [activeTab, setActiveTab] = useState("login")
+  const [isLoginLoading, setIsLoginLoading] = useState(false)
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const [registerError, setRegisterError] = useState<string | null>(null)
+  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null)
   const router = useRouter()
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    // Aquí iría la lógica de login
-    console.log("Login clicked")
-    // Redirigir al Gym Coach desbloqueado
-    router.push("/gym-coach")
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+    const email = String(formData.get("loginEmail") || "").trim()
+    const password = String(formData.get("loginPassword") || "")
+
+    if (!email || !password) {
+      setLoginError("Ingresa tu correo y contraseña")
+      return
+    }
+
+    const authenticate = async () => {
+      try {
+        setLoginError(null)
+        setIsLoginLoading(true)
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          setLoginError(data.error ?? "No se pudo iniciar sesión")
+          return
+        }
+
+        router.push("/profile")
+        router.refresh()
+      } catch (error) {
+        console.error("Login error", error)
+        setLoginError("No se pudo iniciar sesión")
+      } finally {
+        setIsLoginLoading(false)
+      }
+    }
+
+    authenticate()
   }
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault()
-    // Aquí iría la lógica de registro
-    console.log("Register clicked")
-    // Redirigir al Gym Coach desbloqueado
-    router.push("/gym-coach")
+    const form = e.currentTarget as HTMLFormElement
+    const formData = new FormData(form)
+    const firstName = String(formData.get("firstName") || "").trim()
+    const lastName = String(formData.get("lastName") || "").trim()
+    const email = String(formData.get("registerEmail") || "").trim()
+    const password = String(formData.get("registerPassword") || "")
+    const confirmPassword = String(formData.get("confirmPasswordField") || "")
+
+    if (password !== confirmPassword) {
+      setRegisterError("Las contraseñas no coinciden")
+      return
+    }
+
+    if (!firstName || !lastName || !email || !password) {
+      setRegisterError("Todos los campos son obligatorios")
+      return
+    }
+
+    const register = async () => {
+      try {
+        setRegisterError(null)
+        setRegisterSuccess(null)
+        setIsRegisterLoading(true)
+
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firstName, lastName, email, password }),
+        })
+
+        const data = await response.json()
+        if (!response.ok) {
+          setRegisterError(data.error ?? "No se pudo crear la cuenta")
+          return
+        }
+
+        setRegisterSuccess("Cuenta creada. Iniciando sesión...")
+
+        const loginResponse = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        })
+
+        if (loginResponse.ok) {
+          router.push("/profile")
+          router.refresh()
+        } else {
+          setRegisterSuccess("Cuenta creada. Inicia sesión con tu correo y contraseña.")
+          setActiveTab("login")
+        }
+      } catch (error) {
+        console.error("Register error", error)
+        setRegisterError("No se pudo crear la cuenta")
+      } finally {
+        setIsRegisterLoading(false)
+      }
+    }
+
+    register()
   }
 
   const handleGuestLogin = () => {
@@ -163,6 +258,7 @@ export default function AuthPage() {
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                               id="email"
+                              name="loginEmail"
                               type="email"
                               placeholder="tu@email.com"
                               className="pl-10"
@@ -176,6 +272,7 @@ export default function AuthPage() {
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                               id="password"
+                              name="loginPassword"
                               type={showPassword ? "text" : "password"}
                               placeholder="••••••••"
                               className="pl-10 pr-10"
@@ -201,8 +298,11 @@ export default function AuthPage() {
                             ¿Olvidaste tu contraseña?
                           </Link>
                         </div>
-                        <Button type="submit" className="w-full gap-2">
-                          Iniciar Sesión
+                        {loginError && (
+                          <p className="text-sm text-destructive">{loginError}</p>
+                        )}
+                        <Button type="submit" className="w-full gap-2" disabled={isLoginLoading}>
+                          {isLoginLoading ? "Iniciando..." : "Iniciar Sesión"}
                           <ArrowRight className="h-4 w-4" />
                         </Button>
                       </form>
@@ -228,6 +328,7 @@ export default function AuthPage() {
                               <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
                                 id="firstName"
+                                name="firstName"
                                 placeholder="Tu nombre"
                                 className="pl-10"
                                 required
@@ -240,6 +341,7 @@ export default function AuthPage() {
                               <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                               <Input
                                 id="lastName"
+                                name="lastName"
                                 placeholder="Tu apellido"
                                 className="pl-10"
                                 required
@@ -253,6 +355,7 @@ export default function AuthPage() {
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                               id="registerEmail"
+                              name="registerEmail"
                               type="email"
                               placeholder="tu@email.com"
                               className="pl-10"
@@ -266,6 +369,7 @@ export default function AuthPage() {
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                               id="registerPassword"
+                              name="registerPassword"
                               type={showPassword ? "text" : "password"}
                               placeholder="••••••••"
                               className="pl-10 pr-10"
@@ -288,6 +392,7 @@ export default function AuthPage() {
                             <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
                               id="confirmPassword"
+                              name="confirmPasswordField"
                               type={showConfirmPassword ? "text" : "password"}
                               placeholder="••••••••"
                               className="pl-10 pr-10"
@@ -310,8 +415,14 @@ export default function AuthPage() {
                             Acepto los <Link href="#" className="text-primary hover:underline">términos y condiciones</Link>
                           </Label>
                         </div>
-                        <Button type="submit" className="w-full gap-2">
-                          Crear Cuenta
+                        {registerError && (
+                          <p className="text-sm text-destructive">{registerError}</p>
+                        )}
+                        {registerSuccess && (
+                          <p className="text-sm text-green-600">{registerSuccess}</p>
+                        )}
+                        <Button type="submit" className="w-full gap-2" disabled={isRegisterLoading}>
+                          {isRegisterLoading ? "Creando cuenta..." : "Crear Cuenta"}
                           <ArrowRight className="h-4 w-4" />
                         </Button>
                       </form>
