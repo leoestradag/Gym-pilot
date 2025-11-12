@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error logging in user", error)
     return NextResponse.json(
-      { error: "No se pudo iniciar sesión" },
+      { error: "No se pudo iniciar sesión", details: error instanceof Error ? error.message : String(error) },
       { status: 500 },
     )
   }

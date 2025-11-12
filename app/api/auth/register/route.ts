@@ -85,7 +85,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error registering user", error)
     return NextResponse.json(
-      { error: "No se pudo completar el registro" },
+      { error: "No se pudo completar el registro", details: error instanceof Error ? error.message : String(error) },
       { status: 500 },
     )
   }
