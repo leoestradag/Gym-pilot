@@ -63,6 +63,41 @@ interface CoachAccessRequest {
   }
 }
 
+interface CoachDashboard {
+  coach: {
+    id: number
+    status: string
+    role: string
+    bio: string | null
+    gymId: number | null
+    specialties: string[]
+    certifications: string | null
+    experienceYears: number | null
+    userAccount: {
+      name: string | null
+      email: string | null
+    } | null
+  }
+  stats: {
+    approvedClients: number
+    pendingRequests: number
+    upcomingClasses: number
+  }
+  approvedClients: CoachAccessRequest[]
+  pendingRequests: CoachAccessRequest[]
+  upcomingClasses: Array<{
+    id: number
+    title: string
+    description: string | null
+    location: string | null
+    startDate: string
+    endDate: string
+    capacity: number | null
+    templateTitle: string | null
+    templateDay: string | null
+  }>
+}
+
 export default function GymCoachPage() {
   const [messages, setMessages] = useState([
     {
@@ -108,6 +143,10 @@ export default function GymCoachPage() {
   const [accessRequests, setAccessRequests] = useState<CoachAccessRequest[]>([])
   const [isLoadingAccess, setIsLoadingAccess] = useState(false)
   const [accessFeedback, setAccessFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [dashboardData, setDashboardData] = useState<CoachDashboard | null>(null)
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false)
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null)
+  const [activeCoachId, setActiveCoachId] = useState<number | null>(null)
 
   // Cargar datos del formulario al inicio y generar rutina automáticamente
   // Este useEffect se ejecutará después de que todas las funciones estén definidas
@@ -200,6 +239,41 @@ export default function GymCoachPage() {
     }))
   }
 
+  const loadDashboardData = async (coachId: number) => {
+    try {
+      setIsLoadingDashboard(true)
+      const response = await fetch(`/api/coach/dashboard?coachId=${coachId}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setDashboardData(null)
+        setAccessFeedback({
+          type: "error",
+          message: data.error ?? "No se pudo cargar el panel del coach"
+        })
+        return
+      }
+
+      setDashboardData(data)
+      setCoachIdInput((current) => (current.trim().length ? current : String(coachId)))
+      setActiveCoachId(coachId)
+      if (data.approvedClients?.length) {
+        setSelectedClientId((current) => current ?? data.approvedClients[0].member?.id ?? null)
+      } else {
+        setSelectedClientId(null)
+      }
+    } catch (error) {
+      console.error("Error loading coach dashboard", error)
+      setDashboardData(null)
+      setAccessFeedback({
+        type: "error",
+        message: "No se pudo cargar la información del panel"
+      })
+    } finally {
+      setIsLoadingDashboard(false)
+    }
+  }
+
   const formatDateTime = (value: string | null) => {
     if (!value) return "-"
     const date = new Date(value)
@@ -235,6 +309,27 @@ export default function GymCoachPage() {
     }
   }
 
+  const translateCoachRole = (role: string) => {
+    switch (role) {
+      case 'PERSONAL_TRAINER':
+        return 'Entrenador personal'
+      case 'SPINNING':
+        return 'Coach de Spinning'
+      case 'PILATES':
+        return 'Instructor de Pilates'
+      case 'YOGA':
+        return 'Instructor de Yoga'
+      case 'CROSSFIT':
+        return 'Coach de Crossfit'
+      case 'NUTRITION':
+        return 'Coach de Nutrición'
+      case 'STAFF':
+        return 'Staff del gimnasio'
+      default:
+        return role
+    }
+  }
+
   const handleLoadAccessRequests = async () => {
     setAccessFeedback(null)
     const parsedCoachId = Number(coachIdInput)
@@ -256,6 +351,7 @@ export default function GymCoachPage() {
       }
 
       setAccessRequests(data.requests ?? [])
+      await loadDashboardData(parsedCoachId)
     } catch (error) {
       console.error('Error loading coach access requests', error)
       setAccessFeedback({ type: 'error', message: 'No se pudieron cargar las solicitudes' })
@@ -312,6 +408,8 @@ export default function GymCoachPage() {
       if (refreshResponse.ok) {
         setAccessRequests(refreshData.requests ?? [])
       }
+
+      await loadDashboardData(parsedCoachId)
     } catch (error) {
       console.error('Error creating coach access request', error)
       setAccessFeedback({ type: 'error', message: 'No se pudo enviar la solicitud' })
@@ -1230,6 +1328,39 @@ export default function GymCoachPage() {
     return () => messagesContainer.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (!dashboardData) {
+      if (selectedClientId !== null) {
+        setSelectedClientId(null)
+      }
+      return
+    }
+
+    if (!dashboardData.approvedClients.length) {
+      if (selectedClientId !== null) {
+        setSelectedClientId(null)
+      }
+      return
+    }
+
+    const exists = dashboardData.approvedClients.some(
+      (request) => request.member?.id === selectedClientId
+    )
+
+    if (!exists) {
+      setSelectedClientId(dashboardData.approvedClients[0].member?.id ?? null)
+    }
+  }, [dashboardData, selectedClientId])
+
+  const selectedClient = dashboardData?.approvedClients.find(
+    (request) => request.member?.id === selectedClientId
+  )
+
+  const coachRole = dashboardData?.coach.role
+  const roleIsClassFocused = coachRole === 'SPINNING' || coachRole === 'PILATES' || coachRole === 'YOGA'
+  const roleIsNutrition = coachRole === 'NUTRITION'
+  const roleIsTrainer = coachRole === 'PERSONAL_TRAINER' || roleIsNutrition
+
   return (
     <div className="min-h-screen bg-background">
       {/* User Avatar */}
@@ -1275,6 +1406,84 @@ export default function GymCoachPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {isLoadingDashboard && (
+          <div className="mb-6 rounded-lg border border-dashed border-border/60 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+            Cargando información del coach...
+          </div>
+        )}
+
+        {dashboardData && (
+          <div className="grid gap-4 lg:grid-cols-3 mb-8">
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur lg:col-span-2">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center justify-between text-lg">
+                  <span>Resumen del Coach</span>
+                  <Badge variant="outline" className={getStatusBadgeClass(dashboardData.coach.status)}>
+                    {dashboardData.coach.status === "PENDING" ? "Pendiente" : dashboardData.coach.status === "APPROVED" ? "Aprobado" : "Suspendido"}
+                  </Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {dashboardData.coach.userAccount?.name ?? "Sin nombre registrado"} · {translateCoachRole(dashboardData.coach.role)}
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {dashboardData.coach.bio && (
+                  <div>
+                    <span className="text-xs font-semibold uppercase text-muted-foreground">Bio</span>
+                    <p className="text-sm mt-1">{dashboardData.coach.bio}</p>
+                  </div>
+                )}
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-lg border border-border/40 bg-muted/30 p-3">
+                    <p className="text-xs text-muted-foreground uppercase">Clientes aprobados</p>
+                    <p className="text-2xl font-bold text-primary">{dashboardData.stats.approvedClients}</p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/30 p-3">
+                    <p className="text-xs text-muted-foreground uppercase">Solicitudes pendientes</p>
+                    <p className="text-2xl font-bold text-primary">{dashboardData.stats.pendingRequests}</p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/30 p-3">
+                    <p className="text-xs text-muted-foreground uppercase">Próximas clases</p>
+                    <p className="text-2xl font-bold text-primary">{dashboardData.stats.upcomingClasses}</p>
+                  </div>
+                </div>
+                {(dashboardData.coach.specialties?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {dashboardData.coach.specialties.map((item, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {item}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Estado general</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Revisa el estado de tus solicitudes y clases programadas.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm flex items-center justify-between">
+                  <span>Clientes activos</span>
+                  <span className="font-semibold text-green-600">{dashboardData.stats.approvedClients}</span>
+                </div>
+                <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm flex items-center justify-between">
+                  <span>Solicitudes pendientes</span>
+                  <span className="font-semibold text-amber-600">{dashboardData.stats.pendingRequests}</span>
+                </div>
+                <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-sm flex items-center justify-between">
+                  <span>Clases próximas</span>
+                  <span className="font-semibold text-primary">{dashboardData.stats.upcomingClasses}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Chat Section */}
           <div className="lg:col-span-2">
@@ -1387,6 +1596,101 @@ export default function GymCoachPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {dashboardData && (
+              <Card className="border-2 border-border/60 bg-card/90 backdrop-blur mt-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Clientes aprobados</span>
+                    <Badge variant="outline" className="text-xs">
+                      {dashboardData.approvedClients.length}
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Selecciona un cliente para revisar su rutina y notas. Los cambios que hagas debajo se guardan en vivo.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {dashboardData.approvedClients.length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-border/60 bg-muted/30 px-4 py-6 text-center text-sm text-muted-foreground">
+                      Aún no tienes clientes aprobados. Envía solicitudes desde la sección lateral y espera a que el usuario las apruebe.
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap gap-2">
+                        {dashboardData.approvedClients.map((request) => {
+                          const memberId = request.member?.id ?? null
+                          return (
+                            <Button
+                              key={request.id}
+                              size="sm"
+                              variant={selectedClientId === memberId ? "default" : "outline"}
+                              onClick={() => setSelectedClientId(memberId)}
+                              disabled={memberId === null}
+                            >
+                              {request.member?.name ?? `Usuario #${memberId ?? "N/A"}`}
+                            </Button>
+                          )
+                        })}
+                      </div>
+
+                      {selectedClient ? (
+                        <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
+                          <div>
+                            <p className="text-sm font-semibold">
+                              {selectedClient.member?.name ?? `Usuario #${selectedClient.member?.id ?? "N/A"}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {selectedClient.member?.email ?? "Sin correo"}
+                            </p>
+                          </div>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            <div className="rounded border border-border/50 bg-background/60 p-3">
+                              <p className="text-xs uppercase text-muted-foreground">Acceso concedido</p>
+                              <p className="text-sm font-semibold text-primary">
+                                {translateStatus(selectedClient.status)}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground mt-1">
+                                {selectedClient.respondedAt
+                                  ? `Desde ${formatDateTime(selectedClient.respondedAt)}`
+                                  : "Pendiente de confirmación"}
+                              </p>
+                            </div>
+                            <div className="rounded border border-border/50 bg-background/60 p-3">
+                              <p className="text-xs uppercase text-muted-foreground">Notas del coach</p>
+                              <p className="text-sm">
+                                {selectedClient.notes ? selectedClient.notes : "Sin notas registradas"}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-xs text-muted-foreground space-y-2">
+                            <p className="font-semibold text-primary">
+                              ¿Qué puedes editar aquí?
+                            </p>
+                            <ul className="list-disc space-y-1 pl-4">
+                              <li>Usa la sección <strong>Dieta Semana a Semana</strong> para añadir ajustes personalizados (caja “Ajustes del coach”).</li>
+                              <li>Marca el avance en el <strong>Calendario semanal</strong> para mantener actualizado el progreso del cliente.</li>
+                              {roleIsNutrition ? (
+                                <li>Como coach de nutrición puedes registrar recomendaciones específicas en cada día de la dieta.</li>
+                              ) : roleIsTrainer ? (
+                                <li>Agrega comentarios sobre series, repeticiones o técnica en las notas diarias.</li>
+                              ) : (
+                                <li>Comparte recordatorios o mensajes generales en las notas del plan.</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
+                          Selecciona un cliente para ver los detalles.
+                        </div>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Weekly Calendar */}
             <Card className="border-2 border-border/60 bg-card/90 backdrop-blur mt-8">
@@ -1673,6 +1977,99 @@ export default function GymCoachPage() {
 
           {/* Quick Actions */}
           <div className="space-y-6">
+            {dashboardData && (
+              <>
+                <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>Solicitudes pendientes</span>
+                      <Badge variant="outline" className="text-xs">
+                        {dashboardData.pendingRequests.length}
+                      </Badge>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Asegúrate de dar seguimiento para que los clientes aprueben tu acceso.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {dashboardData.pendingRequests.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        No tienes solicitudes pendientes por ahora. Envía nuevas solicitudes o revisa la sección de clientes aprobados.
+                      </p>
+                    ) : (
+                      dashboardData.pendingRequests.map((request) => (
+                        <div key={request.id} className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-semibold">
+                                {request.member?.name ?? `Usuario #${request.member?.id ?? "N/A"}`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {request.member?.email ?? "Sin correo"}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              Enviada {formatDateTime(request.requestedAt)}
+                            </Badge>
+                          </div>
+                          {request.notes && (
+                            <p className="mt-2 text-xs text-muted-foreground">
+                              Nota enviada: {request.notes}
+                            </p>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>Próximas clases</span>
+                      <Badge variant="outline" className="text-xs">
+                        {dashboardData.upcomingClasses.length}
+                      </Badge>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Gestiona tu calendario y los asistentes para tus sesiones.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {dashboardData.upcomingClasses.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">
+                        Todavía no registras sesiones. Puedes crear plantillas de clase y sesiones desde la base de datos o próximamente desde esta interfaz.
+                      </p>
+                    ) : (
+                      dashboardData.upcomingClasses.map((session) => (
+                        <div key={session.id} className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-1">
+                          <p className="text-sm font-semibold">{session.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {session.location ? `${session.location} · ` : ""}
+                            {formatDateTime(session.startDate)}
+                          </p>
+                          {session.templateTitle && (
+                            <Badge variant="outline" className="text-[10px]">
+                              Plantilla: {session.templateTitle}
+                            </Badge>
+                          )}
+                        </div>
+                      ))
+                    )}
+                    {roleIsClassFocused ? (
+                      <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+                        Próximamente podrás agregar sesiones y gestionar asistentes directamente desde aquí.
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+                        Aunque tu rol no es de clases grupales, puedes usar este espacio para registrar sesiones personalizadas si lo necesitas.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
             <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1687,7 +2084,9 @@ export default function GymCoachPage() {
               <CardContent className="space-y-4">
                 <form onSubmit={handleSubmitAccessRequest} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="coachIdInput">Tu ID de coach</Label>
+                    <Label htmlFor="coachIdInput">
+                      Tu ID de coach {activeCoachId ? <span className="text-xs text-muted-foreground">(actual: {activeCoachId})</span> : null}
+                    </Label>
                     <div className="flex gap-2">
                       <Input
                         id="coachIdInput"
