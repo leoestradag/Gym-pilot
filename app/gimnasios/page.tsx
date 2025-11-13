@@ -486,7 +486,7 @@ export default function GymDetailsPage() {
                     <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3">
                       <Clock className="h-4 w-4 text-primary" />
                       <div>
-                        <p className="font-semibold text-foreground">L-V</p>
+                        <p className="font-semibold text-foreground">Horarios</p>
                         <p className="text-muted-foreground">{gym.schedule.weekdays}</p>
                       </div>
                     </div>
