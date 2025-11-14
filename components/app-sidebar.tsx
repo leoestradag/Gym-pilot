@@ -42,7 +42,7 @@ const menuItems = [
   },
   {
     title: "Instructores",
-    url: "/instructores",
+    url: "/admin/instructores",
     icon: Users,
   },
   {
