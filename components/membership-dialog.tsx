@@ -86,10 +86,16 @@ export function MembershipDialog({ open, onOpenChange }: MembershipDialogProps) 
               <SelectTrigger id="membership">
                 <SelectValue placeholder="Selecciona un plan" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="basico">Básico - $299/mes</SelectItem>
-                <SelectItem value="premium">Premium - $499/mes</SelectItem>
-                <SelectItem value="elite">Elite - $799/mes</SelectItem>
+              <SelectContent className="bg-card text-foreground border border-border/50 shadow-lg rounded-xl">
+                <SelectItem value="basico" className="hover:bg-accent/10">
+                  Básico - $299/mes
+                </SelectItem>
+                <SelectItem value="premium" className="hover:bg-accent/10">
+                  Premium - $499/mes
+                </SelectItem>
+                <SelectItem value="elite" className="hover:bg-accent/10">
+                  Elite - $799/mes
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

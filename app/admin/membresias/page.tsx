@@ -158,19 +158,14 @@ export default function MembershipsPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-foreground">Miembros Activos</CardTitle>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar miembro..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 w-64 bg-background/50"
-                  />
-                </div>
-                <Button variant="outline" size="icon" className="bg-transparent">
-                  <Filter className="h-4 w-4" />
-                </Button>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar miembro..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 w-64 bg-background/50"
+                />
               </div>
             </div>
           </CardHeader>
