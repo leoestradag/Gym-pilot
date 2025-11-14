@@ -143,11 +143,16 @@ export function MembersList({ searchQuery }: MembersListProps) {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-                <DropdownMenuItem>Renovar membresía</DropdownMenuItem>
-                <DropdownMenuItem>Editar información</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">Cancelar membresía</DropdownMenuItem>
+              <DropdownMenuContent
+                align="end"
+                className="bg-card text-foreground border border-border/50 shadow-lg rounded-xl"
+              >
+                <DropdownMenuItem className="hover:bg-accent/10">Ver detalles</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-accent/10">Renovar membresía</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-accent/10">Editar información</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive hover:bg-destructive/10">
+                  Cancelar membresía
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
