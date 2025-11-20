@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Award, Users, Star, Calendar, PhoneCall, Mail, X, BookOpen, TrendingUp, Clock } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Plus, Award, Users, Star, Calendar, PhoneCall, Mail, TrendingUp, Clock } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 
@@ -83,16 +86,75 @@ export default function InstructorsPage() {
   const [selectedFilter, setSelectedFilter] = useState("Todos")
   const [selectedInstructor, setSelectedInstructor] = useState<typeof mockInstructors[0] | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [instructors, setInstructors] = useState(mockInstructors)
+  const [formData, setFormData] = useState({
+    name: "",
+    specialty: "",
+    experience: "",
+    rating: "4.8",
+    phone: "",
+    email: "",
+    classes: "",
+    certifications: "",
+  })
 
   const handleViewDetails = (instructor: typeof mockInstructors[0]) => {
     setSelectedInstructor(instructor)
     setIsDialogOpen(true)
   }
 
-  const filteredInstructors =
-    selectedFilter === "Todos"
-      ? mockInstructors
-      : mockInstructors.filter((instructor) => instructor.specialty.toLowerCase().includes(selectedFilter.toLowerCase()))
+  const filteredInstructors = useMemo(
+    () =>
+      selectedFilter === "Todos"
+        ? instructors
+        : instructors.filter((instructor) =>
+            instructor.specialty.toLowerCase().includes(selectedFilter.toLowerCase()),
+          ),
+    [selectedFilter, instructors],
+  )
+
+  const handleCreateInstructor = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const newInstructor = {
+      id: instructors.length + 1,
+      name: formData.name || "Instructor sin nombre",
+      specialty: formData.specialty || "Especialidad general",
+      experience: formData.experience ? `${formData.experience} años` : "1 año",
+      certifications: formData.certifications
+        ? formData.certifications.split(",").map((cert) => cert.trim()).filter(Boolean)
+        : ["Certificación general"],
+      rating: Number(formData.rating) || 4.8,
+      classes: formData.classes
+        ? formData.classes.split("\n").map((line) => {
+            const [name, day, time] = line.split("|").map((item) => item?.trim() || "")
+            return {
+              name: name || "Clase personalizada",
+              day: day || "Lunes",
+              time: time || "08:00",
+            }
+          })
+        : [{ name: "Clase personalizada", day: "Lunes", time: "08:00" }],
+      contact: {
+        phone: formData.phone || "+52 555 000 0000",
+        email: formData.email || "instructor@tessalpgyms.com",
+      },
+    }
+
+    setInstructors((prev) => [newInstructor, ...prev])
+    setFormData({
+      name: "",
+      specialty: "",
+      experience: "",
+      rating: "4.8",
+      phone: "",
+      email: "",
+      classes: "",
+      certifications: "",
+    })
+    setIsCreateDialogOpen(false)
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -101,7 +163,7 @@ export default function InstructorsPage() {
           <SidebarTrigger />
           <h1 className="text-xl font-semibold text-foreground">Instructores</h1>
           <div className="ml-auto flex gap-2">
-            <Button size="sm" className="gap-2">
+            <Button size="sm" className="gap-2" onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4" />
               Nuevo Instructor
             </Button>
@@ -118,7 +180,7 @@ export default function InstructorsPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{mockInstructors.length}</div>
+              <div className="text-2xl font-bold text-foreground">{instructors.length}</div>
               <p className="text-xs text-muted-foreground mt-1">+2 este mes</p>
             </CardContent>
           </Card>
@@ -130,7 +192,7 @@ export default function InstructorsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">
-                {mockInstructors.reduce((acc, instructor) => acc + instructor.classes.length, 0)}
+                {instructors.reduce((acc, instructor) => acc + instructor.classes.length, 0)}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Esta semana</p>
             </CardContent>
@@ -143,7 +205,7 @@ export default function InstructorsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">
-                {(mockInstructors.reduce((acc, instructor) => acc + instructor.rating, 0) / mockInstructors.length).toFixed(1)}
+                {(instructors.reduce((acc, instructor) => acc + instructor.rating, 0) / instructors.length).toFixed(1)}
               </div>
               <p className="text-xs text-primary mt-1">+0.2 vs mes anterior</p>
             </CardContent>
@@ -393,6 +455,114 @@ export default function InstructorsPage() {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Nuevo Instructor</DialogTitle>
+            <DialogDescription>Completa la información para registrar un nuevo instructor.</DialogDescription>
+          </DialogHeader>
+          <form className="space-y-4" onSubmit={handleCreateInstructor}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nombre completo</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(event) => setFormData({ ...formData, name: event.target.value })}
+                  placeholder="Ej. Laura Ramírez"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="specialty">Especialidad</Label>
+                <Input
+                  id="specialty"
+                  value={formData.specialty}
+                  onChange={(event) => setFormData({ ...formData, specialty: event.target.value })}
+                  placeholder="CrossFit, Pilates, Yoga..."
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="experience">Experiencia (años)</Label>
+                <Input
+                  id="experience"
+                  type="number"
+                  min={1}
+                  value={formData.experience}
+                  onChange={(event) => setFormData({ ...formData, experience: event.target.value })}
+                  placeholder="5"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rating">Calificación</Label>
+                <Input
+                  id="rating"
+                  type="number"
+                  min={1}
+                  max={5}
+                  step="0.1"
+                  value={formData.rating}
+                  onChange={(event) => setFormData({ ...formData, rating: event.target.value })}
+                  placeholder="4.8"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
+                  placeholder="+52 555 111 2233"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(event) => setFormData({ ...formData, email: event.target.value })}
+                placeholder="coach@tessalpgyms.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="certifications">Certificaciones (separadas por coma)</Label>
+              <Input
+                id="certifications"
+                value={formData.certifications}
+                onChange={(event) => setFormData({ ...formData, certifications: event.target.value })}
+                placeholder="NASM-CPT, Yoga Alliance 200H..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="classes">Clases (una por línea: Nombre | Día | Hora)</Label>
+              <Textarea
+                id="classes"
+                rows={4}
+                value={formData.classes}
+                onChange={(event) => setFormData({ ...formData, classes: event.target.value })}
+                placeholder={"Funcional Express | Lunes | 07:00\nYoga Flow | Miércoles | 19:30"}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit">Agregar Instructor</Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
