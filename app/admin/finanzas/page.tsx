@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { DollarSign, TrendingUp, TrendingDown, CreditCard, Download, Filter } from "lucide-react"
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, Download } from "lucide-react"
+import * as XLSX from "xlsx"
+import { useToast } from "@/hooks/use-toast"
 import { StatsCard } from "@/components/stats-card"
 import {
   BarChart,
@@ -59,6 +61,101 @@ const recentTransactions = [
 
 export default function FinanzasPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("mes")
+  const { toast } = useToast()
+
+  const handleExport = () => {
+    try {
+      const workbook = XLSX.utils.book_new()
+
+      // Hoja 1: Resumen Mensual (ordenado por mes)
+      const summaryData = monthlyRevenue
+        .map((item) => ({
+          Mes: item.month,
+          Ingresos: item.ingresos,
+          Gastos: item.gastos,
+          "Ganancia Neta": item.neto,
+          "Margen %": ((item.neto / item.ingresos) * 100).toFixed(2) + "%",
+        }))
+        .sort((a, b) => {
+          const monthOrder = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+          return monthOrder.indexOf(a.Mes) - monthOrder.indexOf(b.Mes)
+        })
+
+      const summarySheet = XLSX.utils.json_to_sheet(summaryData)
+      XLSX.utils.book_append_sheet(workbook, summarySheet, "Resumen Mensual")
+
+      // Hoja 2: Transacciones Detalladas (ordenadas por fecha descendente)
+      const transactionsData = recentTransactions
+        .map((transaction) => ({
+          Fecha: transaction.date,
+          Tipo: transaction.type === "ingreso" ? "Ingreso" : "Gasto",
+          Descripción: transaction.description,
+          Monto: transaction.amount,
+          "Monto Absoluto": Math.abs(transaction.amount),
+        }))
+        .sort((a, b) => new Date(b.Fecha).getTime() - new Date(a.Fecha).getTime())
+
+      const transactionsSheet = XLSX.utils.json_to_sheet(transactionsData)
+      XLSX.utils.book_append_sheet(workbook, transactionsSheet, "Transacciones")
+
+      // Hoja 3: Ingresos por Fuente
+      const incomeData = revenueBySource.map((source) => ({
+        Fuente: source.name,
+        Monto: source.value,
+        "Porcentaje %": ((source.value / revenueBySource.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(2) + "%",
+      }))
+
+      const incomeSheet = XLSX.utils.json_to_sheet(incomeData)
+      XLSX.utils.book_append_sheet(workbook, incomeSheet, "Ingresos por Fuente")
+
+      // Hoja 4: Gastos por Categoría
+      const expensesData = expenses
+        .map((expense) => ({
+          Categoría: expense.category,
+          Monto: expense.amount,
+          "Porcentaje %": expense.percentage + "%",
+        }))
+        .sort((a, b) => b.Monto - a.Monto) // Ordenar por monto descendente
+
+      const expensesSheet = XLSX.utils.json_to_sheet(expensesData)
+      XLSX.utils.book_append_sheet(workbook, expensesSheet, "Gastos por Categoría")
+
+      // Hoja 5: Resumen Ejecutivo
+      const totalIncome = monthlyRevenue[monthlyRevenue.length - 1].ingresos
+      const totalExpenses = monthlyRevenue[monthlyRevenue.length - 1].gastos
+      const netProfit = monthlyRevenue[monthlyRevenue.length - 1].neto
+      const profitMargin = ((netProfit / totalIncome) * 100).toFixed(2)
+
+      const executiveSummary = [
+        { Métrica: "Ingresos del Mes Actual", Valor: `$${totalIncome.toLocaleString()}` },
+        { Métrica: "Gastos del Mes Actual", Valor: `$${totalExpenses.toLocaleString()}` },
+        { Métrica: "Ganancia Neta", Valor: `$${netProfit.toLocaleString()}` },
+        { Métrica: "Margen de Ganancia", Valor: `${profitMargin}%` },
+        { Métrica: "Total Transacciones", Valor: recentTransactions.length },
+        { Métrica: "Ingresos", Valor: recentTransactions.filter((t) => t.type === "ingreso").length },
+        { Métrica: "Gastos", Valor: recentTransactions.filter((t) => t.type === "gasto").length },
+      ]
+
+      const executiveSheet = XLSX.utils.json_to_sheet(executiveSummary)
+      XLSX.utils.book_append_sheet(workbook, executiveSheet, "Resumen Ejecutivo")
+
+      // Generar el archivo
+      const fileName = `Registro_Finanzas_Tessalp_${new Date().toISOString().split("T")[0]}.xlsx`
+      XLSX.writeFile(workbook, fileName)
+
+      toast({
+        title: "Exportación exitosa",
+        description: `Archivo ${fileName} descargado correctamente`,
+      })
+    } catch (error) {
+      console.error("Error al exportar:", error)
+      toast({
+        title: "Error al exportar",
+        description: "No se pudo generar el archivo de exportación",
+        variant: "destructive",
+      })
+    }
+  }
 
   return (
     <>
@@ -67,11 +164,7 @@ export default function FinanzasPage() {
           <SidebarTrigger />
           <h1 className="text-xl font-semibold text-foreground">Finanzas</h1>
           <div className="ml-auto flex gap-2">
-            <Button variant="outline" size="sm">
-              <Filter className="mr-2 h-4 w-4" />
-              Filtrar
-            </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Exportar
             </Button>
