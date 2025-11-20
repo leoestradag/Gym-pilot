@@ -2,6 +2,7 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "_comment": "Auto-deploy test - Render webhook verification",
   "scripts": {
     "build": "npm install --legacy-peer-deps && npm run db:generate && npm run build:next",
     "build:next": "next build",
