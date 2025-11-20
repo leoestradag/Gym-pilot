@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, Bot, User } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface Message {
   id: string
@@ -101,64 +100,66 @@ export function AIChat({ selectedPrompt, onPromptUsed }: AIChatProps) {
   }
 
   return (
-    <Card className="border-border/50 bg-card/50 backdrop-blur h-[calc(100vh-12rem)] flex flex-col">
+    <Card className="border-border/50 bg-card/50 backdrop-blur flex flex-col">
       <CardHeader className="border-b border-border/50">
         <CardTitle className="text-foreground flex items-center gap-2">
           <Bot className="h-5 w-5 text-primary" />
           Chat con Asistente IA
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                {message.role === "assistant" && (
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-4 w-4 text-primary" />
-                  </div>
-                )}
+      <CardContent className="flex flex-col p-0">
+        {/* Chat Messages */}
+        <div 
+          ref={scrollRef}
+          className="h-96 overflow-y-auto mb-4 space-y-4 p-4 bg-muted/20 rounded-lg"
+        >
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div className={`flex gap-3 max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                  message.role === "user" 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-primary/10 text-primary"
+                }`}>
+                  {message.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                </div>
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`rounded-lg p-3 ${
                     message.role === "user"
                       ? "bg-primary text-primary-foreground"
-                      : "bg-muted/50 text-foreground border border-border/50"
+                      : "bg-background border border-border"
                   }`}
                 >
                   <p className="text-sm whitespace-pre-line">{message.content}</p>
-                  <p
-                    className={`text-xs mt-1 ${message.role === "user" ? "text-primary-foreground/70" : "text-muted-foreground"}`}
-                  >
+                  <p className={`text-xs opacity-70 mt-1 ${
+                    message.role === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                  }`}>
                     {message.timestamp.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
-                {message.role === "user" && (
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-foreground" />
-                  </div>
-                )}
               </div>
-            ))}
-            {isLoading && (
-              <div className="flex gap-3 justify-start">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Bot className="h-4 w-4 text-primary animate-pulse" />
-                </div>
-                <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
-                  <div className="flex gap-1">
-                    <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" />
-                    <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:0.2s]" />
-                    <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce [animation-delay:0.4s]" />
-                  </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex gap-3 justify-start">
+              <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center shrink-0">
+                <Bot className="h-4 w-4" />
+              </div>
+              <div className="bg-background border border-border rounded-lg p-3">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                 </div>
               </div>
-            )}
-          </div>
-        </ScrollArea>
+            </div>
+          )}
+        </div>
 
+        {/* Input */}
         <form onSubmit={handleSubmit} className="p-4 border-t border-border/50">
           <div className="flex gap-2">
             <Input
