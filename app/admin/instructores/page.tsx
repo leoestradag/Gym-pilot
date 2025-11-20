@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Award, Users, Star, Calendar, PhoneCall, Mail } from "lucide-react"
+import { Plus, Award, Users, Star, Calendar, PhoneCall, Mail, X, BookOpen, TrendingUp, Clock } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
 
 const mockInstructors = [
   {
@@ -79,6 +81,13 @@ const specialtyFilters = ["Todos", "CrossFit", "Yoga", "Pilates", "Cardio", "Wel
 
 export default function InstructorsPage() {
   const [selectedFilter, setSelectedFilter] = useState("Todos")
+  const [selectedInstructor, setSelectedInstructor] = useState<typeof mockInstructors[0] | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleViewDetails = (instructor: typeof mockInstructors[0]) => {
+    setSelectedInstructor(instructor)
+    setIsDialogOpen(true)
+  }
 
   const filteredInstructors =
     selectedFilter === "Todos"
@@ -174,7 +183,12 @@ export default function InstructorsPage() {
                     </Badge>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={() => handleViewDetails(instructor)}
+                >
                   <Award className="h-4 w-4" />
                   Detalles
                 </Button>
@@ -223,6 +237,164 @@ export default function InstructorsPage() {
           )}
         </div>
       </div>
+
+      {/* Dialog de Detalles del Instructor */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedInstructor && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">{selectedInstructor.name}</DialogTitle>
+                <DialogDescription className="text-base">
+                  {selectedInstructor.specialty}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-6 mt-4">
+                {/* Información Principal */}
+                <div className="grid gap-4 md:grid-cols-3">
+                  <Card className="border-border/50 bg-card/50">
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col items-center text-center">
+                        <Star className="h-8 w-8 text-yellow-500 mb-2" />
+                        <div className="text-2xl font-bold">{selectedInstructor.rating.toFixed(1)}</div>
+                        <p className="text-sm text-muted-foreground">Calificación</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-border/50 bg-card/50">
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col items-center text-center">
+                        <Clock className="h-8 w-8 text-primary mb-2" />
+                        <div className="text-2xl font-bold">{selectedInstructor.experience}</div>
+                        <p className="text-sm text-muted-foreground">Experiencia</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-border/50 bg-card/50">
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col items-center text-center">
+                        <Calendar className="h-8 w-8 text-primary mb-2" />
+                        <div className="text-2xl font-bold">{selectedInstructor.classes.length}</div>
+                        <p className="text-sm text-muted-foreground">Clases Activas</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Separator />
+
+                {/* Certificaciones */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <Award className="h-5 w-5 text-primary" />
+                    Certificaciones
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedInstructor.certifications.map((cert, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-sm">
+                        {cert}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Clases Asignadas */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    Clases Asignadas
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedInstructor.classes.map((classItem, idx) => (
+                      <Card key={idx} className="border-border/50 bg-card/50">
+                        <CardContent className="pt-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-foreground">{classItem.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {classItem.day} a las {classItem.time}
+                              </p>
+                            </div>
+                            <Badge variant="outline">Activa</Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Información de Contacto */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <PhoneCall className="h-5 w-5 text-primary" />
+                    Información de Contacto
+                  </h3>
+                  <div className="space-y-3">
+                    <Card className="border-border/50 bg-card/50">
+                      <CardContent className="pt-4">
+                        <div className="flex items-center gap-3">
+                          <PhoneCall className="h-5 w-5 text-primary" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Teléfono</p>
+                            <p className="font-medium text-foreground">{selectedInstructor.contact.phone}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-border/50 bg-card/50">
+                      <CardContent className="pt-4">
+                        <div className="flex items-center gap-3">
+                          <Mail className="h-5 w-5 text-primary" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Email</p>
+                            <p className="font-medium text-foreground">{selectedInstructor.contact.email}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Estadísticas Adicionales */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    Estadísticas
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Card className="border-border/50 bg-card/50">
+                      <CardContent className="pt-4">
+                        <p className="text-sm text-muted-foreground mb-1">Total de Estudiantes</p>
+                        <p className="text-xl font-bold text-foreground">
+                          {Math.floor(Math.random() * 50) + 20}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-border/50 bg-card/50">
+                      <CardContent className="pt-4">
+                        <p className="text-sm text-muted-foreground mb-1">Sesiones este Mes</p>
+                        <p className="text-xl font-bold text-foreground">
+                          {selectedInstructor.classes.length * 4 * 4}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
