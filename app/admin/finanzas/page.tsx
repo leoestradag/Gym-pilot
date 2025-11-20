@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DollarSign, TrendingUp, TrendingDown, CreditCard, Download } from "lucide-react"
-import * as XLSX from "xlsx"
+import * as XLSX from "xlsx-js-style"
 import { useToast } from "@/hooks/use-toast"
 import { StatsCard } from "@/components/stats-card"
 import {
@@ -66,86 +66,411 @@ export default function FinanzasPage() {
   const handleExport = () => {
     try {
       const workbook = XLSX.utils.book_new()
+      const gymName = "Tessalp Smart Gyms"
+      const currentDate = new Date().toLocaleDateString("es-MX", { 
+        year: "numeric", 
+        month: "long", 
+        day: "numeric" 
+      })
+      const reportDate = new Date().toISOString().split("T")[0]
 
-      // Hoja 1: Resumen Mensual (ordenado por mes)
-      const summaryData = monthlyRevenue
-        .map((item) => ({
-          Mes: item.month,
-          Ingresos: item.ingresos,
-          Gastos: item.gastos,
-          "Ganancia Neta": item.neto,
-          "Margen %": ((item.neto / item.ingresos) * 100).toFixed(2) + "%",
-        }))
-        .sort((a, b) => {
-          const monthOrder = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-          return monthOrder.indexOf(a.Mes) - monthOrder.indexOf(b.Mes)
+      // Estilos reutilizables
+      const headerStyle = {
+        font: { bold: true, size: 16, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "1E40AF" } },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: {
+          top: { style: "thin", color: { rgb: "000000" } },
+          bottom: { style: "thin", color: { rgb: "000000" } },
+          left: { style: "thin", color: { rgb: "000000" } },
+          right: { style: "thin", color: { rgb: "000000" } },
+        },
+      }
+
+      const titleStyle = {
+        font: { bold: true, size: 14, color: { rgb: "1E3A8A" } },
+        fill: { fgColor: { rgb: "DBEAFE" } },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: {
+          top: { style: "thin", color: { rgb: "000000" } },
+          bottom: { style: "thin", color: { rgb: "000000" } },
+          left: { style: "thin", color: { rgb: "000000" } },
+          right: { style: "thin", color: { rgb: "000000" } },
+        },
+      }
+
+      const subheaderStyle = {
+        font: { bold: true, size: 11 },
+        fill: { fgColor: { rgb: "F3F4F6" } },
+        alignment: { horizontal: "left", vertical: "center" },
+        border: {
+          top: { style: "thin", color: { rgb: "000000" } },
+          bottom: { style: "thin", color: { rgb: "000000" } },
+          left: { style: "thin", color: { rgb: "000000" } },
+          right: { style: "thin", color: { rgb: "000000" } },
+        },
+      }
+
+      const numberStyle = {
+        alignment: { horizontal: "right", vertical: "center" },
+        numFmt: "#,##0",
+        border: {
+          top: { style: "thin", color: { rgb: "CCCCCC" } },
+          bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+          left: { style: "thin", color: { rgb: "CCCCCC" } },
+          right: { style: "thin", color: { rgb: "CCCCCC" } },
+        },
+      }
+
+      const currencyStyle = {
+        alignment: { horizontal: "right", vertical: "center" },
+        numFmt: '"$"#,##0',
+        border: {
+          top: { style: "thin", color: { rgb: "CCCCCC" } },
+          bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+          left: { style: "thin", color: { rgb: "CCCCCC" } },
+          right: { style: "thin", color: { rgb: "CCCCCC" } },
+        },
+      }
+
+      const percentStyle = {
+        alignment: { horizontal: "right", vertical: "center" },
+        numFmt: "0.00%",
+        border: {
+          top: { style: "thin", color: { rgb: "CCCCCC" } },
+          bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+          left: { style: "thin", color: { rgb: "CCCCCC" } },
+          right: { style: "thin", color: { rgb: "CCCCCC" } },
+        },
+      }
+
+      const positiveStyle = {
+        ...currencyStyle,
+        font: { color: { rgb: "16A34A" } },
+      }
+
+      const negativeStyle = {
+        ...currencyStyle,
+        font: { color: { rgb: "DC2626" } },
+      }
+
+      // Función helper para crear hoja con formato
+      const createFormattedSheet = (data: any[], sheetName: string, headers: string[], headerRowIndex: number) => {
+        const ws = XLSX.utils.aoa_to_sheet(data)
+        
+        // Aplicar estilos a todas las celdas
+        const range = XLSX.utils.decode_range(ws["!ref"] || "A1")
+        
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cellAddress = XLSX.utils.encode_cell({ c: C, r: R })
+            if (!ws[cellAddress]) continue
+            
+            const cellValue = data[R]?.[C]
+            const isHeaderRow = R === headerRowIndex
+            const isTitleRow = R === 0 || (R === 1 && data[0]?.[0]?.includes("Tessalp"))
+            const isSubtitleRow = R === 1 || R === 2
+            const isNumber = typeof cellValue === "number" && !isNaN(cellValue)
+            
+            // Estilo para título del gimnasio (fila 0)
+            if (R === 0 && C === 0 && cellValue && typeof cellValue === "string" && cellValue.includes("Tessalp")) {
+              ws[cellAddress].s = {
+                font: { bold: true, size: 18, color: { rgb: "1E40AF" } },
+                alignment: { horizontal: "center", vertical: "center" },
+              }
+              // Merge cells for title - solo una vez
+              if (!ws["!merges"]) ws["!merges"] = []
+              const hasTitleMerge = ws["!merges"].some((m: any) => m.s.r === 0 && m.s.c === 0)
+              if (!hasTitleMerge) {
+                ws["!merges"].push({ s: { r: 0, c: 0 }, e: { r: 0, c: Math.max(headers.length - 1, 3) } })
+              }
+            }
+            // Estilo para subtítulo de fecha (fila 1)
+            else if (R === 1 && C === 0 && cellValue && typeof cellValue === "string" && cellValue.includes("Análisis")) {
+              ws[cellAddress].s = {
+                font: { bold: true, size: 12, color: { rgb: "4B5563" } },
+                alignment: { horizontal: "center", vertical: "center" },
+              }
+              if (!ws["!merges"]) ws["!merges"] = []
+              const hasSubtitleMerge = ws["!merges"].some((m: any) => m.s.r === 1 && m.s.c === 0)
+              if (!hasSubtitleMerge) {
+                ws["!merges"].push({ s: { r: 1, c: 0 }, e: { r: 1, c: Math.max(headers.length - 1, 3) } })
+              }
+            }
+            // Estilo para secciones (filas con texto en negrita como "RESUMEN EJECUTIVO")
+            else if (cellValue && typeof cellValue === "string" && cellValue === cellValue.toUpperCase() && cellValue.length > 5 && R < headerRowIndex) {
+              ws[cellAddress].s = {
+                font: { bold: true, size: 12, color: { rgb: "1E3A8A" } },
+                fill: { fgColor: { rgb: "DBEAFE" } },
+                alignment: { horizontal: "left", vertical: "center" },
+              }
+              // Merge section headers
+              if (!ws["!merges"]) ws["!merges"] = []
+              const hasSectionMerge = ws["!merges"].some((m: any) => m.s.r === R && m.s.c === 0)
+              if (!hasSectionMerge && C === 0) {
+                ws["!merges"].push({ s: { r: R, c: 0 }, e: { r: R, c: Math.max(headers.length - 1, 1) } })
+              }
+            }
+            // Estilo para headers de columnas
+            else if (isHeaderRow) {
+              ws[cellAddress].s = headerStyle
+            }
+            // Estilo para filas de datos
+            else if (R > headerRowIndex && data[R]) {
+              const headerName = headers[C] || ""
+              const isCurrency = headerName.toLowerCase().includes("ingreso") || 
+                                headerName.toLowerCase().includes("gasto") || 
+                                headerName.toLowerCase().includes("monto") ||
+                                headerName.toLowerCase().includes("ganancia") ||
+                                headerName.toLowerCase().includes("valor") ||
+                                headerName.toLowerCase().includes("total")
+              const isPercent = headerName.includes("%") || headerName.includes("Margen") || headerName.includes("Var.")
+              
+              if (isCurrency && isNumber) {
+                ws[cellAddress].s = cellValue >= 0 ? positiveStyle : negativeStyle
+              } else if (isPercent && isNumber) {
+                ws[cellAddress].s = percentStyle
+              } else if (isNumber) {
+                ws[cellAddress].s = numberStyle
+              } else {
+                ws[cellAddress].s = {
+                  alignment: { horizontal: "left", vertical: "center" },
+                  border: {
+                    top: { style: "thin", color: { rgb: "CCCCCC" } },
+                    bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                    left: { style: "thin", color: { rgb: "CCCCCC" } },
+                    right: { style: "thin", color: { rgb: "CCCCCC" } },
+                  },
+                }
+              }
+            }
+          }
+        }
+
+        // Ajustar ancho de columnas
+        const colWidths = headers.map((_, idx) => {
+          if (idx === 0) return { wch: 20 }
+          if (idx === 1) return { wch: 25 }
+          return { wch: 18 }
         })
+        ws["!cols"] = colWidths
+        
+        return ws
+      }
 
-      const summarySheet = XLSX.utils.json_to_sheet(summaryData)
-      XLSX.utils.book_append_sheet(workbook, summarySheet, "Resumen Mensual")
-
-      // Hoja 2: Transacciones Detalladas (ordenadas por fecha descendente)
-      const transactionsData = recentTransactions
-        .map((transaction) => ({
-          Fecha: transaction.date,
-          Tipo: transaction.type === "ingreso" ? "Ingreso" : "Gasto",
-          Descripción: transaction.description,
-          Monto: transaction.amount,
-          "Monto Absoluto": Math.abs(transaction.amount),
-        }))
-        .sort((a, b) => new Date(b.Fecha).getTime() - new Date(a.Fecha).getTime())
-
-      const transactionsSheet = XLSX.utils.json_to_sheet(transactionsData)
-      XLSX.utils.book_append_sheet(workbook, transactionsSheet, "Transacciones")
-
-      // Hoja 3: Ingresos por Fuente
-      const incomeData = revenueBySource.map((source) => ({
-        Fuente: source.name,
-        Monto: source.value,
-        "Porcentaje %": ((source.value / revenueBySource.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(2) + "%",
-      }))
-
-      const incomeSheet = XLSX.utils.json_to_sheet(incomeData)
-      XLSX.utils.book_append_sheet(workbook, incomeSheet, "Ingresos por Fuente")
-
-      // Hoja 4: Gastos por Categoría
-      const expensesData = expenses
-        .map((expense) => ({
-          Categoría: expense.category,
-          Monto: expense.amount,
-          "Porcentaje %": expense.percentage + "%",
-        }))
-        .sort((a, b) => b.Monto - a.Monto) // Ordenar por monto descendente
-
-      const expensesSheet = XLSX.utils.json_to_sheet(expensesData)
-      XLSX.utils.book_append_sheet(workbook, expensesSheet, "Gastos por Categoría")
-
-      // Hoja 5: Resumen Ejecutivo
+      // HOJA 1: Resumen Ejecutivo
       const totalIncome = monthlyRevenue[monthlyRevenue.length - 1].ingresos
       const totalExpenses = monthlyRevenue[monthlyRevenue.length - 1].gastos
       const netProfit = monthlyRevenue[monthlyRevenue.length - 1].neto
-      const profitMargin = ((netProfit / totalIncome) * 100).toFixed(2)
+      const profitMargin = (netProfit / totalIncome) * 100
+      const avgMonthlyIncome = monthlyRevenue.reduce((acc, curr) => acc + curr.ingresos, 0) / monthlyRevenue.length
+      const avgMonthlyExpenses = monthlyRevenue.reduce((acc, curr) => acc + curr.gastos, 0) / monthlyRevenue.length
+      const avgMonthlyProfit = monthlyRevenue.reduce((acc, curr) => acc + curr.neto, 0) / monthlyRevenue.length
+      const totalIncome6Months = monthlyRevenue.reduce((acc, curr) => acc + curr.ingresos, 0)
+      const totalExpenses6Months = monthlyRevenue.reduce((acc, curr) => acc + curr.gastos, 0)
+      const totalProfit6Months = monthlyRevenue.reduce((acc, curr) => acc + curr.neto, 0)
+      
+      // Calcular tendencias
+      const incomeGrowth = monthlyRevenue.length >= 2 
+        ? ((monthlyRevenue[monthlyRevenue.length - 1].ingresos - monthlyRevenue[monthlyRevenue.length - 2].ingresos) / monthlyRevenue[monthlyRevenue.length - 2].ingresos) * 100
+        : 0
+      const expenseGrowth = monthlyRevenue.length >= 2
+        ? ((monthlyRevenue[monthlyRevenue.length - 1].gastos - monthlyRevenue[monthlyRevenue.length - 2].gastos) / monthlyRevenue[monthlyRevenue.length - 2].gastos) * 100
+        : 0
+      const profitGrowth = monthlyRevenue.length >= 2
+        ? ((monthlyRevenue[monthlyRevenue.length - 1].neto - monthlyRevenue[monthlyRevenue.length - 2].neto) / monthlyRevenue[monthlyRevenue.length - 2].neto) * 100
+        : 0
 
-      const executiveSummary = [
-        { Métrica: "Ingresos del Mes Actual", Valor: `$${totalIncome.toLocaleString()}` },
-        { Métrica: "Gastos del Mes Actual", Valor: `$${totalExpenses.toLocaleString()}` },
-        { Métrica: "Ganancia Neta", Valor: `$${netProfit.toLocaleString()}` },
-        { Métrica: "Margen de Ganancia", Valor: `${profitMargin}%` },
-        { Métrica: "Total Transacciones", Valor: recentTransactions.length },
-        { Métrica: "Ingresos", Valor: recentTransactions.filter((t) => t.type === "ingreso").length },
-        { Métrica: "Gastos", Valor: recentTransactions.filter((t) => t.type === "gasto").length },
+      const executiveData = [
+        [gymName],
+        [`Análisis Financiero - ${currentDate}`],
+        [""],
+        ["RESUMEN EJECUTIVO", ""],
+        ["Métrica", "Valor"],
+        ["Ingresos del Mes Actual", totalIncome],
+        ["Gastos del Mes Actual", totalExpenses],
+        ["Ganancia Neta del Mes", netProfit],
+        ["Margen de Ganancia (%)", profitMargin / 100],
+        ["", ""],
+        ["PROMEDIOS MENSUALES (6 meses)", ""],
+        ["Ingresos Promedio Mensual", avgMonthlyIncome],
+        ["Gastos Promedio Mensual", avgMonthlyExpenses],
+        ["Ganancia Promedio Mensual", avgMonthlyProfit],
+        ["", ""],
+        ["TOTALES ACUMULADOS (6 meses)", ""],
+        ["Total Ingresos", totalIncome6Months],
+        ["Total Gastos", totalExpenses6Months],
+        ["Total Ganancia Neta", totalProfit6Months],
+        ["", ""],
+        ["TENDENCIAS vs MES ANTERIOR", ""],
+        ["Crecimiento de Ingresos (%)", incomeGrowth / 100],
+        ["Crecimiento de Gastos (%)", expenseGrowth / 100],
+        ["Crecimiento de Ganancia (%)", profitGrowth / 100],
+        ["", ""],
+        ["ANÁLISIS DE TRANSACCIONES", ""],
+        ["Total de Transacciones", recentTransactions.length],
+        ["Transacciones de Ingreso", recentTransactions.filter((t) => t.type === "ingreso").length],
+        ["Transacciones de Gasto", recentTransactions.filter((t) => t.type === "gasto").length],
+        ["Ingresos Totales (Transacciones)", recentTransactions.filter((t) => t.type === "ingreso").reduce((acc, curr) => acc + Math.abs(curr.amount), 0)],
+        ["Gastos Totales (Transacciones)", Math.abs(recentTransactions.filter((t) => t.type === "gasto").reduce((acc, curr) => acc + curr.amount, 0))],
       ]
 
-      const executiveSheet = XLSX.utils.json_to_sheet(executiveSummary)
+      const executiveSheet = createFormattedSheet(executiveData, "Resumen Ejecutivo", ["Métrica", "Valor"], 3)
       XLSX.utils.book_append_sheet(workbook, executiveSheet, "Resumen Ejecutivo")
 
+      // HOJA 2: Resumen Mensual con análisis
+      const monthOrder = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+      const sortedRevenue = [...monthlyRevenue].sort((a, b) => 
+        monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month)
+      )
+
+      const summaryData = [
+        [gymName],
+        [`Análisis Financiero Mensual - ${currentDate}`],
+        [""],
+        ["Mes", "Ingresos", "Gastos", "Ganancia Neta", "Margen %", "Var. Ingresos", "Var. Gastos", "Var. Ganancia"],
+        ...sortedRevenue.map((item, idx) => {
+          const margin = (item.neto / item.ingresos) * 100
+          const prevMonth = idx > 0 ? sortedRevenue[idx - 1] : null
+          const incomeVar = prevMonth ? ((item.ingresos - prevMonth.ingresos) / prevMonth.ingresos) * 100 : 0
+          const expenseVar = prevMonth ? ((item.gastos - prevMonth.gastos) / prevMonth.gastos) * 100 : 0
+          const profitVar = prevMonth ? ((item.neto - prevMonth.neto) / prevMonth.neto) * 100 : 0
+          
+          return [
+            item.month,
+            item.ingresos,
+            item.gastos,
+            item.neto,
+            margin / 100,
+            incomeVar / 100,
+            expenseVar / 100,
+            profitVar / 100,
+          ]
+        }),
+        ["TOTALES", 
+          sortedRevenue.reduce((acc, curr) => acc + curr.ingresos, 0),
+          sortedRevenue.reduce((acc, curr) => acc + curr.gastos, 0),
+          sortedRevenue.reduce((acc, curr) => acc + curr.neto, 0),
+          (sortedRevenue.reduce((acc, curr) => acc + curr.neto, 0) / sortedRevenue.reduce((acc, curr) => acc + curr.ingresos, 0)) * 100 / 100,
+          "",
+          "",
+          "",
+        ],
+      ]
+
+      const summarySheet = createFormattedSheet(summaryData, "Resumen Mensual", 
+        ["Mes", "Ingresos", "Gastos", "Ganancia Neta", "Margen %", "Var. Ingresos", "Var. Gastos", "Var. Ganancia"], 3)
+      XLSX.utils.book_append_sheet(workbook, summarySheet, "Resumen Mensual")
+
+      // HOJA 3: Transacciones Detalladas
+      const transactionsData = [
+        [gymName],
+        [`Registro de Transacciones - ${currentDate}`],
+        [""],
+        ["Fecha", "Tipo", "Descripción", "Monto", "Categoría"],
+        ...recentTransactions
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .map((transaction) => {
+            const category = transaction.type === "ingreso" 
+              ? (transaction.description.includes("Membresía") ? "Membresías" :
+                 transaction.description.includes("Clase") ? "Clases Grupales" :
+                 transaction.description.includes("Entrenamiento") ? "Entrenamiento Personal" : "Otros")
+              : (transaction.description.includes("Salario") ? "Salarios" :
+                 transaction.description.includes("Mantenimiento") ? "Equipamiento" : "Otros")
+            
+            return [
+              transaction.date,
+              transaction.type === "ingreso" ? "Ingreso" : "Gasto",
+              transaction.description,
+              transaction.amount,
+              category,
+            ]
+          }),
+        ["TOTALES", "", "", 
+          recentTransactions.reduce((acc, curr) => acc + curr.amount, 0),
+          "",
+        ],
+      ]
+
+      const transactionsSheet = createFormattedSheet(transactionsData, "Transacciones",
+        ["Fecha", "Tipo", "Descripción", "Monto", "Categoría"], 3)
+      XLSX.utils.book_append_sheet(workbook, transactionsSheet, "Transacciones")
+
+      // HOJA 4: Ingresos por Fuente con análisis
+      const totalRevenue = revenueBySource.reduce((acc, curr) => acc + curr.value, 0)
+      const incomeData = [
+        [gymName],
+        [`Análisis de Ingresos por Fuente - ${currentDate}`],
+        [""],
+        ["Fuente de Ingreso", "Monto", "Porcentaje %", "Tendencia"],
+        ...revenueBySource.map((source) => {
+          const percentage = (source.value / totalRevenue) * 100
+          const trend = source.value >= totalRevenue / revenueBySource.length ? "Alta" : "Media"
+          return [source.name, source.value, percentage / 100, trend]
+        }),
+        ["TOTAL", totalRevenue, 1, ""],
+      ]
+
+      const incomeSheet = createFormattedSheet(incomeData, "Ingresos por Fuente",
+        ["Fuente de Ingreso", "Monto", "Porcentaje %", "Tendencia"], 3)
+      XLSX.utils.book_append_sheet(workbook, incomeSheet, "Ingresos por Fuente")
+
+      // HOJA 5: Gastos por Categoría con análisis
+      const totalExpensesAmount = expenses.reduce((acc, curr) => acc + curr.amount, 0)
+      const expensesData = [
+        [gymName],
+        [`Análisis de Gastos por Categoría - ${currentDate}`],
+        [""],
+        ["Categoría", "Monto", "Porcentaje %", "Observaciones"],
+        ...expenses
+          .sort((a, b) => b.amount - a.amount)
+          .map((expense) => {
+            const observation = expense.percentage > 50 ? "Alto - Revisar" : 
+                               expense.percentage > 25 ? "Moderado" : "Bajo"
+            return [expense.category, expense.amount, expense.percentage / 100, observation]
+          }),
+        ["TOTAL", totalExpensesAmount, 100 / 100, ""],
+      ]
+
+      const expensesSheet = createFormattedSheet(expensesData, "Gastos por Categoría",
+        ["Categoría", "Monto", "Porcentaje %", "Observaciones"], 3)
+      XLSX.utils.book_append_sheet(workbook, expensesSheet, "Gastos por Categoría")
+
+      // HOJA 6: Análisis de Ratios y KPIs
+      const ratiosData = [
+        [gymName],
+        [`Análisis de Ratios Financieros - ${currentDate}`],
+        [""],
+        ["Indicador", "Valor", "Interpretación"],
+        ["Margen de Ganancia Bruta", profitMargin / 100, profitMargin > 40 ? "Excelente" : profitMargin > 25 ? "Bueno" : "Mejorar"],
+        ["Ratio Ingresos/Gastos", totalIncome / totalExpenses, totalIncome / totalExpenses > 2 ? "Excelente" : totalIncome / totalExpenses > 1.5 ? "Bueno" : "Revisar"],
+        ["Crecimiento de Ingresos (Mensual)", incomeGrowth / 100, incomeGrowth > 10 ? "Alto crecimiento" : incomeGrowth > 0 ? "Crecimiento positivo" : "Revisar"],
+        ["Eficiencia Operativa", (netProfit / totalIncome) * 100 / 100, (netProfit / totalIncome) > 0.4 ? "Alta eficiencia" : "Mejorar eficiencia"],
+        ["Ingresos por Transacción Promedio", 
+          recentTransactions.filter((t) => t.type === "ingreso").length > 0 
+            ? recentTransactions.filter((t) => t.type === "ingreso").reduce((acc, curr) => acc + Math.abs(curr.amount), 0) / recentTransactions.filter((t) => t.type === "ingreso").length
+            : 0,
+          "Ticket promedio"
+        ],
+        ["Gastos por Transacción Promedio",
+          recentTransactions.filter((t) => t.type === "gasto").length > 0
+            ? Math.abs(recentTransactions.filter((t) => t.type === "gasto").reduce((acc, curr) => acc + curr.amount, 0)) / recentTransactions.filter((t) => t.type === "gasto").length
+            : 0,
+          "Costo promedio"
+        ],
+      ]
+
+      const ratiosSheet = createFormattedSheet(ratiosData, "Ratios y KPIs",
+        ["Indicador", "Valor", "Interpretación"], 3)
+      XLSX.utils.book_append_sheet(workbook, ratiosSheet, "Ratios y KPIs")
+
       // Generar el archivo
-      const fileName = `Registro_Finanzas_Tessalp_${new Date().toISOString().split("T")[0]}.xlsx`
+      const fileName = `Analisis_Financiero_${gymName.replace(/\s+/g, "_")}_${reportDate}.xlsx`
       XLSX.writeFile(workbook, fileName)
 
       toast({
         title: "Exportación exitosa",
-        description: `Archivo ${fileName} descargado correctamente`,
+        description: `Análisis financiero ${fileName} descargado correctamente`,
       })
     } catch (error) {
       console.error("Error al exportar:", error)

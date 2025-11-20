@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@prisma/client', 'xlsx-js-style'],
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'xlsx']
+    // Legacy support
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
