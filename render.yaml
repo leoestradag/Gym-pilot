@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: npm run build
     startCommand: npm start
+    autoDeploy: true
     envVars:
       - key: DATABASE_URL
         value: postgresql://neondb_owner:npg_AY0P6hXyDTQd@ep-calm-tooth-ahh8mdr1-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
