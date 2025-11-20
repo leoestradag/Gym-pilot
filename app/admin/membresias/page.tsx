@@ -189,12 +189,12 @@ export default function MembershipsPage() {
 
           <Card className="border-border/50 bg-card/50 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Ingresos Mensuales</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Membresías Compradas</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">$123,450</div>
-              <p className="text-xs text-primary mt-1">+15% vs mes anterior</p>
+              <div className="text-2xl font-bold text-foreground">45</div>
+              <p className="text-xs text-primary mt-1">Esta semana</p>
             </CardContent>
           </Card>
 
