@@ -92,7 +92,6 @@ export default function InstructorsPage() {
     name: "",
     specialty: "",
     experience: "",
-    rating: "4.8",
     phone: "",
     email: "",
     classes: "",
@@ -125,7 +124,7 @@ export default function InstructorsPage() {
       certifications: formData.certifications
         ? formData.certifications.split(",").map((cert) => cert.trim()).filter(Boolean)
         : ["Certificación general"],
-      rating: Number(formData.rating) || 4.8,
+      rating: 4.8,
       classes: formData.classes
         ? formData.classes.split("\n").map((line) => {
             const [name, day, time] = line.split("|").map((item) => item?.trim() || "")
@@ -147,7 +146,6 @@ export default function InstructorsPage() {
       name: "",
       specialty: "",
       experience: "",
-      rating: "4.8",
       phone: "",
       email: "",
       classes: "",
@@ -488,7 +486,7 @@ export default function InstructorsPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="experience">Experiencia (años)</Label>
                 <Input
@@ -498,19 +496,6 @@ export default function InstructorsPage() {
                   value={formData.experience}
                   onChange={(event) => setFormData({ ...formData, experience: event.target.value })}
                   placeholder="5"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="rating">Calificación</Label>
-                <Input
-                  id="rating"
-                  type="number"
-                  min={1}
-                  max={5}
-                  step="0.1"
-                  value={formData.rating}
-                  onChange={(event) => setFormData({ ...formData, rating: event.target.value })}
-                  placeholder="4.8"
                 />
               </div>
               <div className="space-y-2">
