@@ -81,6 +81,7 @@ const mockInstructors = [
 ]
 
 const specialtyFilters = ["Todos", "CrossFit", "Yoga", "Pilates", "Cardio", "Wellness"]
+const WEEKLY_CLASS_GOAL = 20
 
 export default function InstructorsPage() {
   const [selectedFilter, setSelectedFilter] = useState("Todos")
@@ -112,6 +113,8 @@ export default function InstructorsPage() {
           ),
     [selectedFilter, instructors],
   )
+
+  const totalClassesCovered = instructors.reduce((acc, instructor) => acc + instructor.classes.length, 0)
 
   const handleCreateInstructor = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -190,7 +193,8 @@ export default function InstructorsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">
-                {instructors.reduce((acc, instructor) => acc + instructor.classes.length, 0)}
+                {Math.min(totalClassesCovered, WEEKLY_CLASS_GOAL)}
+                <span className="text-base text-muted-foreground">/{WEEKLY_CLASS_GOAL}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">Esta semana</p>
             </CardContent>
