@@ -8,7 +8,7 @@ import { Plus, CalendarIcon, Users, Clock } from "lucide-react"
 import { useState } from "react"
 import { ClassDialog } from "@/components/class-dialog"
 import { ClassSchedule } from "@/components/class-schedule"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 // Mock classes data
 const mockClasses = [
@@ -54,6 +54,7 @@ const classTypes = ["Todos", "Yoga", "CrossFit", "Cardio", "Pilates", "Baile"]
 
 export default function ClassesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("Todos")
 
   const filteredClasses = selectedType === "Todos" ? mockClasses : mockClasses.filter((c) => c.type === selectedType)
@@ -190,100 +191,116 @@ export default function ClassesPage() {
           </Card>
         </div>
 
-        {/* Classes View */}
-        <Tabs defaultValue="schedule" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="schedule">Horario Semanal</TabsTrigger>
-            <TabsTrigger value="list">Lista de Clases</TabsTrigger>
-          </TabsList>
+        {/* Weekly Schedule Card */}
+        <Card 
+          className="border-border/50 bg-card/50 backdrop-blur cursor-pointer hover:bg-accent/5 transition-colors"
+          onClick={() => setIsScheduleDialogOpen(true)}
+        >
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-foreground">Horario Semanal</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {mockClasses.length} clases esta semana
+                </p>
+              </div>
+              <CalendarIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </CardHeader>
+        </Card>
 
-          <TabsContent value="schedule" className="space-y-4">
-            <ClassSchedule classes={mockClasses} />
-          </TabsContent>
-
-          <TabsContent value="list" className="space-y-4">
-            <Card className="border-border/50 bg-card/50 backdrop-blur">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-foreground">Todas las Clases</CardTitle>
-                  <div className="flex gap-2">
-                    {classTypes.map((type) => (
-                      <Button
-                        key={type}
-                        variant={selectedType === type ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedType(type)}
-                        className={selectedType !== type ? "bg-transparent" : ""}
-                      >
-                        {type}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {filteredClasses.map((classItem) => (
-                    <div
-                      key={classItem.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background/50 hover:bg-accent/5 transition-colors"
-                    >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className={`h-12 w-12 rounded-lg ${classItem.color} flex items-center justify-center`}>
-                          <CalendarIcon className="h-6 w-6" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-foreground">{classItem.name}</h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {classItem.type}
-                            </Badge>
-                            {classItem.enrolled >= classItem.capacity && (
-                              <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-xs">Lleno</Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                            <span>{classItem.instructor}</span>
-                            <span>•</span>
-                            <span>
-                              {classItem.day} {classItem.time}
-                            </span>
-                            <span>•</span>
-                            <span>{classItem.duration} min</span>
-                          </div>
-                        </div>
+        {/* Classes List */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-foreground">Todas las Clases</CardTitle>
+              <div className="flex gap-2">
+                {classTypes.map((type) => (
+                  <Button
+                    key={type}
+                    variant={selectedType === type ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedType(type)}
+                    className={selectedType !== type ? "bg-transparent" : ""}
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {filteredClasses.map((classItem) => (
+                <div
+                  key={classItem.id}
+                  className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background/50 hover:bg-accent/5 transition-colors"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className={`h-12 w-12 rounded-lg ${classItem.color} flex items-center justify-center`}>
+                      <CalendarIcon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground">{classItem.name}</h3>
+                        <Badge variant="secondary" className="text-xs">
+                          {classItem.type}
+                        </Badge>
+                        {classItem.enrolled >= classItem.capacity && (
+                          <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-xs">Lleno</Badge>
+                        )}
                       </div>
-
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium text-foreground">
-                              {classItem.enrolled}/{classItem.capacity}
-                            </span>
-                          </div>
-                          <div className="w-24 h-2 bg-muted rounded-full mt-1 overflow-hidden">
-                            <div
-                              className="h-full bg-primary rounded-full transition-all"
-                              style={{ width: `${(classItem.enrolled / classItem.capacity) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        <Button variant="outline" size="sm" className="bg-transparent">
-                          Ver Detalles
-                        </Button>
+                      <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                        <span>{classItem.instructor}</span>
+                        <span>•</span>
+                        <span>
+                          {classItem.day} {classItem.time}
+                        </span>
+                        <span>•</span>
+                        <span>{classItem.duration} min</span>
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-foreground">
+                          {classItem.enrolled}/{classItem.capacity}
+                        </span>
+                      </div>
+                      <div className="w-24 h-2 bg-muted rounded-full mt-1 overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all"
+                          style={{ width: `${(classItem.enrolled / classItem.capacity) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <Button variant="outline" size="sm" className="bg-transparent">
+                      Ver Detalles
+                    </Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      
+      <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Horario Semanal</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <ClassSchedule classes={mockClasses} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
