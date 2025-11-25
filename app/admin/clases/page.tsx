@@ -26,18 +26,6 @@ const mockClasses = [
   },
   {
     id: 2,
-    name: "CrossFit Intenso",
-    instructor: "Carlos Mendoza",
-    day: "Lunes",
-    time: "18:00",
-    duration: 90,
-    capacity: 15,
-    enrolled: 15,
-    type: "CrossFit",
-    color: "bg-red-500/10 text-red-500 border-red-500/20",
-  },
-  {
-    id: 3,
     name: "Spinning",
     instructor: "María González",
     day: "Martes",
@@ -49,7 +37,7 @@ const mockClasses = [
     color: "bg-blue-500/10 text-blue-500 border-blue-500/20",
   },
   {
-    id: 4,
+    id: 3,
     name: "Pilates",
     instructor: "Ana López",
     day: "Miércoles",
@@ -59,18 +47,6 @@ const mockClasses = [
     enrolled: 12,
     type: "Pilates",
     color: "bg-pink-500/10 text-pink-500 border-pink-500/20",
-  },
-  {
-    id: 5,
-    name: "Zumba",
-    instructor: "Pedro Sánchez",
-    day: "Jueves",
-    time: "19:00",
-    duration: 60,
-    capacity: 30,
-    enrolled: 28,
-    type: "Baile",
-    color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
   },
 ]
 
