@@ -292,11 +292,11 @@ export default function ClassesPage() {
       <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       
       <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] w-full max-h-[90vh] p-6">
           <DialogHeader>
             <DialogTitle>Horario Semanal</DialogTitle>
           </DialogHeader>
-          <div className="mt-4">
+          <div className="mt-4 overflow-y-auto max-h-[calc(90vh-120px)]">
             <ClassSchedule classes={mockClasses} />
           </div>
         </DialogContent>
