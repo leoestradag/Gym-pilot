@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Plus, CalendarIcon, Users, Clock } from "lucide-react"
 import { useState } from "react"
 import { ClassDialog } from "@/components/class-dialog"
-import { ClassSchedule } from "@/components/class-schedule"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { WeeklyClassCalendar } from "@/components/weekly-class-calendar"
 
 // Mock classes data
 const mockClasses = [
@@ -54,7 +53,6 @@ const classTypes = ["Todos", "Yoga", "CrossFit", "Cardio", "Pilates", "Baile"]
 
 export default function ClassesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("Todos")
 
   const filteredClasses = selectedType === "Todos" ? mockClasses : mockClasses.filter((c) => c.type === selectedType)
@@ -191,22 +189,22 @@ export default function ClassesPage() {
           </Card>
         </div>
 
-        {/* Weekly Schedule Card */}
-        <Card 
-          className="border-border/50 bg-card/50 backdrop-blur cursor-pointer hover:bg-accent/5 transition-colors"
-          onClick={() => setIsScheduleDialogOpen(true)}
-        >
+        {/* Weekly Calendar */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-foreground">Horario Semanal</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {mockClasses.length} clases esta semana
+                  Clases para {new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
                 </p>
               </div>
               <CalendarIcon className="h-8 w-8 text-muted-foreground" />
             </div>
           </CardHeader>
+          <CardContent>
+            <WeeklyClassCalendar classes={mockClasses} />
+          </CardContent>
         </Card>
 
         {/* Classes List */}
@@ -290,17 +288,6 @@ export default function ClassesPage() {
       </div>
 
       <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
-      
-      <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
-        <DialogContent className="max-w-[95vw] w-full max-h-[90vh] p-6">
-          <DialogHeader>
-            <DialogTitle>Horario Semanal</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4 overflow-y-auto max-h-[calc(90vh-120px)]">
-            <ClassSchedule classes={mockClasses} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }
