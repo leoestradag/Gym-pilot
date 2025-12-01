@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { StatsCard } from "@/components/stats-card"
-import { Users, CheckCircle, DollarSign, TrendingUp, Plus } from "lucide-react"
+import { Users, CheckCircle, DollarSign, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockStats } from "@/lib/db"
@@ -12,16 +12,6 @@ export default function AdminDashboardPage() {
         <div className="flex h-16 items-center gap-4 px-6">
           <SidebarTrigger />
           <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
-          <div className="ml-auto flex gap-2">
-            <Button size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nueva Clase
-            </Button>
-            <Button size="sm" variant="outline" className="gap-2 bg-transparent">
-              <Plus className="h-4 w-4" />
-              Nuevo Instructor
-            </Button>
-          </div>
         </div>
       </div>
 
