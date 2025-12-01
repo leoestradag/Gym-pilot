@@ -92,6 +92,7 @@ export default function ClassesPage() {
 
   const handleAddClass = (newClassData: {
     name: string
+    type: string
     instructor: string
     day: string
     time: string
@@ -107,8 +108,8 @@ export default function ClassesPage() {
       duration: parseInt(newClassData.duration),
       capacity: parseInt(newClassData.capacity),
       enrolled: 0,
-      type: "General", // Default type since we removed the type field
-      color: getClassColor("General"),
+      type: newClassData.type,
+      color: getClassColor(newClassData.type),
     }
     setClasses([...classes, newClass])
   }

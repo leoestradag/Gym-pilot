@@ -16,6 +16,7 @@ interface ClassDialogProps {
   onOpenChange: (open: boolean) => void
   onAddClass?: (classData: {
     name: string
+    type: string
     instructor: string
     day: string
     time: string
@@ -28,6 +29,7 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
+    type: "",
     instructor: "",
     day: "",
     time: "",
@@ -40,7 +42,7 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
     e.preventDefault()
     
     // Validate required fields
-    if (!formData.name || !formData.instructor || !formData.day || !formData.time || !formData.duration || !formData.capacity) {
+    if (!formData.name || !formData.type || !formData.instructor || !formData.day || !formData.time || !formData.duration || !formData.capacity) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos obligatorios.",
@@ -53,6 +55,7 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
     if (onAddClass) {
       onAddClass({
         name: formData.name,
+        type: formData.type,
         instructor: formData.instructor,
         day: formData.day,
         time: formData.time,
@@ -69,6 +72,7 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
     onOpenChange(false)
     setFormData({
       name: "",
+      type: "",
       instructor: "",
       day: "",
       time: "",
@@ -86,15 +90,38 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
           <DialogDescription>Crea una nueva clase grupal para el gimnasio</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nombre de la Clase</Label>
-            <Input
-              id="name"
-              placeholder="Yoga Matutino"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nombre de la Clase</Label>
+              <Input
+                id="name"
+                placeholder="Yoga Matutino"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="type">Tipo</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
+                required
+              >
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Selecciona tipo" />
+                </SelectTrigger>
+                <SelectContent className="bg-white text-foreground">
+                  <SelectItem value="Yoga" className="text-foreground">Yoga</SelectItem>
+                  <SelectItem value="CrossFit" className="text-foreground">CrossFit</SelectItem>
+                  <SelectItem value="Cardio" className="text-foreground">Cardio</SelectItem>
+                  <SelectItem value="Pilates" className="text-foreground">Pilates</SelectItem>
+                  <SelectItem value="Baile" className="text-foreground">Baile</SelectItem>
+                  <SelectItem value="Funcional" className="text-foreground">Funcional</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">
