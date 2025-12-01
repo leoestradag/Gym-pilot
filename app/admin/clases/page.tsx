@@ -726,33 +726,6 @@ export default function ClassesPage() {
                     </div>
                   </div>
 
-                  <Separator />
-
-                  {/* Estadísticas Adicionales */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-primary" />
-                      Estadísticas
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <Card className="border-border/50 bg-card/50">
-                        <CardContent className="pt-4">
-                          <p className="text-sm text-muted-foreground mb-1">Total de Estudiantes</p>
-                          <p className="text-xl font-bold text-foreground">
-                            {Math.floor(Math.random() * 50) + 20}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      <Card className="border-border/50 bg-card/50">
-                        <CardContent className="pt-4">
-                          <p className="text-sm text-muted-foreground mb-1">Sesiones este Mes</p>
-                          <p className="text-xl font-bold text-foreground">
-                            {selectedInstructor.classes.length * 4 * 4}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
                 </div>
               </>
             )}
