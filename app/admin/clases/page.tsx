@@ -255,10 +255,6 @@ export default function ClassesPage() {
                         />
                       </div>
                     </div>
-
-                    <Button variant="outline" size="sm" className="bg-transparent">
-                      Ver Detalles
-                    </Button>
                   </div>
                 </div>
               ))}
