@@ -161,25 +161,7 @@ export default function ClassesPage() {
       const response = await fetch("/api/instructors")
       if (response.ok) {
         const dbInstructors = await response.json()
-        // Get classes for each instructor
-        const instructorsWithClasses = await Promise.all(
-          dbInstructors.map(async (instructor: any) => {
-            // Get classes for this instructor from the classes list
-            const instructorClasses = classes
-              .filter((c) => c.instructor.toLowerCase().includes(instructor.name.toLowerCase()))
-              .map((c) => ({
-                name: c.name,
-                day: c.day,
-                time: c.time,
-              }))
-            
-            return {
-              ...instructor,
-              classes: instructorClasses,
-            }
-          })
-        )
-        setInstructors(instructorsWithClasses)
+        setInstructors(dbInstructors)
       } else {
         console.error("Failed to load instructors from database")
         setInstructors([])

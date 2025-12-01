@@ -22,8 +22,29 @@ export async function GET() {
     }
 
     const instructors = await prisma.instructor.findMany({
+      include: {
+        classes: {
+          select: {
+            id: true,
+            name: true,
+            dayOfWeek: true,
+            time: true,
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     })
+
+    // Day mapping
+    const dayMap: { [key: string]: string } = {
+      lunes: "Lunes",
+      martes: "Martes",
+      miercoles: "Miércoles",
+      jueves: "Jueves",
+      viernes: "Viernes",
+      sabado: "Sábado",
+      domingo: "Domingo",
+    }
 
     // Transform to match the frontend format
     const formattedInstructors = instructors.map((instructor) => {
@@ -37,9 +58,12 @@ export async function GET() {
         }
       }
 
-      // Get classes for this instructor from the classes table
-      // For now, we'll return empty array and let the frontend handle it
-      // In the future, we can join with classes table
+      // Get classes for this instructor
+      const instructorClasses = instructor.classes.map((cls) => ({
+        name: cls.name,
+        day: dayMap[cls.dayOfWeek.toLowerCase()] || cls.dayOfWeek,
+        time: cls.time.substring(0, 5), // Format HH:MM
+      }))
 
       return {
         id: instructor.id,
@@ -48,7 +72,7 @@ export async function GET() {
         experience: instructor.experience || "1 año",
         certifications: certifications.length > 0 ? certifications : ["Certificación general"],
         rating: instructor.rating || 4.5,
-        classes: [], // Will be populated from classes table if needed
+        classes: instructorClasses,
         contact: {
           phone: instructor.phone || "+52 555 000 0000",
           email: instructor.email,
