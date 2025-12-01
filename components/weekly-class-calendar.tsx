@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Users, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ClassItem {
@@ -37,6 +38,8 @@ const timeSlots = [
 export function WeeklyClassCalendar({ classes }: WeeklyClassCalendarProps) {
   const [viewMode, setViewMode] = useState<"day" | "week" | "month">("week")
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedClass, setSelectedClass] = useState<ClassItem | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   // Get start of week (Monday)
   const getWeekStart = (date: Date) => {
@@ -182,6 +185,10 @@ export function WeeklyClassCalendar({ classes }: WeeklyClassCalendarProps) {
                               {classesAtTime.map((classItem) => (
                                 <div
                                   key={classItem.id}
+                                  onClick={() => {
+                                    setSelectedClass(classItem)
+                                    setIsDialogOpen(true)
+                                  }}
                                   className={cn(
                                     "p-2 rounded text-xs cursor-pointer hover:opacity-80 transition-opacity",
                                     classItem.color
@@ -209,6 +216,79 @@ export function WeeklyClassCalendar({ classes }: WeeklyClassCalendarProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Class Details Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              {selectedClass?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedClass && (
+            <div className="space-y-4 mt-4">
+              {/* Class Type Badge */}
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">{selectedClass.type}</Badge>
+                {selectedClass.enrolled >= selectedClass.capacity && (
+                  <Badge className="bg-red-500/10 text-red-500 border-red-500/20">Lleno</Badge>
+                )}
+              </div>
+
+              {/* Instructor */}
+              <div className="flex items-center gap-3">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Instructor</p>
+                  <p className="font-medium">{selectedClass.instructor}</p>
+                </div>
+              </div>
+
+              {/* Schedule */}
+              <div className="flex items-center gap-3">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Horario</p>
+                  <p className="font-medium">
+                    {selectedClass.day} {selectedClass.time}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Duración: {selectedClass.duration} minutos
+                  </p>
+                </div>
+              </div>
+
+              {/* Occupancy */}
+              <div className="flex items-center gap-3">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm text-muted-foreground">Ocupación</p>
+                    <p className="text-sm font-medium">
+                      {selectedClass.enrolled}/{selectedClass.capacity} ({Math.round((selectedClass.enrolled / selectedClass.capacity) * 100)}%)
+                    </p>
+                  </div>
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        selectedClass.enrolled >= selectedClass.capacity
+                          ? "bg-red-500"
+                          : selectedClass.enrolled / selectedClass.capacity >= 0.8
+                          ? "bg-orange-500"
+                          : "bg-primary"
+                      )}
+                      style={{ width: `${Math.min((selectedClass.enrolled / selectedClass.capacity) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
