@@ -49,8 +49,6 @@ const initialClasses = [
   },
 ]
 
-const classTypes = ["Todos", "Yoga", "CrossFit", "Cardio", "Pilates", "Baile"]
-
 // Color mapping for class types
 const getClassColor = (type: string) => {
   const colorMap: { [key: string]: string } = {
@@ -88,11 +86,14 @@ export default function ClassesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("Todos")
 
+  // Get all unique types from classes, including "General" if there are classes with that type
+  const allTypes = new Set(classes.map((c) => c.type).filter(Boolean))
+  const classTypes = ["Todos", ...Array.from(allTypes).sort()]
+
   const filteredClasses = selectedType === "Todos" ? classes : classes.filter((c) => c.type === selectedType)
 
   const handleAddClass = (newClassData: {
     name: string
-    type: string
     instructor: string
     day: string
     time: string
@@ -108,8 +109,8 @@ export default function ClassesPage() {
       duration: parseInt(newClassData.duration),
       capacity: parseInt(newClassData.capacity),
       enrolled: 0,
-      type: newClassData.type,
-      color: getClassColor(newClassData.type),
+      type: "General", // Default type for new classes
+      color: getClassColor("General"),
     }
     setClasses([...classes, newClass])
   }
@@ -191,7 +192,7 @@ export default function ClassesPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-foreground">Todas las Clases</CardTitle>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {classTypes.map((type) => (
                   <Button
                     key={type}
