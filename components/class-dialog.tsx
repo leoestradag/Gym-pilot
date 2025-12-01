@@ -14,9 +14,17 @@ import { useToast } from "@/hooks/use-toast"
 interface ClassDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onAddClass?: (classData: {
+    name: string
+    instructor: string
+    day: string
+    time: string
+    duration: string
+    capacity: string
+  }) => void
 }
 
-export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
+export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
@@ -30,10 +38,34 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate required fields
+    if (!formData.name || !formData.instructor || !formData.day || !formData.time || !formData.duration || !formData.capacity) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos obligatorios.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Call the callback to add the class
+    if (onAddClass) {
+      onAddClass({
+        name: formData.name,
+        instructor: formData.instructor,
+        day: formData.day,
+        time: formData.time,
+        duration: formData.duration,
+        capacity: formData.capacity,
+      })
+    }
+
     toast({
       title: "Clase creada",
       description: `La clase "${formData.name}" ha sido creada exitosamente.`,
     })
+    
     onOpenChange(false)
     setFormData({
       name: "",
@@ -70,6 +102,7 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
             <Select
               value={formData.instructor}
               onValueChange={(value) => setFormData({ ...formData, instructor: value })}
+              required
             >
               <SelectTrigger id="instructor">
                 <SelectValue placeholder="Selecciona instructor" />
@@ -86,7 +119,7 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="day">Día de la Semana</Label>
-              <Select value={formData.day} onValueChange={(value) => setFormData({ ...formData, day: value })}>
+              <Select value={formData.day} onValueChange={(value) => setFormData({ ...formData, day: value })} required>
                 <SelectTrigger id="day">
                   <SelectValue placeholder="Selecciona día" />
                 </SelectTrigger>

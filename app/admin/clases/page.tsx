@@ -9,8 +9,8 @@ import { useState } from "react"
 import { ClassDialog } from "@/components/class-dialog"
 import { WeeklyClassCalendar } from "@/components/weekly-class-calendar"
 
-// Mock classes data
-const mockClasses = [
+// Initial mock classes data
+const initialClasses = [
   {
     id: 1,
     name: "Yoga Matutino",
@@ -51,11 +51,67 @@ const mockClasses = [
 
 const classTypes = ["Todos", "Yoga", "CrossFit", "Cardio", "Pilates", "Baile"]
 
+// Color mapping for class types
+const getClassColor = (type: string) => {
+  const colorMap: { [key: string]: string } = {
+    Yoga: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    CrossFit: "bg-red-500/10 text-red-500 border-red-500/20",
+    Cardio: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    Pilates: "bg-pink-500/10 text-pink-500 border-pink-500/20",
+    Baile: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    Funcional: "bg-green-500/10 text-green-500 border-green-500/20",
+  }
+  return colorMap[type] || "bg-gray-500/10 text-gray-500 border-gray-500/20"
+}
+
+// Instructor mapping
+const instructorMap: { [key: string]: string } = {
+  ana: "Ana López",
+  carlos: "Carlos Mendoza",
+  maria: "María González",
+  pedro: "Pedro Sánchez",
+}
+
+// Day mapping
+const dayMap: { [key: string]: string } = {
+  lunes: "Lunes",
+  martes: "Martes",
+  miercoles: "Miércoles",
+  jueves: "Jueves",
+  viernes: "Viernes",
+  sabado: "Sábado",
+  domingo: "Domingo",
+}
+
 export default function ClassesPage() {
+  const [classes, setClasses] = useState(initialClasses)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("Todos")
 
-  const filteredClasses = selectedType === "Todos" ? mockClasses : mockClasses.filter((c) => c.type === selectedType)
+  const filteredClasses = selectedType === "Todos" ? classes : classes.filter((c) => c.type === selectedType)
+
+  const handleAddClass = (newClassData: {
+    name: string
+    instructor: string
+    day: string
+    time: string
+    duration: string
+    capacity: string
+  }) => {
+    const newClass = {
+      id: Math.max(...classes.map((c) => c.id), 0) + 1,
+      name: newClassData.name,
+      instructor: instructorMap[newClassData.instructor] || newClassData.instructor,
+      day: dayMap[newClassData.day] || newClassData.day,
+      time: newClassData.time.substring(0, 5), // Format HH:MM
+      duration: parseInt(newClassData.duration),
+      capacity: parseInt(newClassData.capacity),
+      enrolled: 0,
+      type: "General", // Default type since we removed the type field
+      color: getClassColor("General"),
+    }
+    setClasses([...classes, newClass])
+  }
 
   return (
     <>
@@ -81,7 +137,7 @@ export default function ClassesPage() {
               <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-xl font-bold text-foreground">{mockClasses.length}</div>
+              <div className="text-xl font-bold text-foreground">{classes.length}</div>
               <p className="text-[10px] text-muted-foreground mt-0.5">Esta semana</p>
             </CardContent>
           </Card>
@@ -93,7 +149,7 @@ export default function ClassesPage() {
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <div className="text-xl font-bold text-foreground">
-                {mockClasses.reduce((acc, c) => acc + c.enrolled, 0)}
+                {classes.reduce((acc, c) => acc + c.enrolled, 0)}
               </div>
               <p className="text-[10px] text-primary mt-0.5">+24 esta semana</p>
             </CardContent>
@@ -125,7 +181,7 @@ export default function ClassesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <WeeklyClassCalendar classes={mockClasses} />
+            <WeeklyClassCalendar classes={classes} />
           </CardContent>
         </Card>
 
@@ -209,7 +265,7 @@ export default function ClassesPage() {
         </Card>
       </div>
 
-      <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onAddClass={handleAddClass} />
     </>
   )
 }
