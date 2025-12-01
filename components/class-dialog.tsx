@@ -36,7 +36,7 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
     description: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validate required fields
@@ -51,20 +51,29 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
 
     // Call the callback to add the class
     if (onAddClass) {
-      onAddClass({
-        name: formData.name,
-        instructor: formData.instructor,
-        day: formData.day,
-        time: formData.time,
-        duration: formData.duration,
-        capacity: formData.capacity,
-      })
+      try {
+        await onAddClass({
+          name: formData.name,
+          instructor: formData.instructor,
+          day: formData.day,
+          time: formData.time,
+          duration: formData.duration,
+          capacity: formData.capacity,
+        })
+        
+        toast({
+          title: "Clase creada",
+          description: `La clase "${formData.name}" ha sido creada exitosamente.`,
+        })
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo crear la clase. Por favor intenta de nuevo.",
+          variant: "destructive",
+        })
+        return
+      }
     }
-
-    toast({
-      title: "Clase creada",
-      description: `La clase "${formData.name}" ha sido creada exitosamente.`,
-    })
     
     onOpenChange(false)
     setFormData({

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Plus, CalendarIcon, Users, Clock } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ClassDialog } from "@/components/class-dialog"
 import { WeeklyClassCalendar } from "@/components/weekly-class-calendar"
 
@@ -85,6 +85,32 @@ export default function ClassesPage() {
   const [classes, setClasses] = useState(initialClasses)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("Todos")
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load classes from database on mount
+  useEffect(() => {
+    const loadClasses = async () => {
+      try {
+        const response = await fetch("/api/classes")
+        if (response.ok) {
+          const dbClasses = await response.json()
+          // Combine initial classes with database classes, avoiding duplicates
+          const allClasses = [...initialClasses]
+          dbClasses.forEach((dbClass: any) => {
+            if (!allClasses.find((c) => c.id === dbClass.id)) {
+              allClasses.push(dbClass)
+            }
+          })
+          setClasses(allClasses)
+        }
+      } catch (error) {
+        console.error("Error loading classes", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadClasses()
+  }, [])
 
   // Get all unique types from classes, including "General" if there are classes with that type
   const allTypes = new Set(classes.map((c) => c.type).filter(Boolean))
@@ -92,7 +118,7 @@ export default function ClassesPage() {
 
   const filteredClasses = selectedType === "Todos" ? classes : classes.filter((c) => c.type === selectedType)
 
-  const handleAddClass = (newClassData: {
+  const handleAddClass = async (newClassData: {
     name: string
     instructor: string
     day: string
@@ -100,19 +126,38 @@ export default function ClassesPage() {
     duration: string
     capacity: string
   }) => {
-    const newClass = {
-      id: Math.max(...classes.map((c) => c.id), 0) + 1,
-      name: newClassData.name,
-      instructor: instructorMap[newClassData.instructor] || newClassData.instructor,
-      day: dayMap[newClassData.day] || newClassData.day,
-      time: newClassData.time.substring(0, 5), // Format HH:MM
-      duration: parseInt(newClassData.duration),
-      capacity: parseInt(newClassData.capacity),
-      enrolled: 0,
-      type: "General", // Default type for new classes
-      color: getClassColor("General"),
+    try {
+      const response = await fetch("/api/classes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newClassData),
+      })
+
+      if (!response.ok) {
+        throw new Error("No se pudo crear la clase")
+      }
+
+      const data = await response.json()
+      
+      // Transform the response to match our format
+      const newClass = {
+        id: data.class.id,
+        name: data.class.name,
+        instructor: data.class.instructorName || instructorMap[newClassData.instructor] || newClassData.instructor,
+        day: dayMap[newClassData.day] || newClassData.day,
+        time: data.class.time.substring(0, 5),
+        duration: data.class.duration,
+        capacity: data.class.capacity,
+        enrolled: data.class.enrolled || 0,
+        type: data.class.type || "General",
+        color: getClassColor(data.class.type || "General"),
+      }
+      
+      setClasses([...classes, newClass])
+    } catch (error) {
+      console.error("Error creating class", error)
+      throw error
     }
-    setClasses([...classes, newClass])
   }
 
   return (
