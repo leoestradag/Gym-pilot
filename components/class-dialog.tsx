@@ -25,7 +25,6 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
     time: "",
     duration: "",
     capacity: "",
-    type: "",
     description: "",
   })
 
@@ -43,7 +42,6 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
       time: "",
       duration: "",
       capacity: "",
-      type: "",
       description: "",
     })
   }
@@ -56,34 +54,15 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
           <DialogDescription>Crea una nueva clase grupal para el gimnasio</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre de la Clase</Label>
-              <Input
-                id="name"
-                placeholder="Yoga Matutino"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="type">Tipo</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                <SelectTrigger id="type">
-                  <SelectValue placeholder="Selecciona tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yoga">Yoga</SelectItem>
-                  <SelectItem value="crossfit">CrossFit</SelectItem>
-                  <SelectItem value="cardio">Cardio</SelectItem>
-                  <SelectItem value="pilates">Pilates</SelectItem>
-                  <SelectItem value="baile">Baile</SelectItem>
-                  <SelectItem value="funcional">Funcional</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Nombre de la Clase</Label>
+            <Input
+              id="name"
+              placeholder="Yoga Matutino"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
           </div>
 
           <div className="space-y-2">
