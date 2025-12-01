@@ -74,117 +74,39 @@ export default function ClassesPage() {
 
       <div className="p-6 space-y-6">
         {/* Quick Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-3">
           <Card className="border-border/50 bg-card/50 backdrop-blur">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Clases Activas</CardTitle>
-              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 px-4 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Clases Activas</CardTitle>
+              <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{mockClasses.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Esta semana</p>
+            <CardContent className="px-4 pb-4">
+              <div className="text-xl font-bold text-foreground">{mockClasses.length}</div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Esta semana</p>
             </CardContent>
           </Card>
 
           <Card className="border-border/50 bg-card/50 backdrop-blur">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Inscritos</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 px-4 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Total Inscritos</CardTitle>
+              <Users className="h-3.5 w-3.5 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">
+            <CardContent className="px-4 pb-4">
+              <div className="text-xl font-bold text-foreground">
                 {mockClasses.reduce((acc, c) => acc + c.enrolled, 0)}
               </div>
-              <p className="text-xs text-primary mt-1">+24 esta semana</p>
+              <p className="text-[10px] text-primary mt-0.5">+24 esta semana</p>
             </CardContent>
           </Card>
 
           <Card className="border-border/50 bg-card/50 backdrop-blur">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Ocupación Promedio</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 px-4 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Ocupación Promedio</CardTitle>
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">87%</div>
-              <p className="text-xs text-primary mt-1">+5% vs semana anterior</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50 bg-card/50 backdrop-blur">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-foreground">Clases Llenas</CardTitle>
-                <div className="flex gap-2">
-                  {classTypes.map((type) => (
-                    <Button
-                      key={type}
-                      variant={selectedType === type ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedType(type)}
-                      className={selectedType !== type ? "bg-transparent" : ""}
-                    >
-                      {type}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {filteredClasses.map((classItem) => (
-                  <div
-                    key={classItem.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background/50 hover:bg-accent/5 transition-colors"
-                  >
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className={`h-12 w-12 rounded-lg ${classItem.color} flex items-center justify-center`}>
-                        <CalendarIcon className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">{classItem.name}</h3>
-                          <Badge variant="secondary" className="text-xs">
-                            {classItem.type}
-                          </Badge>
-                          {classItem.enrolled >= classItem.capacity && (
-                            <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-xs">Lleno</Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                          <span>{classItem.instructor}</span>
-                          <span>•</span>
-                          <span>
-                            {classItem.day} {classItem.time}
-                          </span>
-                          <span>•</span>
-                          <span>{classItem.duration} min</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium text-foreground">
-                            {classItem.enrolled}/{classItem.capacity}
-                          </span>
-                        </div>
-                        <div className="w-24 h-2 bg-muted rounded-full mt-1 overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all"
-                            style={{ width: `${(classItem.enrolled / classItem.capacity) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <Button variant="outline" size="sm" className="bg-transparent">
-                        Ver Detalles
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <CardContent className="px-4 pb-4">
+              <div className="text-xl font-bold text-foreground">87%</div>
+              <p className="text-[10px] text-primary mt-0.5">+5% vs semana anterior</p>
             </CardContent>
           </Card>
         </div>
