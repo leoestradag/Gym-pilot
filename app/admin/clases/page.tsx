@@ -256,7 +256,7 @@ export default function ClassesPage() {
 
   const totalClassesCovered = instructors.reduce((acc, instructor) => acc + instructor.classes.length, 0)
 
-  const handleViewInstructorDetails = (instructor: typeof mockInstructors[0]) => {
+  const handleViewInstructorDetails = (instructor: Instructor) => {
     setSelectedInstructor(instructor)
     setIsInstructorDialogOpen(true)
   }
