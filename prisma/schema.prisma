@@ -169,14 +169,17 @@ enum CoachClassStatus {
 }
 
 model Instructor {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  phone     String?
-  specialty String
-  bio       String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  phone         String?
+  specialty     String
+  experience    String?  // e.g., "8 años"
+  certifications String? // JSON array as string or comma-separated
+  rating        Float?   @default(4.5)
+  bio           String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   classes Class[]
 

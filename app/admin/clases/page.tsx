@@ -87,73 +87,20 @@ const dayMap: { [key: string]: string } = {
   domingo: "Domingo",
 }
 
-// Mock instructors data
-const mockInstructors = [
-  {
-    id: 1,
-    name: "Carlos Mendoza",
-    specialty: "CrossFit y Fuerza",
-    experience: "8 años",
-    certifications: ["NSCA-CSCS", "CrossFit Level 2"],
-    rating: 4.9,
-    classes: [
-      { name: "CrossFit Intenso", day: "Lunes", time: "18:00" },
-      { name: "HIIT Elite", day: "Jueves", time: "19:00" },
-    ],
-    contact: {
-      phone: "+52 555 123 4567",
-      email: "carlos@tessalpgyms.com",
-    },
-  },
-  {
-    id: 2,
-    name: "María González",
-    specialty: "Yoga y Pilates",
-    experience: "6 años",
-    certifications: ["Yoga Alliance RYT-500", "Pilates PMA"],
-    rating: 4.8,
-    classes: [
-      { name: "Yoga Matutino", day: "Lunes", time: "07:00" },
-      { name: "Pilates Core", day: "Miércoles", time: "10:00" },
-    ],
-    contact: {
-      phone: "+52 555 234 5678",
-      email: "maria@tessalpgyms.com",
-    },
-  },
-  {
-    id: 3,
-    name: "Ana López",
-    specialty: "Nutrición Deportiva y Wellness",
-    experience: "5 años",
-    certifications: ["ISSN-CNS", "Wellness Coach"],
-    rating: 4.7,
-    classes: [
-      { name: "Pilates", day: "Miércoles", time: "10:00" },
-      { name: "Meditación Activa", day: "Viernes", time: "08:30" },
-    ],
-    contact: {
-      phone: "+52 555 345 6789",
-      email: "ana@tessalpgyms.com",
-    },
-  },
-  {
-    id: 4,
-    name: "Pedro Sánchez",
-    specialty: "Spinning y Cardio",
-    experience: "7 años",
-    certifications: ["ACE Cycling", "NASM-CPT"],
-    rating: 4.6,
-    classes: [
-      { name: "Spinning", day: "Martes", time: "06:30" },
-      { name: "Cardio Extreme", day: "Jueves", time: "20:00" },
-    ],
-    contact: {
-      phone: "+52 555 987 6543",
-      email: "pedro@tessalpgyms.com",
-    },
-  },
-]
+// Instructor type definition
+type Instructor = {
+  id: number
+  name: string
+  specialty: string
+  experience: string
+  certifications: string[]
+  rating: number
+  classes: Array<{ name: string; day: string; time: string }>
+  contact: {
+    phone: string
+    email: string
+  }
+}
 
 const specialtyFilters = ["Todos", "CrossFit", "Yoga", "Pilates", "Cardio", "Wellness"]
 const WEEKLY_CLASS_GOAL = 20
@@ -166,10 +113,11 @@ export default function ClassesPage() {
   
   // Instructors state
   const [selectedFilter, setSelectedFilter] = useState("Todos")
-  const [selectedInstructor, setSelectedInstructor] = useState<typeof mockInstructors[0] | null>(null)
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null)
   const [isInstructorDialogOpen, setIsInstructorDialogOpen] = useState(false)
   const [isCreateInstructorDialogOpen, setIsCreateInstructorDialogOpen] = useState(false)
-  const [instructors, setInstructors] = useState(mockInstructors)
+  const [instructors, setInstructors] = useState<Instructor[]>([])
+  const [isLoadingInstructors, setIsLoadingInstructors] = useState(true)
   const [instructorFormData, setInstructorFormData] = useState({
     name: "",
     specialty: "",
@@ -207,10 +155,52 @@ export default function ClassesPage() {
     }
   }
 
+  // Function to load instructors from database
+  const loadInstructors = async () => {
+    try {
+      const response = await fetch("/api/instructors")
+      if (response.ok) {
+        const dbInstructors = await response.json()
+        // Get classes for each instructor
+        const instructorsWithClasses = await Promise.all(
+          dbInstructors.map(async (instructor: any) => {
+            // Get classes for this instructor from the classes list
+            const instructorClasses = classes
+              .filter((c) => c.instructor.toLowerCase().includes(instructor.name.toLowerCase()))
+              .map((c) => ({
+                name: c.name,
+                day: c.day,
+                time: c.time,
+              }))
+            
+            return {
+              ...instructor,
+              classes: instructorClasses,
+            }
+          })
+        )
+        setInstructors(instructorsWithClasses)
+      } else {
+        console.error("Failed to load instructors from database")
+        setInstructors([])
+      }
+    } catch (error) {
+      console.error("Error loading instructors", error)
+      setInstructors([])
+    } finally {
+      setIsLoadingInstructors(false)
+    }
+  }
+
   // Load classes from database on mount
   useEffect(() => {
     loadClasses()
   }, [])
+
+  // Load instructors on mount and when classes change
+  useEffect(() => {
+    loadInstructors()
+  }, [classes.length]) // Reload when classes count changes
 
   // Get all unique types from classes, including "General" if there are classes with that type
   const allTypes = new Set(classes.map((c) => c.type).filter(Boolean))
@@ -289,45 +279,45 @@ export default function ClassesPage() {
     setIsInstructorDialogOpen(true)
   }
 
-  const handleCreateInstructor = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateInstructor = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const newInstructor = {
-      id: instructors.length + 1,
-      name: instructorFormData.name || "Instructor sin nombre",
-      specialty: instructorFormData.specialty || "Especialidad general",
-      experience: instructorFormData.experience ? `${instructorFormData.experience} años` : "1 año",
-      certifications: instructorFormData.certifications
-        ? instructorFormData.certifications.split(",").map((cert) => cert.trim()).filter(Boolean)
-        : ["Certificación general"],
-      rating: 4.8,
-      classes: instructorFormData.classes
-        ? instructorFormData.classes.split("\n").map((line) => {
-            const [name, day, time] = line.split("|").map((item) => item?.trim() || "")
-            return {
-              name: name || "Clase personalizada",
-              day: day || "Lunes",
-              time: time || "08:00",
-            }
-          })
-        : [{ name: "Clase personalizada", day: "Lunes", time: "08:00" }],
-      contact: {
-        phone: instructorFormData.phone || "+52 555 000 0000",
-        email: instructorFormData.email || "instructor@tessalpgyms.com",
-      },
-    }
+    try {
+      const response = await fetch("/api/instructors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: instructorFormData.name,
+          specialty: instructorFormData.specialty,
+          email: instructorFormData.email,
+          phone: instructorFormData.phone || undefined,
+          experience: instructorFormData.experience ? `${instructorFormData.experience} años` : undefined,
+          certifications: instructorFormData.certifications || undefined,
+        }),
+      })
 
-    setInstructors((prev) => [newInstructor, ...prev])
-    setInstructorFormData({
-      name: "",
-      specialty: "",
-      experience: "",
-      phone: "",
-      email: "",
-      classes: "",
-      certifications: "",
-    })
-    setIsCreateInstructorDialogOpen(false)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "No se pudo crear el instructor")
+      }
+
+      // Reload instructors from database
+      await loadInstructors()
+      
+      setInstructorFormData({
+        name: "",
+        specialty: "",
+        experience: "",
+        phone: "",
+        email: "",
+        classes: "",
+        certifications: "",
+      })
+      setIsCreateInstructorDialogOpen(false)
+    } catch (error) {
+      console.error("Error creating instructor", error)
+      alert(error instanceof Error ? error.message : "No se pudo crear el instructor")
+    }
   }
 
   return (
@@ -549,8 +539,24 @@ export default function ClassesPage() {
             </div>
 
             {/* Instructors list */}
-            <div className="grid gap-6 md:grid-cols-2">
-              {filteredInstructors.map((instructor) => (
+            {isLoadingInstructors ? (
+              <Card className="border-border/50 bg-card/50 backdrop-blur py-12 text-center">
+                <CardContent>
+                  <p className="text-muted-foreground">Cargando instructores...</p>
+                </CardContent>
+              </Card>
+            ) : filteredInstructors.length === 0 ? (
+              <Card className="border-dashed border-border/70 bg-card/40 py-12 text-center">
+                <CardContent>
+                  <p className="text-muted-foreground">No hay instructores registrados.</p>
+                  <Button variant="outline" size="sm" className="mt-3" onClick={() => setIsCreateInstructorDialogOpen(true)}>
+                    Agregar primer instructor
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="border-border/50 bg-card/70 backdrop-blur">
                   <CardHeader className="flex items-start justify-between">
                     <div>
@@ -605,18 +611,8 @@ export default function ClassesPage() {
                   </CardContent>
                 </Card>
               ))}
-
-              {filteredInstructors.length === 0 && (
-                <Card className="border-dashed border-border/70 bg-card/40 py-12 text-center">
-                  <CardContent>
-                    <p className="text-muted-foreground">No hay instructores con esta especialidad.</p>
-                    <Button variant="outline" size="sm" className="mt-3" onClick={() => setSelectedFilter("Todos")}>
-                      Ver todos
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
