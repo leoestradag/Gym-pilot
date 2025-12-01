@@ -74,11 +74,11 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
               <SelectTrigger id="instructor">
                 <SelectValue placeholder="Selecciona instructor" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ana">Ana López</SelectItem>
-                <SelectItem value="carlos">Carlos Mendoza</SelectItem>
-                <SelectItem value="maria">María González</SelectItem>
-                <SelectItem value="pedro">Pedro Sánchez</SelectItem>
+              <SelectContent className="bg-white text-foreground">
+                <SelectItem value="ana" className="text-foreground">Ana López</SelectItem>
+                <SelectItem value="carlos" className="text-foreground">Carlos Mendoza</SelectItem>
+                <SelectItem value="maria" className="text-foreground">María González</SelectItem>
+                <SelectItem value="pedro" className="text-foreground">Pedro Sánchez</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -90,14 +90,14 @@ export function ClassDialog({ open, onOpenChange }: ClassDialogProps) {
                 <SelectTrigger id="day">
                   <SelectValue placeholder="Selecciona día" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lunes">Lunes</SelectItem>
-                  <SelectItem value="martes">Martes</SelectItem>
-                  <SelectItem value="miercoles">Miércoles</SelectItem>
-                  <SelectItem value="jueves">Jueves</SelectItem>
-                  <SelectItem value="viernes">Viernes</SelectItem>
-                  <SelectItem value="sabado">Sábado</SelectItem>
-                  <SelectItem value="domingo">Domingo</SelectItem>
+                <SelectContent className="bg-white text-foreground">
+                  <SelectItem value="lunes" className="text-foreground">Lunes</SelectItem>
+                  <SelectItem value="martes" className="text-foreground">Martes</SelectItem>
+                  <SelectItem value="miercoles" className="text-foreground">Miércoles</SelectItem>
+                  <SelectItem value="jueves" className="text-foreground">Jueves</SelectItem>
+                  <SelectItem value="viernes" className="text-foreground">Viernes</SelectItem>
+                  <SelectItem value="sabado" className="text-foreground">Sábado</SelectItem>
+                  <SelectItem value="domingo" className="text-foreground">Domingo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
