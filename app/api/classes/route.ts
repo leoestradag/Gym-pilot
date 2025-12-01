@@ -14,7 +14,7 @@ const createClassSchema = z.object({
 
 export async function GET() {
   try {
-    if (!prisma.class) {
+    if (!prisma || !prisma.class) {
       return NextResponse.json(
         { error: "Servicio de base de datos no disponible" },
         { status: 503 },
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       )
     }
 
-    if (!prisma.class) {
+    if (!prisma || !prisma.class) {
       return NextResponse.json(
         { error: "Servicio de base de datos no disponible" },
         { status: 503 },

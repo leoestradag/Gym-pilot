@@ -87,28 +87,35 @@ export default function ClassesPage() {
   const [selectedType, setSelectedType] = useState("Todos")
   const [isLoading, setIsLoading] = useState(true)
 
+  // Function to load classes from database
+  const loadClasses = async () => {
+    try {
+      const response = await fetch("/api/classes")
+      if (response.ok) {
+        const dbClasses = await response.json()
+        // Prioritize database classes, only use initial classes if database is empty
+        if (dbClasses.length > 0) {
+          setClasses(dbClasses)
+        } else {
+          // If no classes in database, use initial classes
+          setClasses(initialClasses)
+        }
+      } else {
+        // If API fails, use initial classes as fallback
+        console.error("Failed to load classes from database")
+        setClasses(initialClasses)
+      }
+    } catch (error) {
+      console.error("Error loading classes", error)
+      // On error, use initial classes as fallback
+      setClasses(initialClasses)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Load classes from database on mount
   useEffect(() => {
-    const loadClasses = async () => {
-      try {
-        const response = await fetch("/api/classes")
-        if (response.ok) {
-          const dbClasses = await response.json()
-          // Combine initial classes with database classes, avoiding duplicates
-          const allClasses = [...initialClasses]
-          dbClasses.forEach((dbClass: any) => {
-            if (!allClasses.find((c) => c.id === dbClass.id)) {
-              allClasses.push(dbClass)
-            }
-          })
-          setClasses(allClasses)
-        }
-      } catch (error) {
-        console.error("Error loading classes", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
     loadClasses()
   }, [])
 
@@ -134,17 +141,28 @@ export default function ClassesPage() {
       })
 
       if (!response.ok) {
-        throw new Error("No se pudo crear la clase")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "No se pudo crear la clase")
       }
 
       const data = await response.json()
       
       // Transform the response to match our format
+      const dayMapReverse: { [key: string]: string } = {
+        lunes: "Lunes",
+        martes: "Martes",
+        miercoles: "Miércoles",
+        jueves: "Jueves",
+        viernes: "Viernes",
+        sabado: "Sábado",
+        domingo: "Domingo",
+      }
+      
       const newClass = {
         id: data.class.id,
         name: data.class.name,
         instructor: data.class.instructorName || instructorMap[newClassData.instructor] || newClassData.instructor,
-        day: dayMap[newClassData.day] || newClassData.day,
+        day: dayMapReverse[data.class.dayOfWeek] || data.class.dayOfWeek,
         time: data.class.time.substring(0, 5),
         duration: data.class.duration,
         capacity: data.class.capacity,
@@ -153,7 +171,8 @@ export default function ClassesPage() {
         color: getClassColor(data.class.type || "General"),
       }
       
-      setClasses([...classes, newClass])
+      // Reload all classes from database to ensure consistency
+      await loadClasses()
     } catch (error) {
       console.error("Error creating class", error)
       throw error
