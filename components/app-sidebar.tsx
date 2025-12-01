@@ -41,11 +41,6 @@ const menuItems = [
     icon: Calendar,
   },
   {
-    title: "Instructores",
-    url: "/admin/clases",
-    icon: Users,
-  },
-  {
     title: "Membresías",
     url: "/admin/membresias",
     icon: CreditCard,
