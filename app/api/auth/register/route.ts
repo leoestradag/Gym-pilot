@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         name: fullName,
         email: email.toLowerCase(),
         passwordHash: hashedPassword,
-        role: "MEMBER",
+        role: "USER",
       },
     })
 
