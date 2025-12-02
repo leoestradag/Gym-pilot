@@ -10,6 +10,7 @@ import {
   Dumbbell,
   DollarSign,
   Home,
+  Building2,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -64,6 +65,11 @@ const menuItems = [
     title: "Marketing",
     url: "/admin/marketing",
     icon: Megaphone,
+  },
+  {
+    title: "Gimnasios",
+    url: "/admin/gimnasios",
+    icon: Building2,
   },
 ]
 
