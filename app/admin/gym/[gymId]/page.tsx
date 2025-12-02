@@ -45,10 +45,12 @@ export default async function GymAdminDashboard({
   const { gymId } = await params
   const gymSession = await getGymSession()
 
+  // If not authenticated, redirect to verification page
   if (!gymSession) {
-    redirect("/admin/gym/login")
+    redirect(`/admin/gym/${gymId}/verify`)
   }
 
+  // Check if gym is accessing their own panel
   if (gymSession.id !== Number(gymId)) {
     redirect(`/admin/gym/${gymSession.id}`)
   }

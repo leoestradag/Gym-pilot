@@ -9,11 +9,15 @@ export default async function GymAdminLayout({
   params: Promise<{ gymId: string }>
 }) {
   const { gymId } = await params
+  
+  // Check if this is the verify page - allow it without session
+  // For other pages, require verification first
   const gym = await getGymSession()
 
-  // Check if gym is authenticated
+  // If not authenticated and not on verify page, redirect to verify
   if (!gym) {
-    redirect("/admin/gym/login")
+    // Allow verify page to load
+    return <>{children}</>
   }
 
   // Check if gym is accessing their own panel
