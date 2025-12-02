@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getGymSession } from "@/lib/gym-session"
+import { getGymSession, getGymAccess } from "@/lib/gym-session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
@@ -44,18 +44,26 @@ export default async function GymAdminDashboard({
 }) {
   const { gymId } = await params
   const gymSession = await getGymSession()
+  const gymAccess = await getGymAccess(Number(gymId))
 
-  // If not authenticated, redirect to verification page
-  if (!gymSession) {
+  // If not authenticated and no access verified, redirect to verification page
+  if (!gymSession && !gymAccess) {
+    redirect(`/admin/gym/${gymId}/verify`)
+  }
+
+  // Use session or access, prefer session
+  const currentGym = gymSession || gymAccess
+
+  if (!currentGym) {
     redirect(`/admin/gym/${gymId}/verify`)
   }
 
   // Check if gym is accessing their own panel
-  if (gymSession.id !== Number(gymId)) {
-    redirect(`/admin/gym/${gymSession.id}`)
+  if (currentGym.id !== Number(gymId)) {
+    redirect(`/admin/gym/${currentGym.id}`)
   }
 
-  const gym = await getGymData(gymSession.id)
+  const gym = await getGymData(currentGym.id)
 
   if (!gym) {
     return (

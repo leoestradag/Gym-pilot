@@ -25,22 +25,29 @@ export default function VerifyGymAccessPage() {
     setIsLoading(true)
 
     try {
-      if (accessId !== REQUIRED_ID) {
-        toast({
-          title: "ID incorrecto",
-          description: "El ID de acceso no es válido",
-          variant: "destructive",
-        })
-        setIsLoading(false)
-        return
+      const response = await fetch(`/api/gym/${gymId}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessId }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al verificar")
       }
 
-      // ID correcto, redirigir al panel administrativo del gimnasio
+      toast({
+        title: "Acceso verificado",
+        description: `Bienvenido, ${data.gym.name}`,
+      })
+
+      // Redirect to gym admin panel
       router.push(`/admin/gym/${gymId}`)
     } catch (error) {
       toast({
         title: "Error",
-        description: "No se pudo verificar el acceso",
+        description: error instanceof Error ? error.message : "No se pudo verificar el acceso",
         variant: "destructive",
       })
       setIsLoading(false)

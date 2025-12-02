@@ -51,3 +51,41 @@ export async function getGymSession() {
   }
 }
 
+export async function getGymAccess(gymId: number) {
+  try {
+    const cookieStore = await cookies()
+    const accessCookie = cookieStore.get(`gym_access_${gymId}`)
+    if (!accessCookie) return null
+
+    const secret = getJwtSecret()
+    const { payload } = await jwtVerify(accessCookie.value, secret)
+
+    if (payload.type !== "gym_access" || payload.gymId !== gymId || !payload.verified) {
+      return null
+    }
+
+    // Return gym info
+    if (!prisma || !prisma.gym) return null
+
+    const gym = await prisma.gym.findUnique({
+      where: { id: gymId },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        adminCode: true,
+        location: true,
+        phone: true,
+        email: true,
+        hours: true,
+        image: true,
+      },
+    })
+
+    return gym
+  } catch (error) {
+    console.error("Error decodificando acceso de gimnasio", error)
+    return null
+  }
+}
+
