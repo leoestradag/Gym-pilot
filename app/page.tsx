@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Users, Star, ArrowRight, Dumbbell, Brain, Wand2 } from "lucide-react"
@@ -5,64 +8,35 @@ import Link from "next/link"
 import { GymCoachPreview } from "@/components/gym-coach-preview"
 import { UserAvatar } from "@/components/user-avatar"
 
-const gyms = [
-  {
-    id: "tessalp-centro",
-    name: "Tessalp Centro",
-    location: "Av. Principal 123, Centro",
-    members: 450,
-    rating: 4.8,
-    image: "/modern-gym-interior.png",
-    description: "Nuestro gimnasio insignia con equipamiento de última generación",
-  },
-  {
-    id: "tessalp-norte",
-    name: "Tessalp Norte",
-    location: "Blvd. Norte 456, Zona Norte",
-    members: 320,
-    rating: 4.7,
-    image: "/fitness-center-equipment.jpg",
-    description: "Amplio espacio con área de crossfit y clases grupales",
-  },
-  {
-    id: "tessalp-sur",
-    name: "Tessalp Sur",
-    location: "Calle Sur 789, Zona Sur",
-    members: 280,
-    rating: 4.9,
-    image: "/gym-training-area.jpg",
-    description: "Ambiente familiar con entrenadores personalizados",
-  },
-  {
-    id: "one-gym",
-    name: "One Gym",
-    location: "Plaza Galerías, Zona Rosa",
-    members: 1200,
-    rating: 4.6,
-    image: "/people-training-in-modern-gym.jpg",
-    description: "Tecnología de vanguardia con acceso 24/7 y app personalizada",
-  },
-  {
-    id: "world-gym",
-    name: "World Gym",
-    location: "Centro Comercial Perisur",
-    members: 950,
-    rating: 4.5,
-    image: "/people-training-in-modern-gym.jpg",
-    description: "Máquinas profesionales y entrenamiento personal de calidad mundial",
-  },
-  {
-    id: "smartfit",
-    name: "Smart Fit",
-    location: "Plaza Satélite",
-    members: 1800,
-    rating: 4.4,
-    image: "/people-training-in-modern-gym.jpg",
-    description: "Precio accesible, múltiples ubicaciones y sin contratos",
-  },
-]
+type Gym = {
+  id: number
+  name: string
+  location: string
+  image?: string | null
+  slug?: string | null
+}
 
 export default function LandingPage() {
+  const [gyms, setGyms] = useState<Gym[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    loadGyms()
+  }, [])
+
+  const loadGyms = async () => {
+    try {
+      const response = await fetch("/api/gyms")
+      if (response.ok) {
+        const data = await response.json()
+        setGyms(data)
+      }
+    } catch (error) {
+      console.error("Error loading gyms", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-background">
       {/* User Avatar */}
@@ -116,42 +90,45 @@ export default function LandingPage() {
             <p className="text-xl text-muted-foreground text-balance">Encuentra la ubicación más cercana a ti</p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {gyms.map((gym) => (
-              <Card
-                key={gym.id}
-                className="border-2 border-border/60 bg-card/90 backdrop-blur overflow-hidden hover:border-primary/70 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
-              >
-                <img src={gym.image || "/placeholder.svg"} alt={gym.name} className="w-full h-48 object-cover" />
-                <CardHeader>
-                  <CardTitle className="text-2xl">{gym.name}</CardTitle>
-                  <CardDescription className="flex items-center gap-2 text-base">
-                    <MapPin className="h-4 w-4" />
-                    {gym.location}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground">{gym.description}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span>{gym.members} miembros</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-primary text-primary" />
-                      <span className="font-semibold">{gym.rating}</span>
-                    </div>
-                  </div>
-                  <Link href={`/gym/${gym.id}`} className="block">
-                    <Button className="w-full gap-2">
-                      Ver más información
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Cargando gimnasios...</p>
+            </div>
+          ) : gyms.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No hay gimnasios disponibles en este momento</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {gyms.map((gym) => (
+                <Card
+                  key={gym.id}
+                  className="border-2 border-border/60 bg-card/90 backdrop-blur overflow-hidden hover:border-primary/70 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
+                >
+                  <img
+                    src={gym.image || "/modern-gym-interior.png"}
+                    alt={gym.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <CardHeader>
+                    <CardTitle className="text-2xl">{gym.name}</CardTitle>
+                    <CardDescription className="flex items-center gap-2 text-base">
+                      <MapPin className="h-4 w-4" />
+                      {gym.location}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Link href={`/gym/${gym.slug || gym.id}`} className="block">
+                      <Button className="w-full gap-2">
+                        Ver más información
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
