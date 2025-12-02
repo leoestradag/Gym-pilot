@@ -7,6 +7,7 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Protection is handled by middleware.ts
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
