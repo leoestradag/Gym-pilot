@@ -407,7 +407,6 @@ export default function MyGymPage() {
                 variant="outline"
                 onClick={() => {
                   setIsDialogOpen(false)
-                  setEditingGym(null)
                   setFormData({
                     name: "",
                     location: "",
@@ -422,7 +421,7 @@ export default function MyGymPage() {
                 Cancelar
               </Button>
               <Button type="submit">
-                {editingGym ? "Actualizar" : "Crear"}
+                Actualizar
               </Button>
             </div>
           </form>
