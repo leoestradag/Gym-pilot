@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { cookies } from "next/headers"
 import { jwtVerify } from "jose"
 
 const GYM_SESSION_COOKIE = "gym_session"
@@ -15,19 +14,22 @@ function getJwtSecret() {
 
 async function hasGymAccess(request: NextRequest): Promise<boolean> {
   try {
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get(GYM_SESSION_COOKIE)
+    const sessionCookie = request.cookies.get(GYM_SESSION_COOKIE)
     
     if (sessionCookie) {
       const secret = getJwtSecret()
-      const { payload } = await jwtVerify(sessionCookie.value, secret)
-      if (payload.type === "gym" && payload.gymId) {
-        return true
+      try {
+        const { payload } = await jwtVerify(sessionCookie.value, secret)
+        if (payload.type === "gym" && payload.gymId) {
+          return true
+        }
+      } catch {
+        // Invalid token, continue checking
       }
     }
 
     // Check for gym_access_* cookies
-    const allCookies = cookieStore.getAll()
+    const allCookies = request.cookies.getAll()
     for (const cookie of allCookies) {
       if (cookie.name.startsWith("gym_access_")) {
         const secret = getJwtSecret()
