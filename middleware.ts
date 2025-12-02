@@ -55,7 +55,10 @@ export async function middleware(request: NextRequest) {
 
   // Allow access to gym selection and login pages
   if (pathname.startsWith("/admin/gym/select") || pathname.startsWith("/admin/gym/login")) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    // Add pathname to headers for layout to check
+    response.headers.set("x-pathname", pathname)
+    return response
   }
 
   // Protect all other admin routes
@@ -65,6 +68,10 @@ export async function middleware(request: NextRequest) {
     if (!hasAccess) {
       return NextResponse.redirect(new URL("/admin/gym/select", request.url))
     }
+    
+    const response = NextResponse.next()
+    response.headers.set("x-pathname", pathname)
+    return response
   }
 
   return NextResponse.next()
