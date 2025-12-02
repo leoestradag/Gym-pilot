@@ -1,6 +1,5 @@
 import type React from "react"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { AdminLayoutWrapper } from "@/components/admin-layout-wrapper"
 
 export default function AdminLayout({
   children,
@@ -8,13 +7,5 @@ export default function AdminLayout({
   children: React.ReactNode
 }>) {
   // Protection is handled by middleware.ts
-  // The layout for /admin/gym/select will override this one
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1">{children}</main>
-      </div>
-    </SidebarProvider>
-  )
+  return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>
 }
