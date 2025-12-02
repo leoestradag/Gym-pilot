@@ -5,7 +5,11 @@ export default function SelectGymLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // This layout doesn't include the sidebar - it's a standalone page
-  return <>{children}</>
+  // This layout overrides the admin layout - no sidebar on selection page
+  return (
+    <div className="min-h-screen w-full">
+      {children}
+    </div>
+  )
 }
 
