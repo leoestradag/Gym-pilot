@@ -3,7 +3,6 @@ import { getGymSession } from "@/lib/gym-session"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
-  Building2, 
   CreditCard, 
   Calendar, 
   MapPin, 
@@ -18,23 +17,17 @@ import { prisma } from "@/lib/db"
 
 async function getGymData(gymId: number) {
   try {
+    if (!prisma || !prisma.gym) {
+      return null
+    }
+    
     const gym = await prisma.gym.findUnique({
       where: { id: gymId },
       include: {
-        facilities: {
-          orderBy: { order: "asc" },
-        },
-        amenities: {
-          orderBy: { order: "asc" },
-        },
-        membershipPlans: {
-          orderBy: { order: "asc" },
-        },
-        schedules: {
-          orderBy: { 
-            dayOfWeek: "asc" 
-          },
-        },
+        facilities: true,
+        amenities: true,
+        membershipPlans: true,
+        schedules: true,
       },
     })
     return gym
@@ -63,12 +56,20 @@ export default async function GymAdminDashboard({
   const gym = await getGymData(gymSession.id)
 
   if (!gym) {
-    return <div>Error al cargar información del gimnasio</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Error al cargar información del gimnasio</div>
+      </div>
+    )
   }
+
+  const facilitiesCount = gym.facilities?.length || 0
+  const amenitiesCount = gym.amenities?.length || 0
+  const plansCount = gym.membershipPlans?.length || 0
+  const schedulesCount = gym.schedules?.length || 0
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -94,7 +95,6 @@ export default async function GymAdminDashboard({
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-4 mb-8">
           <Card className="border-border/50 bg-card/50 backdrop-blur">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -104,7 +104,7 @@ export default async function GymAdminDashboard({
               <Dumbbell className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{gym.facilities.length}</div>
+              <div className="text-2xl font-bold text-foreground">{facilitiesCount}</div>
               <p className="text-xs text-muted-foreground mt-1">Áreas configuradas</p>
             </CardContent>
           </Card>
@@ -117,7 +117,7 @@ export default async function GymAdminDashboard({
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{gym.membershipPlans.length}</div>
+              <div className="text-2xl font-bold text-foreground">{plansCount}</div>
               <p className="text-xs text-muted-foreground mt-1">Planes activos</p>
             </CardContent>
           </Card>
@@ -130,7 +130,7 @@ export default async function GymAdminDashboard({
               <Heart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{gym.amenities.length}</div>
+              <div className="text-2xl font-bold text-foreground">{amenitiesCount}</div>
               <p className="text-xs text-muted-foreground mt-1">Servicios adicionales</p>
             </CardContent>
           </Card>
@@ -143,13 +143,12 @@ export default async function GymAdminDashboard({
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{gym.schedules.length}</div>
+              <div className="text-2xl font-bold text-foreground">{schedulesCount}</div>
               <p className="text-xs text-muted-foreground mt-1">Días configurados</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Management Sections */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Link href={`/admin/gym/${gymId}/instalaciones`}>
             <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
@@ -239,10 +238,9 @@ export default async function GymAdminDashboard({
                 </p>
               </CardContent>
             </Card>
-          </Card>
+          </Link>
         </div>
 
-        {/* Gym Info Summary */}
         <Card className="mt-8 border-border/50 bg-card/50 backdrop-blur">
           <CardHeader>
             <CardTitle>Información del Gimnasio</CardTitle>
@@ -272,4 +270,3 @@ export default async function GymAdminDashboard({
     </div>
   )
 }
-
