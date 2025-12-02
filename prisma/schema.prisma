@@ -230,9 +230,85 @@ model Gym {
   email        String
   hours        String
   image        String?
+  slug         String?        @unique // URL-friendly identifier (e.g., "tessalp-centro")
+  adminCode    String?        @unique @map("admin_code") // Code for gym admin login
+  passwordHash String?        @map("password_hash") // Hashed password for gym admin
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
+  
   CoachProfile CoachProfile[]
+  facilities   GymFacility[]
+  amenities    GymAmenity[]
+  membershipPlans GymMembershipPlan[]
+  schedules    GymSchedule[]
 
   @@map("gyms")
+}
+
+model GymFacility {
+  id          Int      @id @default(autoincrement())
+  gymId       Int      @map("gym_id")
+  name        String
+  description String
+  image       String?
+  features    String[] // Array of feature strings
+  icon        String?  // Icon name/identifier
+  order       Int      @default(0) // For ordering display
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@map("gym_facilities")
+}
+
+model GymAmenity {
+  id          Int      @id @default(autoincrement())
+  gymId       Int      @map("gym_id")
+  name        String
+  description String
+  image       String?
+  icon        String?  // Icon name/identifier
+  order       Int      @default(0) // For ordering display
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@map("gym_amenities")
+}
+
+model GymMembershipPlan {
+  id          Int      @id @default(autoincrement())
+  gymId       Int      @map("gym_id")
+  name        String
+  price       Float
+  period      String   @default("mes") // "mes", "trimestre", "año"
+  description String?
+  features    String[] // Array of feature strings
+  popular     Boolean  @default(false)
+  color       String?  // CSS class or color code
+  order       Int      @default(0) // For ordering display
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@map("gym_membership_plans")
+}
+
+model GymSchedule {
+  id          Int      @id @default(autoincrement())
+  gymId       Int      @map("gym_id")
+  dayOfWeek   String   @map("day_of_week") // "Lunes", "Martes", etc.
+  openTime    String   @map("open_time") // "05:00"
+  closeTime   String   @map("close_time") // "23:00"
+  isClosed    Boolean  @default(false) @map("is_closed")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@unique([gymId, dayOfWeek])
+  @@map("gym_schedules")
 }
