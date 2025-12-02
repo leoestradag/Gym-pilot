@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getGymSession } from "@/lib/gym-session"
+import { getGymSession, getGymAccess } from "@/lib/gym-session"
 
 export default async function GymAdminLayout({
   children,
@@ -12,17 +12,26 @@ export default async function GymAdminLayout({
   
   // Check if this is the verify page - allow it without session
   // For other pages, require verification first
-  const gym = await getGymSession()
+  const gymSession = await getGymSession()
+  const gymAccess = await getGymAccess(Number(gymId))
 
-  // If not authenticated and not on verify page, redirect to verify
-  if (!gym) {
+  // If not authenticated and no access verified, allow verify page to load
+  // Otherwise, check access
+  if (!gymSession && !gymAccess) {
     // Allow verify page to load
     return <>{children}</>
   }
 
+  // Use session or access, prefer session
+  const currentGym = gymSession || gymAccess
+
+  if (!currentGym) {
+    return <>{children}</>
+  }
+
   // Check if gym is accessing their own panel
-  if (gym.id !== Number(gymId)) {
-    redirect(`/admin/gym/${gym.id}`)
+  if (currentGym.id !== Number(gymId)) {
+    redirect(`/admin/gym/${currentGym.id}`)
   }
 
   return <>{children}</>
