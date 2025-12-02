@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getGymSession, getGymAccess } from "@/lib/gym-session"
 import { prisma } from "@/lib/db"
+import { cookies } from "next/headers"
 
 export async function GET() {
   try {
@@ -32,9 +33,45 @@ export async function GET() {
       }
     }
 
-    // If no session, check if there's any gym access cookie
-    // We'll need to check all possible gym IDs (this is a fallback)
-    // For now, return error if no session
+    // If no session, check for gym access cookies
+    const cookieStore = await cookies()
+    const allCookies = cookieStore.getAll()
+    
+    // Look for gym_access_* cookies
+    for (const cookie of allCookies) {
+      if (cookie.name.startsWith("gym_access_")) {
+        const gymId = Number(cookie.name.replace("gym_access_", ""))
+        if (!Number.isNaN(gymId)) {
+          const gymAccess = await getGymAccess(gymId)
+          if (gymAccess) {
+            // Get full gym data with relations
+            const gym = await prisma.gym.findUnique({
+              where: { id: gymAccess.id },
+              include: {
+                facilities: {
+                  orderBy: { order: "asc" },
+                },
+                amenities: {
+                  orderBy: { order: "asc" },
+                },
+                membershipPlans: {
+                  orderBy: { order: "asc" },
+                },
+                schedules: {
+                  orderBy: { dayOfWeek: "asc" },
+                },
+              },
+            })
+
+            if (gym) {
+              return NextResponse.json({ gym })
+            }
+          }
+        }
+      }
+    }
+
+    // No session or access found
     return NextResponse.json(
       { error: "No hay gimnasio asociado a tu sesión" },
       { status: 401 }
