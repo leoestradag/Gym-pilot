@@ -67,7 +67,7 @@ const menuItems = [
     icon: Megaphone,
   },
   {
-    title: "Gimnasios",
+    title: "Mi Gimnasio",
     url: "/admin/gimnasios",
     icon: Building2,
   },
