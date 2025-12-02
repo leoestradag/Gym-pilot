@@ -299,7 +299,6 @@ export default function MyGymPage() {
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
         setIsDialogOpen(open)
         if (!open) {
-          setEditingGym(null)
           setFormData({
             name: "",
             location: "",
