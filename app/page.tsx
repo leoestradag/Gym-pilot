@@ -210,7 +210,7 @@ export default function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/crear-rutina">
                   <Button size="lg" className="gap-2">
-                    Empezar ahora
+                    Comenzar ahora
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -233,7 +233,7 @@ export default function LandingPage() {
           <p className="text-xl text-muted-foreground mb-8 text-balance">
             Accede a nuestro panel administrativo para gestionar tu gimnasio
           </p>
-          <Link href="/admin">
+          <Link href="/admin/gym/select">
             <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-transparent">
               Acceder al Panel Administrativo
             </Button>
