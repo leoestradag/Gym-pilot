@@ -7,8 +7,12 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 export function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   
-  // Don't show sidebar on gym selection page
-  if (pathname?.includes("/admin/gym/select") || pathname?.includes("/admin/gym/login")) {
+  // Don't show sidebar on gym selection, login, or verification pages
+  if (
+    pathname?.includes("/admin/gym/select") || 
+    pathname?.includes("/admin/gym/login") ||
+    pathname?.match(/\/admin\/gym\/\d+\/verify/)
+  ) {
     return <>{children}</>
   }
 
