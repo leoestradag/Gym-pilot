@@ -42,12 +42,12 @@ export default function VerifyGymAccessPage() {
         description: `Bienvenido, ${data.gym.name}`,
       })
 
-      // Redirect to main admin dashboard after a short delay to ensure cookie is set
+      // Redirect to gym admin dashboard after a short delay to ensure cookie is set
       setTimeout(() => {
         if (typeof window !== 'undefined') {
-          window.location.href = '/admin'
+          window.location.href = `/admin/gym/${gymId}`
         } else {
-          router.push('/admin')
+          router.push(`/admin/gym/${gymId}`)
         }
       }, 500)
     } catch (error) {

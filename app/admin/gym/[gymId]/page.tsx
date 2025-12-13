@@ -10,7 +10,9 @@ import {
   LogOut,
   Dumbbell,
   Heart,
-  Clock
+  Clock,
+  DollarSign,
+  Users
 } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/db"
@@ -209,6 +211,42 @@ export default async function GymAdminDashboard({
               <CardContent>
                 <p className="text-sm text-muted-foreground">
                   Configura los horarios de operación
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/admin/finanzas">
+            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <DollarSign className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Finanzas</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Revisa ingresos, gastos y reportes financieros
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/admin/clases">
+            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Clases</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Gestiona clases grupales e instructores
                 </p>
               </CardContent>
             </Card>
