@@ -47,13 +47,48 @@ export default function ProfilePage() {
   const [accessRequests, setAccessRequests] = useState<MemberAccessRequest[]>([])
   const [accessFeedback, setAccessFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [isLoadingAccess, setIsLoadingAccess] = useState(false)
+  const [isLoadingUser, setIsLoadingUser] = useState(true)
+  const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null)
 
   useEffect(() => {
-    // Obtener membresías desde localStorage
-    const savedMemberships = localStorage.getItem('user-memberships')
-    if (savedMemberships) {
-      setMemberships(JSON.parse(savedMemberships))
+    // Verificar si hay un usuario autenticado
+    const checkUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        const data = await response.json()
+        
+        if (response.ok && data.user) {
+          setUser(data.user)
+          // Solo cargar membresías si hay un usuario autenticado
+          const savedMemberships = localStorage.getItem('user-memberships')
+          if (savedMemberships) {
+            try {
+              const parsed = JSON.parse(savedMemberships)
+              // Verificar que sea un array válido
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setMemberships(parsed)
+              }
+            } catch (e) {
+              // Si hay error al parsear, limpiar el localStorage
+              localStorage.removeItem('user-memberships')
+            }
+          }
+        } else {
+          // Si no hay usuario autenticado, limpiar membresías
+          localStorage.removeItem('user-memberships')
+          setMemberships([])
+        }
+      } catch (error) {
+        console.error('Error checking user', error)
+        // En caso de error, limpiar membresías para evitar mostrar datos incorrectos
+        localStorage.removeItem('user-memberships')
+        setMemberships([])
+      } finally {
+        setIsLoadingUser(false)
+      }
     }
+
+    checkUser()
   }, [])
 
   const formatPrice = (price: number) => {

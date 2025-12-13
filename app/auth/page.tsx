@@ -64,6 +64,13 @@ export default function AuthPage() {
           return
         }
 
+        // Limpiar membresías del localStorage si el usuario no tiene sesión previa
+        // Esto asegura que usuarios nuevos no vean datos de pruebas anteriores
+        const userSession = document.cookie.includes('user_session')
+        if (!userSession) {
+          localStorage.removeItem('user-memberships')
+        }
+        
         router.push("/profile")
         router.refresh()
       } catch (error) {
@@ -139,6 +146,9 @@ export default function AuthPage() {
         })
 
         if (loginResponse.ok) {
+          // Limpiar membresías del localStorage para usuarios nuevos
+          localStorage.removeItem('user-memberships')
+          localStorage.removeItem('gym-cart')
           router.push("/profile")
           router.refresh()
         } else {
