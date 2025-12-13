@@ -196,8 +196,9 @@ export default function SelectGymPage() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      console.log("Button clicked for gym:", gym.id)
-                      handleSelectGym(gym.id)
+                      console.log("Button clicked for gym:", gym.id, gym.name)
+                      // Navegación directa y confiable
+                      window.location.href = `/admin/gym/${gym.id}/verify`
                     }}
                   >
                     Seleccionar
