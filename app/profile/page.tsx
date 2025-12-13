@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Calendar, MapPin, CreditCard, CheckCircle, Clock } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, CreditCard, CheckCircle, Clock, Settings, User as UserIcon, Mail, Save } from "lucide-react"
 import Link from "next/link"
 
 interface Membership {
@@ -49,6 +49,12 @@ export default function ProfilePage() {
   const [isLoadingAccess, setIsLoadingAccess] = useState(false)
   const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null)
+  const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile')
+  const [settingsData, setSettingsData] = useState({
+    name: '',
+    email: '',
+  })
+  const [isSavingSettings, setIsSavingSettings] = useState(false)
 
   useEffect(() => {
     // Verificar si hay un usuario autenticado
@@ -59,6 +65,10 @@ export default function ProfilePage() {
         
         if (response.ok && data.user) {
           setUser(data.user)
+          setSettingsData({
+            name: data.user.name || '',
+            email: data.user.email || '',
+          })
           // Solo cargar membresías si hay un usuario autenticado
           const savedMemberships = localStorage.getItem('user-memberships')
           if (savedMemberships) {
@@ -89,6 +99,14 @@ export default function ProfilePage() {
     }
 
     checkUser()
+    
+    // Verificar si hay un hash en la URL para cambiar de tab
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash
+      if (hash === '#settings') {
+        setActiveTab('settings')
+      }
+    }
   }, [])
 
   const formatPrice = (price: number) => {
@@ -254,7 +272,29 @@ export default function ProfilePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+        {/* Tabs */}
+        <div className="flex gap-2 border-b border-border/50">
+          <Button
+            variant={activeTab === 'profile' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('profile')}
+            className="gap-2"
+          >
+            <UserIcon className="h-4 w-4" />
+            Perfil
+          </Button>
+          <Button
+            variant={activeTab === 'settings' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('settings')}
+            className="gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            Configuración
+          </Button>
+        </div>
+
+        {activeTab === 'profile' ? (
+          <>
+            <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
           <CardHeader>
             <CardTitle className="text-xl">Solicitudes de acceso de coaches</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -463,6 +503,71 @@ export default function ProfilePage() {
               ))}
             </div>
           </div>
+        )}
+          </>
+        ) : (
+          <Card className="border-2 border-border/60 bg-card/90 backdrop-blur">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Configuración
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Gestiona tu información personal y preferencias
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {user ? (
+                <form onSubmit={async (e) => {
+                  e.preventDefault()
+                  setIsSavingSettings(true)
+                  // Aquí iría la lógica para guardar los cambios
+                  // Por ahora solo mostramos un mensaje
+                  setTimeout(() => {
+                    setIsSavingSettings(false)
+                    alert('Configuración guardada (funcionalidad pendiente)')
+                  }, 1000)
+                }} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nombre completo</Label>
+                    <Input
+                      id="name"
+                      value={settingsData.name}
+                      onChange={(e) => setSettingsData({ ...settingsData, name: e.target.value })}
+                      placeholder="Tu nombre completo"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={settingsData.email}
+                      onChange={(e) => setSettingsData({ ...settingsData, email: e.target.value })}
+                      placeholder="tu@email.com"
+                      disabled
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      El email no se puede cambiar por seguridad
+                    </p>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button type="submit" disabled={isSavingSettings} className="gap-2">
+                      <Save className="h-4 w-4" />
+                      {isSavingSettings ? 'Guardando...' : 'Guardar Cambios'}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Inicia sesión para acceder a la configuración</p>
+                  <Link href="/auth" className="mt-4 inline-block">
+                    <Button>Iniciar Sesión</Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

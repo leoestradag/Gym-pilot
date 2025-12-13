@@ -29,27 +29,92 @@ interface UserData {
 export function UserAvatar() {
   const [isOpen, setIsOpen] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    // Simular datos del usuario (en una app real vendría de la base de datos)
-    const mockUserData: UserData = {
-      firstName: "Juan",
-      lastName: "Pérez",
-      email: "juan.perez@email.com",
-      phone: "+52 (555) 123-4567",
-      joinDate: "15 de Enero, 2025",
-      membershipType: "Premium"
-    }
-    setUserData(mockUserData)
+    loadUserData()
   }, [])
 
-  const handleLogout = () => {
-    // Aquí iría la lógica de cerrar sesión
-    console.log("Logout clicked")
-    // Redirigir al inicio
-    router.push("/")
+  const loadUserData = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch("/api/auth/me")
+      if (response.ok) {
+        const data = await response.json()
+        if (data.user) {
+          // Parsear nombre completo en firstName y lastName
+          const nameParts = data.user.name.split(" ")
+          const firstName = nameParts[0] || ""
+          const lastName = nameParts.slice(1).join(" ") || ""
+          
+          setUserData({
+            firstName,
+            lastName,
+            email: data.user.email,
+            phone: undefined, // No está en el modelo UserAccount
+            joinDate: new Date().toLocaleDateString('es-MX', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }),
+            membershipType: "Premium" // Por defecto, se puede obtener de membresías
+          })
+        } else {
+          // Si no hay usuario, usar datos mock para mostrar el componente
+          setUserData({
+            firstName: "Usuario",
+            lastName: "Invitado",
+            email: "invitado@email.com",
+            phone: undefined,
+            joinDate: new Date().toLocaleDateString('es-MX', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }),
+            membershipType: "Básico"
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error loading user data", error)
+      // En caso de error, no mostrar el componente
+      setUserData(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      setIsOpen(false)
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      })
+      
+      if (response.ok) {
+        // Limpiar cualquier dato local
+        setUserData(null)
+        // Redirigir al inicio
+        router.push("/")
+        router.refresh()
+      } else {
+        console.error("Error al cerrar sesión")
+        // Aún así redirigir al inicio
+        router.push("/")
+        router.refresh()
+      }
+    } catch (error) {
+      console.error("Error al cerrar sesión", error)
+      // Aún así redirigir al inicio
+      router.push("/")
+      router.refresh()
+    }
+  }
+
+  const handleSettings = () => {
     setIsOpen(false)
+    router.push("/profile#settings")
   }
 
   const getInitials = () => {
@@ -155,7 +220,7 @@ export function UserAvatar() {
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2"
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleSettings}
                   >
                     <Settings className="h-4 w-4" />
                     Configuración
