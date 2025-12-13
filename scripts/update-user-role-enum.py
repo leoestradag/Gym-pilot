@@ -64,3 +64,4 @@ except psycopg2.Error as e:
     print(f"❌ Error: {e}")
     sys.exit(1)
 
+

@@ -14,7 +14,6 @@ const gymsData = {
     email: "centro@tessalpgyms.com",
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
     image: "/modern-gym-interior.png",
-    accent: "text-primary",
   },
   "tessalp-norte": {
     name: "Tessalp Norte",
@@ -23,7 +22,6 @@ const gymsData = {
     email: "norte@tessalpgyms.com",
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
     image: "/fitness-center-equipment.jpg",
-    accent: "text-green-500",
   },
   "tessalp-sur": {
     name: "Tessalp Sur",
@@ -32,7 +30,6 @@ const gymsData = {
     email: "sur@tessalpgyms.com",
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
     image: "/gym-training-area.jpg",
-    accent: "text-orange-500",
   },
   "one-gym": {
     name: "One Gym",
@@ -41,7 +38,6 @@ const gymsData = {
     email: "info@onegym.com",
     hours: "24/7 - Acceso ilimitado todos los días",
     image: "/people-training-in-modern-gym.jpg",
-    accent: "text-blue-500",
   },
   "world-gym": {
     name: "World Gym",
@@ -50,7 +46,6 @@ const gymsData = {
     email: "contacto@worldgym.com",
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
     image: "/people-training-in-modern-gym.jpg",
-    accent: "text-amber-500",
   },
   "smartfit": {
     name: "Smart Fit",
@@ -59,7 +54,6 @@ const gymsData = {
     email: "atencion@smartfit.com",
     hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
     image: "/people-training-in-modern-gym.jpg",
-    accent: "text-rose-500",
   },
 }
 
@@ -99,8 +93,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance">
-            Transforma tu vida en{" "}
-            <span className={gym.accent ?? "text-primary"}>{gym.name}</span>
+            Transforma tu vida en <span className="text-primary">{gym.name}</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 text-balance">
             Equipamiento de última generación, entrenadores certificados y una comunidad que te apoya

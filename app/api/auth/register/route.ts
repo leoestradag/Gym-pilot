@@ -17,8 +17,11 @@ const registerSchema = z.object({
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, {
-      message: "Debe contener letras y números",
+    .refine((val) => /[A-Za-z]/.test(val), {
+      message: "La contraseña debe contener al menos una letra",
+    })
+    .refine((val) => /\d/.test(val), {
+      message: "La contraseña debe contener al menos un número",
     }),
 })
 
@@ -40,7 +43,8 @@ export async function POST(request: Request) {
 
     const { firstName, lastName, email, password } = validation.data
 
-    if (!prisma.userAccount) {
+    if (!prisma || !prisma.userAccount) {
+      console.error("Prisma client not available or userAccount model not found")
       return NextResponse.json(
         { error: "Servicio de base de datos no disponible" },
         { status: 503 },

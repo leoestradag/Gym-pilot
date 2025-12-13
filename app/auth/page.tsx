@@ -111,7 +111,22 @@ export default function AuthPage() {
 
         const data = await response.json()
         if (!response.ok) {
-          setRegisterError(data.error ?? "No se pudo crear la cuenta")
+          // Mostrar errores específicos de validación si están disponibles
+          if (data.details) {
+            const errorMessages: string[] = []
+            if (data.details.firstName) errorMessages.push(...data.details.firstName)
+            if (data.details.lastName) errorMessages.push(...data.details.lastName)
+            if (data.details.email) errorMessages.push(...data.details.email)
+            if (data.details.password) errorMessages.push(...data.details.password)
+            
+            if (errorMessages.length > 0) {
+              setRegisterError(errorMessages.join(". "))
+            } else {
+              setRegisterError(data.error ?? "No se pudo crear la cuenta")
+            }
+          } else {
+            setRegisterError(data.error ?? "No se pudo crear la cuenta")
+          }
           return
         }
 

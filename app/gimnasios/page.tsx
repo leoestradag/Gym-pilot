@@ -1,15 +1,20 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  MapPin,
-  Users,
-  Star,
-  Clock,
-  ArrowLeft,
-  Dumbbell,
-  Shield,
+import { 
+  MapPin, 
+  Users, 
+  Star, 
+  Clock, 
+  Dumbbell, 
+  Award, 
+  Shield, 
   Heart,
+  ArrowLeft,
+  CheckCircle,
+  Users2,
+  Calendar,
+  Zap
 } from "lucide-react"
 import Link from "next/link"
 
@@ -443,89 +448,187 @@ export default function GymDetailsPage() {
         </div>
       </div>
 
-      {/* Gym Grid */}
+      {/* Gym Details */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-12">
           {gymDetails.map((gym) => (
-            <Link key={gym.id} href={`/gym/${gym.id}`}>
-              <Card className="group h-full border-border/50 bg-card/80 backdrop-blur overflow-hidden transition-all hover:shadow-xl">
-                <div className="relative h-44 w-full overflow-hidden">
-                  <img
-                    src={gym.image}
-                    alt={gym.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 to-transparent px-4 py-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-lg font-semibold text-foreground">{gym.name}</h2>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {gym.location}
-                        </p>
+            <Card key={gym.id} className="border-border/50 bg-card/80 backdrop-blur overflow-hidden">
+              {/* Gym Header */}
+              <div className="relative">
+                <img 
+                  src={gym.image} 
+                  alt={gym.name}
+                  className="w-full h-64 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-3xl font-bold text-white">{gym.name}</h2>
+                      <p className="text-white/80 flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {gym.location}
+                      </p>
+                    </div>
+                    <div className="text-right text-white">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xl font-bold">{gym.rating}</span>
                       </div>
-                      <Badge className="flex items-center gap-1 bg-primary text-primary-foreground">
-                        <Star className="h-3 w-3 fill-current" />
-                        {gym.rating}
-                      </Badge>
+                      <p className="text-sm text-white/80">{gym.totalMembers} miembros</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <CardContent className="p-8">
+                {/* Basic Info */}
+                <div className="grid gap-8 md:grid-cols-3 mb-8">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-primary" />
+                      Historia
+                    </h3>
+                    <div className="space-y-2">
+                      <p><strong>Establecido:</strong> {gym.established}</p>
+                      <p><strong>Años activos:</strong> {gym.yearsActive} años</p>
+                      <p><strong>Miembros actuales:</strong> {gym.totalMembers}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-primary" />
+                      Horarios
+                    </h3>
+                    <div className="space-y-2">
+                      <p><strong>Lunes a Viernes:</strong> {gym.schedule.weekdays}</p>
+                      <p><strong>Sábado y Domingo:</strong> {gym.schedule.weekends}</p>
+                      <p><strong>Clases:</strong> {gym.schedule.classes}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold flex items-center gap-2">
+                      <Users2 className="h-5 w-5 text-primary" />
+                      Staff
+                    </h3>
+                    <div className="space-y-2">
+                      <p><strong>Total de entrenadores:</strong> {gym.staff.total}</p>
+                      <p><strong>Especialidades:</strong> Variadas</p>
+                      <p><strong>Experiencia promedio:</strong> 5+ años</p>
                     </div>
                   </div>
                 </div>
 
-                <CardContent className="space-y-4 p-5">
-                  <p className="text-sm text-muted-foreground line-clamp-2">{gym.description}</p>
-
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3">
-                      <Users className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="font-semibold text-foreground">{gym.totalMembers}</p>
-                        <p className="text-muted-foreground">Miembros</p>
-                      </div>
+                {/* Equipment */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Dumbbell className="h-6 w-6 text-primary" />
+                    Equipamiento
+                  </h3>
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <div>
+                      <h4 className="font-semibold mb-3 text-primary">Cardio</h4>
+                      <ul className="space-y-2">
+                        {gym.equipment.cardio.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="font-semibold text-foreground">Horarios</p>
-                        <p className="text-muted-foreground">{gym.schedule.weekdays}</p>
-                      </div>
+                    <div>
+                      <h4 className="font-semibold mb-3 text-primary">Fuerza</h4>
+                      <ul className="space-y-2">
+                        {gym.equipment.strength.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3">
-                      <Dumbbell className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="font-semibold text-foreground">Equipo</p>
-                        <p className="text-muted-foreground">{gym.equipment.cardio.length + gym.equipment.strength.length + gym.equipment.functional.length} categorías</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3">
-                      <Shield className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="font-semibold text-foreground">{gym.staff.total}</p>
-                        <p className="text-muted-foreground">Entrenadores</p>
-                      </div>
+                    <div>
+                      <h4 className="font-semibold mb-3 text-primary">Funcional</h4>
+                      <ul className="space-y-2">
+                        {gym.equipment.functional.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      Est. {gym.established}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {gym.yearsActive}+ años activos
-                    </Badge>
-                    <Badge variant="outline" className="text-xs flex items-center gap-1">
-                      <Heart className="h-3 w-3" />
-                      {gym.achievements[0]}
-                    </Badge>
+                {/* Staff Details */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Users className="h-6 w-6 text-primary" />
+                    Nuestro Staff
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {gym.staff.trainers.map((trainer, index) => (
+                      <Card key={index} className="border-border/50 bg-card/50">
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold mb-2">{trainer.name}</h4>
+                          <p className="text-sm text-muted-foreground mb-2">{trainer.specialty}</p>
+                          <div className="space-y-1 text-xs">
+                            <p><strong>Experiencia:</strong> {trainer.experience}</p>
+                            <p><strong>Certificación:</strong> {trainer.certification}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
+                </div>
 
-                  <Button variant="outline" size="sm" className="w-full justify-center gap-2">
-                    Ver más detalles
-                    <ArrowLeft className="h-4 w-4 rotate-180" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </Link>
+                {/* Services */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Zap className="h-6 w-6 text-primary" />
+                    Servicios Incluidos
+                  </h3>
+                  <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                    {gym.services.map((service, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 rounded-lg bg-card/50">
+                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                        <span className="text-sm">{service}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Achievements */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Award className="h-6 w-6 text-primary" />
+                    Logros y Certificaciones
+                  </h3>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {gym.achievements.map((achievement, index) => (
+                      <div key={index} className="flex items-center gap-3 p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                        <Award className="h-5 w-5 text-primary shrink-0" />
+                        <span className="font-medium">{achievement}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="text-center pt-6 border-t border-border/50">
+                  <Link href={`/gym/${gym.id}`}>
+                    <Button size="lg" className="gap-2">
+                      Ver Gimnasio Completo
+                      <ArrowLeft className="h-4 w-4 rotate-180" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
