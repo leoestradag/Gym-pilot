@@ -166,8 +166,7 @@ export default function SelectGymPage() {
             {gyms.map((gym) => (
               <Card
                 key={gym.id}
-                className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer"
-                onClick={() => handleSelectGym(gym.id)}
+                className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all"
               >
                 {gym.image && (
                   <img src={gym.image} alt={gym.name} className="w-full h-32 object-cover rounded-t-lg" />
@@ -185,7 +184,13 @@ export default function SelectGymPage() {
                     <MapPin className="h-4 w-4" />
                     <span className="truncate">{gym.location}</span>
                   </div>
-                  <Button className="w-full gap-2">
+                  <Button 
+                    className="w-full gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleSelectGym(gym.id)
+                    }}
+                  >
                     Seleccionar
                     <ArrowRight className="h-4 w-4" />
                   </Button>
