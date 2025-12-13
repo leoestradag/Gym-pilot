@@ -64,7 +64,13 @@ export default function SelectGymPage() {
   }
 
   const handleSelectGym = (gymId: number) => {
-    router.push(`/admin/gym/${gymId}/verify`)
+    console.log("Selecting gym:", gymId)
+    // Usar window.location.href para navegación más confiable
+    if (typeof window !== 'undefined') {
+      window.location.href = `/admin/gym/${gymId}/verify`
+    } else {
+      router.push(`/admin/gym/${gymId}/verify`)
+    }
   }
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
@@ -186,8 +192,11 @@ export default function SelectGymPage() {
                   </div>
                   <Button 
                     className="w-full gap-2"
+                    type="button"
                     onClick={(e) => {
+                      e.preventDefault()
                       e.stopPropagation()
+                      console.log("Button clicked for gym:", gym.id)
                       handleSelectGym(gym.id)
                     }}
                   >
