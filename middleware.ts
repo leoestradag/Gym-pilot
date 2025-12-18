@@ -53,8 +53,12 @@ async function hasGymAccess(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow access to gym selection and login pages
-  if (pathname.startsWith("/admin/gym/select") || pathname.startsWith("/admin/gym/login")) {
+  // Allow access to gym selection, login, and verify pages
+  if (
+    pathname.startsWith("/admin/gym/select") || 
+    pathname.startsWith("/admin/gym/login") ||
+    pathname.match(/^\/admin\/gym\/\d+\/verify$/)
+  ) {
     const response = NextResponse.next()
     // Add pathname to headers for layout to check
     response.headers.set("x-pathname", pathname)
