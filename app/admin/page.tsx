@@ -39,10 +39,26 @@ interface DashboardStats {
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [gymName, setGymName] = useState<string | null>(null)
 
   useEffect(() => {
     loadStats()
+    loadGymName()
   }, [])
+
+  const loadGymName = async () => {
+    try {
+      const response = await fetch("/api/gym/current")
+      if (response.ok) {
+        const data = await response.json()
+        if (data.gym?.name) {
+          setGymName(data.gym.name)
+        }
+      }
+    } catch (error) {
+      console.error("Error loading gym name", error)
+    }
+  }
 
   const loadStats = async () => {
     try {
@@ -99,7 +115,14 @@ export default function AdminDashboardPage() {
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="flex h-16 items-center gap-4 px-6">
           <SidebarTrigger />
-          <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
+          <div className="flex-1">
+            <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
+            {gymName && (
+              <p className="text-sm text-muted-foreground">
+                Bienvenido a tu panel administrativo de <span className="font-medium text-foreground">{gymName}</span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
