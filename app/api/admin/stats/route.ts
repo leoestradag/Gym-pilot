@@ -3,38 +3,38 @@ import { prisma } from "@/lib/db"
 import { getGymSession, getGymAccess } from "@/lib/gym-session"
 
 export async function GET(request: Request) {
-  // Obtener gymId de la sesión o de query params
-  const { searchParams } = new URL(request.url)
-  const gymIdParam = searchParams.get("gymId")
-  
+  // Obtener gymId de la sesión o de cookies de acceso
   let gymId: number | null = null
   
   // Intentar obtener de la sesión primero
   const gymSession = await getGymSession()
   if (gymSession) {
     gymId = gymSession.id
-  } else if (gymIdParam) {
-    gymId = parseInt(gymIdParam)
-    // Verificar acceso
-    const gymAccess = await getGymAccess(gymId)
-    if (!gymAccess) {
-      return NextResponse.json(
-        { error: "No tienes acceso a este gimnasio" },
-        { status: 403 },
-      )
-    }
   } else {
-    // Si no hay sesión ni gymId, retornar error
-    return NextResponse.json(
-      { error: "Se requiere sesión de gimnasio" },
-      { status: 401 },
-    )
+    // Si no hay sesión, buscar en cookies de acceso
+    const { cookies } = await import("next/headers")
+    const cookieStore = await cookies()
+    const allCookies = cookieStore.getAll()
+    
+    // Buscar cookies gym_access_*
+    for (const cookie of allCookies) {
+      if (cookie.name.startsWith("gym_access_")) {
+        const cookieGymId = Number(cookie.name.replace("gym_access_", ""))
+        if (!Number.isNaN(cookieGymId)) {
+          const gymAccess = await getGymAccess(cookieGymId)
+          if (gymAccess) {
+            gymId = gymAccess.id
+            break
+          }
+        }
+      }
+    }
   }
   
   if (!gymId) {
     return NextResponse.json(
-      { error: "Gimnasio no identificado" },
-      { status: 400 },
+      { error: "Se requiere sesión de gimnasio" },
+      { status: 401 },
     )
   }
   try {

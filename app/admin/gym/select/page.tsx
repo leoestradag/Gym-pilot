@@ -49,6 +49,7 @@ export default function SelectGymPage() {
       const response = await fetch("/api/gyms")
       if (response.ok) {
         const data = await response.json()
+        console.log("Gyms loaded:", data)
         setGyms(data)
       }
     } catch (error) {
@@ -194,6 +195,7 @@ export default function SelectGymPage() {
                     className="w-full gap-2"
                     type="button"
                     onClick={() => {
+                      console.log("Selecting gym:", { id: gym.id, name: gym.name, slug: gym.slug })
                       console.log("Navigating to:", `/admin/gym/${gym.id}/verify`)
                       window.location.href = `/admin/gym/${gym.id}/verify`
                     }}
