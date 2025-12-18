@@ -190,20 +190,15 @@ export default function SelectGymPage() {
                     <MapPin className="h-4 w-4" />
                     <span className="truncate">{gym.location}</span>
                   </div>
-                  <Button 
-                    className="w-full gap-2"
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      console.log("Button clicked for gym:", gym.id, gym.name)
-                      // Navegación directa y confiable
-                      window.location.href = `/admin/gym/${gym.id}/verify`
-                    }}
-                  >
-                    Seleccionar
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  <Link href={`/admin/gym/${gym.id}/verify`} className="block">
+                    <Button 
+                      className="w-full gap-2"
+                      type="button"
+                    >
+                      Seleccionar
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
