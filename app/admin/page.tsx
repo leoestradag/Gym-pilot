@@ -68,6 +68,7 @@ export default function AdminDashboardPage() {
             Sáb: 0,
             Dom: 0,
           },
+          totalMembers: 0,
         })
       }
     } catch (error) {
@@ -86,6 +87,7 @@ export default function AdminDashboardPage() {
           Sáb: 0,
           Dom: 0,
         },
+        totalMembers: 0,
       })
     } finally {
       setIsLoading(false)
