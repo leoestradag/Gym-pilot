@@ -1,7 +1,42 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { getGymSession, getGymAccess } from "@/lib/gym-session"
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Obtener gymId de la sesión o de query params
+  const { searchParams } = new URL(request.url)
+  const gymIdParam = searchParams.get("gymId")
+  
+  let gymId: number | null = null
+  
+  // Intentar obtener de la sesión primero
+  const gymSession = await getGymSession()
+  if (gymSession) {
+    gymId = gymSession.id
+  } else if (gymIdParam) {
+    gymId = parseInt(gymIdParam)
+    // Verificar acceso
+    const gymAccess = await getGymAccess(gymId)
+    if (!gymAccess) {
+      return NextResponse.json(
+        { error: "No tienes acceso a este gimnasio" },
+        { status: 403 },
+      )
+    }
+  } else {
+    // Si no hay sesión ni gymId, retornar error
+    return NextResponse.json(
+      { error: "Se requiere sesión de gimnasio" },
+      { status: 401 },
+    )
+  }
+  
+  if (!gymId) {
+    return NextResponse.json(
+      { error: "Gimnasio no identificado" },
+      { status: 400 },
+    )
+  }
   try {
     if (!prisma) {
       return NextResponse.json(
@@ -16,9 +51,10 @@ export async function GET() {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
 
-    // 1. Miembros Activos (con membresía activa y no expirada)
+    // 1. Miembros Activos (con membresía activa y no expirada) - filtrado por gimnasio
     const activeMembers = await prisma.member.count({
       where: {
+        gymId: gymId,
         status: "active",
         membershipEnd: {
           gte: now,
@@ -30,6 +66,7 @@ export async function GET() {
     const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
     const activeMembersLastMonth = await prisma.member.count({
       where: {
+        gymId: gymId,
         status: "active",
         membershipEnd: {
           gte: lastMonthDate,
@@ -41,11 +78,14 @@ export async function GET() {
       ? Math.round(((activeMembers - activeMembersLastMonth) / activeMembersLastMonth) * 100)
       : 0
 
-    // 2. Check-ins de Hoy
+    // 2. Check-ins de Hoy - filtrado por gimnasio (a través de miembros)
     const todayCheckins = await prisma.checkIn.count({
       where: {
         checkinTime: {
           gte: startOfToday,
+        },
+        member: {
+          gymId: gymId,
         },
       },
     })
@@ -58,6 +98,9 @@ export async function GET() {
           gte: new Date(lastMonthSameDay.setHours(0, 0, 0, 0)),
           lt: new Date(lastMonthSameDay.setHours(23, 59, 59, 999)),
         },
+        member: {
+          gymId: gymId,
+        },
       },
     })
 
@@ -66,9 +109,10 @@ export async function GET() {
       : 0
 
     // 3. Ingresos del Mes (suma de precios de planes de membresía de miembros creados este mes)
-    // Obtener todos los miembros creados este mes
+    // Obtener todos los miembros creados este mes - filtrado por gimnasio
     const membersThisMonth = await prisma.member.findMany({
       where: {
+        gymId: gymId,
         createdAt: {
           gte: startOfMonth,
         },
@@ -78,8 +122,11 @@ export async function GET() {
       },
     })
 
-    // Obtener todos los planes de membresía para calcular ingresos
+    // Obtener todos los planes de membresía del gimnasio para calcular ingresos
     const allPlans = await prisma.gymMembershipPlan.findMany({
+      where: {
+        gymId: gymId,
+      },
       select: {
         name: true,
         price: true,
@@ -108,6 +155,7 @@ export async function GET() {
     // Ingresos del mes anterior
     const membersLastMonth = await prisma.member.findMany({
       where: {
+        gymId: gymId,
         createdAt: {
           gte: startOfLastMonth,
           lt: startOfMonth,
@@ -136,9 +184,10 @@ export async function GET() {
       ? Math.round(((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
       : 0
 
-    // 4. Nuevas Membresías (miembros creados este mes)
+    // 4. Nuevas Membresías (miembros creados este mes) - filtrado por gimnasio
     const newMemberships = await prisma.member.count({
       where: {
+        gymId: gymId,
         createdAt: {
           gte: startOfMonth,
         },
@@ -147,6 +196,7 @@ export async function GET() {
 
     const newMembershipsLastMonth = await prisma.member.count({
       where: {
+        gymId: gymId,
         createdAt: {
           gte: startOfLastMonth,
           lt: startOfMonth,
@@ -158,7 +208,7 @@ export async function GET() {
       ? Math.round(((newMemberships - newMembershipsLastMonth) / newMembershipsLastMonth) * 100)
       : 0
 
-    // 5. Asistencia Semanal (check-ins por día de la semana)
+    // 5. Asistencia Semanal (check-ins por día de la semana) - filtrado por gimnasio
     const weekStart = new Date(now)
     weekStart.setDate(now.getDate() - now.getDay() + 1) // Lunes de esta semana
     weekStart.setHours(0, 0, 0, 0)
@@ -167,6 +217,9 @@ export async function GET() {
       where: {
         checkinTime: {
           gte: weekStart,
+        },
+        member: {
+          gymId: gymId,
         },
       },
       select: {
@@ -191,8 +244,12 @@ export async function GET() {
       attendanceByDay[dayNames[day]]++
     })
 
-    // 6. Total de miembros inscritos hasta hoy
-    const totalMembers = await prisma.member.count()
+    // 6. Total de miembros inscritos hasta hoy - filtrado por gimnasio
+    const totalMembers = await prisma.member.count({
+      where: {
+        gymId: gymId,
+      },
+    })
 
     return NextResponse.json({
       activeMembers: {

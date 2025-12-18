@@ -19,11 +19,13 @@ model Member {
   membershipStart DateTime @map("membership_start")
   membershipEnd   DateTime @map("membership_end")
   status          String   @default("active")
+  gymId           Int?     @map("gym_id")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  checkIns           CheckIn[]
-  coachAccess        CoachUserAccess[]
+  gym             Gym?                 @relation(fields: [gymId], references: [id])
+  checkIns        CheckIn[]
+  coachAccess     CoachUserAccess[]
   CoachClassAttendee CoachClassAttendee[]
 
   @@map("members")
@@ -236,11 +238,12 @@ model Gym {
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   
-  CoachProfile CoachProfile[]
-  facilities   GymFacility[]
-  amenities    GymAmenity[]
+  members         Member[]
+  CoachProfile    CoachProfile[]
+  facilities      GymFacility[]
+  amenities       GymAmenity[]
   membershipPlans GymMembershipPlan[]
-  schedules    GymSchedule[]
+  schedules       GymSchedule[]
 
   @@map("gyms")
 }
