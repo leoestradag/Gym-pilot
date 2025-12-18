@@ -191,6 +191,9 @@ export async function GET() {
       attendanceByDay[dayNames[day]]++
     })
 
+    // 6. Total de miembros inscritos hasta hoy
+    const totalMembers = await prisma.member.count()
+
     return NextResponse.json({
       activeMembers: {
         value: activeMembers,
@@ -209,6 +212,7 @@ export async function GET() {
         trend: newMembershipsTrend,
       },
       weeklyAttendance: attendanceByDay,
+      totalMembers,
     })
   } catch (error) {
     console.error("Error fetching dashboard stats", error)

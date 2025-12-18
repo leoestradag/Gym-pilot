@@ -33,6 +33,7 @@ interface DashboardStats {
     Sáb: number
     Dom: number
   }
+  totalMembers: number
 }
 
 export default function AdminDashboardPage() {
@@ -143,7 +144,12 @@ export default function AdminDashboardPage() {
             {/* Weekly Attendance Summary */}
             <Card className="border-border/50 bg-card/50 backdrop-blur">
               <CardHeader>
-                <CardTitle className="text-foreground">Asistencia Semanal</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-foreground">Asistencia Semanal</CardTitle>
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">{stats?.totalMembers ?? 0}</span> miembros inscritos
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-7 gap-4">
