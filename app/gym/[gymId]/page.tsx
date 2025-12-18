@@ -5,81 +5,115 @@ import { Badge } from "@/components/ui/badge"
 import { Clock, MapPin, Phone, Mail, Users, Dumbbell, Heart, ArrowLeft, Home } from "lucide-react"
 import { GymNavigation } from "@/components/gym-navigation"
 import Link from "next/link"
-
-const gymsData = {
-  "tessalp-centro": {
-    name: "Tessalp Centro",
-    location: "Av. Principal 123, Centro",
-    phone: "+52 (555) 123-4567",
-    email: "centro@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/modern-gym-interior.png",
-  },
-  "tessalp-norte": {
-    name: "Tessalp Norte",
-    location: "Blvd. Norte 456, Zona Norte",
-    phone: "+52 (555) 234-5678",
-    email: "norte@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/fitness-center-equipment.jpg",
-  },
-  "tessalp-sur": {
-    name: "Tessalp Sur",
-    location: "Calle Sur 789, Zona Sur",
-    phone: "+52 (555) 345-6789",
-    email: "sur@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/gym-training-area.jpg",
-  },
-  "one-gym": {
-    name: "One Gym",
-    location: "Plaza Galerías, Zona Rosa",
-    phone: "+52 (555) 456-7890",
-    email: "info@onegym.com",
-    hours: "24/7 - Acceso ilimitado todos los días",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "world-gym": {
-    name: "World Gym",
-    location: "Centro Comercial Perisur",
-    phone: "+52 (555) 567-8901",
-    email: "contacto@worldgym.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "smartfit": {
-    name: "Smart Fit",
-    location: "Plaza Satélite",
-    phone: "+52 (555) 678-9012",
-    email: "atencion@smartfit.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-}
-
-
+import { prisma } from "@/lib/db"
 
 export default async function GymPage({ params }: { params: Promise<{ gymId: string }> }) {
   const { gymId } = await params
-  const gym = gymsData[gymId as keyof typeof gymsData]
+  
+  // Buscar gimnasio por slug o ID
+  if (!prisma || !prisma.gym) {
+    return <div>Error: Servicio de base de datos no disponible</div>
+  }
+
+  // Normalizar el slug: convertir a minúsculas y reemplazar espacios con guiones
+  const normalizedSlug = gymId.toLowerCase().trim()
+  
+  // Intentar buscar por slug primero (exacto, con guiones, con espacios)
+  let gym = await prisma.gym.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedSlug },
+        { slug: normalizedSlug.replace(/-/g, " ") },
+        { slug: normalizedSlug.replace(/ /g, "-") },
+        // Si es número, buscar por ID
+        ...(isNaN(Number(gymId)) ? [] : [{ id: Number(gymId) }]),
+      ],
+    },
+    include: {
+      facilities: {
+        orderBy: { order: "asc" },
+      },
+      amenities: {
+        orderBy: { order: "asc" },
+      },
+      membershipPlans: {
+        orderBy: { order: "asc" },
+      },
+      schedules: {
+        orderBy: { dayOfWeek: "asc" },
+      },
+    },
+  })
+
+  // Si no se encuentra por slug, intentar buscar por nombre (case insensitive)
+  if (!gym) {
+    const allGyms = await prisma.gym.findMany({
+      where: {
+        name: {
+          contains: gymId,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        facilities: {
+          orderBy: { order: "asc" },
+        },
+        amenities: {
+          orderBy: { order: "asc" },
+        },
+        membershipPlans: {
+          orderBy: { order: "asc" },
+        },
+        schedules: {
+          orderBy: { dayOfWeek: "asc" },
+        },
+      },
+    })
+    
+    if (allGyms.length > 0) {
+      gym = allGyms[0]
+    }
+  }
 
   if (!gym) {
-    return <div>Gimnasio no encontrado</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Gimnasio no encontrado</h1>
+          <p className="text-muted-foreground mb-4">
+            No se encontró el gimnasio con el identificador: {gymId}
+          </p>
+          <Link href="/gimnasios">
+            <Button>Ver todos los gimnasios</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
+
+  // Formatear horarios si existen
+  const formattedHours = gym.schedules && gym.schedules.length > 0
+    ? gym.schedules
+        .filter((s) => !s.isClosed)
+        .map((s) => `${s.dayOfWeek}: ${s.openTime} - ${s.closeTime}`)
+        .join(" | ")
+    : gym.hours || "Horarios no disponibles"
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <GymNavigation gymId={gymId} />
+      <GymNavigation gymId={gym.slug || gymId} />
       
       {/* Hero Section */}
       <section id="inicio" className="relative h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-primary/25" />
-        <img
-          src={gym.image || "/placeholder.svg"}
-          alt={gym.name}
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
+        {gym.image && (
+          <img
+            src={gym.image}
+            alt={gym.name}
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          />
+        )}
         
         {/* Back Button */}
         <div className="absolute top-6 right-6 z-20">
@@ -150,7 +184,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
           </div>
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-               <Link href={`/gym/${gymId}/membresias`}>
+               <Link href={`/gym/${gym.slug || gymId}/membresias`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -169,7 +203,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
               </Card>
             </Link>
 
-            <Link href={`/gym/${gymId}/clases`}>
+            <Link href={`/gym/${gym.slug || gymId}/clases`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -188,7 +222,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
               </Card>
             </Link>
 
-            <Link href={`/gym/${gymId}/instalaciones`}>
+            <Link href={`/gym/${gym.slug || gymId}/instalaciones`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -207,7 +241,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
               </Card>
             </Link>
 
-            <Link href={`/gym/${gymId}/horarios`}>
+            <Link href={`/gym/${gym.slug || gymId}/horarios`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -226,7 +260,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
               </Card>
             </Link>
 
-            <Link href={`/gym/${gymId}/contacto`}>
+            <Link href={`/gym/${gym.slug || gymId}/contacto`}>
               <Card className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -283,7 +317,7 @@ export default async function GymPage({ params }: { params: Promise<{ gymId: str
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4">{gym.hours}</p>
+                <p className="text-muted-foreground mb-4">{formattedHours}</p>
                 <p className="text-sm text-muted-foreground">
                   Horarios flexibles diseñados para adaptarse a tu estilo de vida y compromisos.
                 </p>
