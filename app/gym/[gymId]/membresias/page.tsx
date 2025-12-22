@@ -242,7 +242,7 @@ export default function MembresiasPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <ul className="space-y-3">
-                      {plan.features.map((feature) => (
+                      {plan.features.map((feature: string) => (
                         <li key={feature} className="flex items-start gap-2">
                           <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                           <span className="text-sm">{feature}</span>
