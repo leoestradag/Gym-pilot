@@ -179,6 +179,21 @@ export default function ClassesPage() {
   // Load classes from database on mount
   useEffect(() => {
     loadClasses()
+    // Cargar slug del gimnasio
+    const loadGymSlug = async () => {
+      try {
+        const response = await fetch("/api/gym/current")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.gym?.slug) {
+            setGymSlug(data.gym.slug)
+          }
+        }
+      } catch (error) {
+        console.error("Error loading gym slug", error)
+      }
+    }
+    loadGymSlug()
   }, [])
 
   // Load instructors on mount and when classes change
