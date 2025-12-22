@@ -4,7 +4,9 @@ import { prisma } from "@/lib/db"
 
 const createClassSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
-  instructor: z.string().min(1, "El instructor es obligatorio"),
+  instructor: z.string().optional(), // Mantener para compatibilidad
+  instructorId: z.union([z.string(), z.number()]).optional(), // ID del instructor
+  instructorName: z.string().optional(), // Nombre del instructor
   day: z.string().min(1, "El día es obligatorio"),
   time: z.string().min(1, "La hora es obligatoria"),
   duration: z.string().min(1, "La duración es obligatoria"),
@@ -98,7 +100,36 @@ export async function POST(request: Request) {
       )
     }
 
-    const { name, instructor, day, time, duration, capacity, description } = validation.data
+    const { name, instructor, instructorId, instructorName, day, time, duration, capacity, description } = validation.data
+
+    // Validar que haya instructorId o instructor
+    if (!instructorId && !instructor) {
+      return NextResponse.json(
+        { error: "El instructor es obligatorio" },
+        { status: 400 },
+      )
+    }
+
+    // Obtener el instructor si se proporciona instructorId
+    let finalInstructorId: number | null = null
+    let finalInstructorName: string | null = null
+
+    if (instructorId) {
+      const instructorIdNum = typeof instructorId === "string" ? parseInt(instructorId) : instructorId
+      if (!Number.isNaN(instructorIdNum)) {
+        const instructorRecord = await prisma.instructor.findUnique({
+          where: { id: instructorIdNum },
+          select: { id: true, name: true },
+        })
+        if (instructorRecord) {
+          finalInstructorId = instructorRecord.id
+          finalInstructorName = instructorRecord.name
+        }
+      }
+    } else if (instructor) {
+      // Si solo se proporciona el nombre, buscar por nombre
+      finalInstructorName = instructor
+    }
 
     // Map day names to lowercase
     const dayMap: { [key: string]: string } = {
@@ -119,7 +150,8 @@ export async function POST(request: Request) {
     const newClass = await prisma.class.create({
       data: {
         name,
-        instructorName: instructor,
+        instructorId: finalInstructorId,
+        instructorName: finalInstructorName || instructorName || instructor || null,
         dayOfWeek,
         time: formattedTime,
         duration: parseInt(duration),

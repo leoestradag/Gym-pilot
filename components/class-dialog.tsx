@@ -11,9 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 
+interface Instructor {
+  id: number
+  name: string
+  specialty?: string
+}
+
 interface ClassDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  instructors?: Instructor[]
   onAddClass?: (classData: {
     name: string
     instructor: string
@@ -24,7 +31,7 @@ interface ClassDialogProps {
   }) => void
 }
 
-export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps) {
+export function ClassDialog({ open, onOpenChange, instructors = [], onAddClass }: ClassDialogProps) {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
@@ -112,17 +119,30 @@ export function ClassDialog({ open, onOpenChange, onAddClass }: ClassDialogProps
               value={formData.instructor}
               onValueChange={(value) => setFormData({ ...formData, instructor: value })}
               required
+              disabled={instructors.length === 0}
             >
               <SelectTrigger id="instructor">
-                <SelectValue placeholder="Selecciona instructor" />
+                <SelectValue placeholder={instructors.length === 0 ? "No hay instructores disponibles" : "Selecciona instructor"} />
               </SelectTrigger>
               <SelectContent className="bg-white text-foreground">
-                <SelectItem value="ana" className="text-foreground">Ana López</SelectItem>
-                <SelectItem value="carlos" className="text-foreground">Carlos Mendoza</SelectItem>
-                <SelectItem value="maria" className="text-foreground">María González</SelectItem>
-                <SelectItem value="pedro" className="text-foreground">Pedro Sánchez</SelectItem>
+                {instructors.length === 0 ? (
+                  <SelectItem value="" disabled className="text-muted-foreground">
+                    No hay instructores registrados
+                  </SelectItem>
+                ) : (
+                  instructors.map((instructor) => (
+                    <SelectItem key={instructor.id} value={instructor.id.toString()} className="text-foreground">
+                      {instructor.name} {instructor.specialty ? `- ${instructor.specialty}` : ""}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
+            {instructors.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                Primero debes registrar instructores en la pestaña "Instructores"
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

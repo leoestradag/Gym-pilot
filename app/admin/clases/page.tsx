@@ -192,17 +192,26 @@ export default function ClassesPage() {
 
   const handleAddClass = async (newClassData: {
     name: string
-    instructor: string
+    instructor: string // Ahora será el ID del instructor
     day: string
     time: string
     duration: string
     capacity: string
   }) => {
     try {
+      // Convertir instructor ID a número y encontrar el nombre
+      const instructorId = parseInt(newClassData.instructor)
+      const selectedInstructor = instructors.find(inst => inst.id === instructorId)
+      const instructorName = selectedInstructor?.name || ""
+      
       const response = await fetch("/api/classes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newClassData),
+        body: JSON.stringify({
+          ...newClassData,
+          instructorId: instructorId,
+          instructorName: instructorName,
+        }),
       })
 
       if (!response.ok) {
@@ -599,7 +608,16 @@ export default function ClassesPage() {
         </Tabs>
 
         {/* Class Dialog */}
-        <ClassDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onAddClass={handleAddClass} />
+        <ClassDialog 
+          open={isDialogOpen} 
+          onOpenChange={setIsDialogOpen} 
+          instructors={instructors.map(instructor => ({
+            id: instructor.id,
+            name: instructor.name,
+            specialty: instructor.specialty,
+          }))}
+          onAddClass={handleAddClass} 
+        />
 
         {/* Instructor Details Dialog */}
         <Dialog open={isInstructorDialogOpen} onOpenChange={setIsInstructorDialogOpen}>
