@@ -1,74 +1,17 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Clock, Users, Star, ArrowLeft, Calendar, MapPin } from "lucide-react"
+import { Clock, Users, Star, ArrowLeft, Calendar, MapPin, Loader2 } from "lucide-react"
 import Link from "next/link"
-
-const gymsData = {
-  "tessalp-centro": {
-    name: "Tessalp Centro",
-    location: "Av. Principal 123, Centro",
-    phone: "+52 (555) 123-4567",
-    email: "centro@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/modern-gym-interior.png",
-  },
-  "tessalp-norte": {
-    name: "Tessalp Norte",
-    location: "Blvd. Norte 456, Zona Norte",
-    phone: "+52 (555) 234-5678",
-    email: "norte@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/fitness-center-equipment.jpg",
-  },
-  "tessalp-sur": {
-    name: "Tessalp Sur",
-    location: "Calle Sur 789, Zona Sur",
-    phone: "+52 (555) 345-6789",
-    email: "sur@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/gym-training-area.jpg",
-  },
-  "one-gym": {
-    name: "One Gym",
-    location: "Plaza Galerías, Zona Rosa",
-    phone: "+52 (555) 456-7890",
-    email: "info@onegym.com",
-    hours: "24/7 - Acceso ilimitado todos los días",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "world-gym": {
-    name: "World Gym",
-    location: "Centro Comercial Perisur",
-    phone: "+52 (555) 567-8901",
-    email: "contacto@worldgym.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "smartfit": {
-    name: "Smart Fit",
-    location: "Plaza Satélite",
-    phone: "+52 (555) 678-9012",
-    email: "atencion@smartfit.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-}
-
-const classes = [
-  { name: "Yoga", time: "7:00 AM - 8:00 AM", instructor: "María González", capacity: "20/25", difficulty: "Principiante", description: "Clase de yoga para todos los niveles, enfocada en flexibilidad y relajación." },
-  { name: "CrossFit", time: "6:00 PM - 7:00 PM", instructor: "Carlos Ruiz", capacity: "15/20", difficulty: "Avanzado", description: "Entrenamiento funcional de alta intensidad que combina fuerza y cardio." },
-  { name: "Spinning", time: "8:00 AM - 9:00 AM", instructor: "Ana Martínez", capacity: "18/30", difficulty: "Intermedio", description: "Clase de ciclismo indoor con música motivacional y diferentes intensidades." },
-  { name: "Zumba", time: "7:00 PM - 8:00 PM", instructor: "Laura Pérez", capacity: "22/25", difficulty: "Principiante", description: "Baile fitness que combina movimientos de baile con ejercicios aeróbicos." },
-  { name: "Pilates", time: "9:00 AM - 10:00 AM", instructor: "Sofia Torres", capacity: "12/15", difficulty: "Intermedio", description: "Método de ejercicio que se centra en el fortalecimiento del core y la flexibilidad." },
-  { name: "Boxing", time: "5:00 PM - 6:00 PM", instructor: "Miguel Ángel", capacity: "10/15", difficulty: "Avanzado", description: "Entrenamiento de boxeo que combina técnica, cardio y fuerza." },
-  { name: "HIIT", time: "6:30 AM - 7:30 AM", instructor: "Diego Ramírez", capacity: "16/20", difficulty: "Avanzado", description: "Entrenamiento de intervalos de alta intensidad para quemar grasa y mejorar condición física." },
-  { name: "Aqua Fitness", time: "10:00 AM - 11:00 AM", instructor: "Patricia López", capacity: "14/18", difficulty: "Principiante", description: "Ejercicios en agua que reducen el impacto en las articulaciones." },
-]
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
     case "Principiante":
+    case "General":
       return "bg-green-100 text-green-800"
     case "Intermedio":
       return "bg-yellow-100 text-yellow-800"
@@ -79,21 +22,93 @@ const getDifficultyColor = (difficulty: string) => {
   }
 }
 
-export default async function ClasesPage({ params }: { params: Promise<{ gymId: string }> }) {
-  const { gymId } = await params
-  const gym = gymsData[gymId as keyof typeof gymsData]
+export default function ClasesPage() {
+  const params = useParams()
+  const gymId = params.gymId as string
+  const [gym, setGym] = useState<any>(null)
+  const [classes, setClasses] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Buscar gimnasio
+        const gymResponse = await fetch(`/api/gyms`)
+        if (gymResponse.ok) {
+          const gyms = await gymResponse.json()
+          const foundGym = gyms.find((g: any) => 
+            g.slug === gymId || 
+            g.slug === gymId.replace(/-/g, " ") ||
+            g.slug === gymId.replace(/ /g, "-") ||
+            g.id === parseInt(gymId)
+          )
+          
+          if (foundGym) {
+            setGym(foundGym)
+            
+            // Cargar clases del gimnasio
+            const classesResponse = await fetch(`/api/public/gym/${gymId}/classes`)
+            if (classesResponse.ok) {
+              const classesData = await classesResponse.json()
+              setClasses(classesData)
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error loading gym data", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    if (gymId) {
+      loadData()
+    }
+  }, [gymId])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2 text-muted-foreground">Cargando clases...</span>
+      </div>
+    )
+  }
 
   if (!gym) {
-    return <div>Gimnasio no encontrado</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Gimnasio no encontrado</h1>
+          <p className="text-muted-foreground mb-4">
+            No se encontró el gimnasio con el identificador: {gymId}
+          </p>
+          <Link href="/gimnasios">
+            <Button>Ver todos los gimnasios</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
+
+  // Agrupar clases por día para el horario semanal
+  const classesByDay: { [key: string]: any[] } = {}
+  classes.forEach((cls) => {
+    const day = cls.day
+    if (!classesByDay[day]) {
+      classesByDay[day] = []
+    }
+    classesByDay[day].push(cls)
+  })
+
+  const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4">
-            <Link href={`/gym/${gymId}`}>
+            <Link href={`/gym/${gym.slug || gymId}`}>
               <Button variant="ghost" size="sm" className="gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver al Gimnasio
@@ -107,7 +122,6 @@ export default async function ClasesPage({ params }: { params: Promise<{ gymId: 
         </div>
       </div>
 
-      {/* Hero Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/20">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Clases Grupales</h2>
@@ -127,49 +141,53 @@ export default async function ClasesPage({ params }: { params: Promise<{ gymId: 
         </div>
       </section>
 
-      {/* Classes Grid */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {classes.map((clase) => (
-              <Card key={clase.name} className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{clase.name}</CardTitle>
-                    <Badge className={getDifficultyColor(clase.difficulty)}>
-                      {clase.difficulty}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {clase.time}
+          {classes.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">No hay clases disponibles en este momento.</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {classes.map((clase) => (
+                <Card key={clase.id} className="border-2 border-border/60 bg-card/90 backdrop-blur hover:border-primary/60 hover:shadow-lg transition-all duration-300">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl">{clase.name}</CardTitle>
+                      <Badge className={getDifficultyColor(clase.difficulty)}>
+                        {clase.difficulty}
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      {clase.capacity}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {clase.time} ({clase.duration} min)
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        {clase.capacity}
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Instructor: {clase.instructor}</h4>
-                    <p className="text-sm text-muted-foreground">{clase.description}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button className="flex-1">Reservar Clase</Button>
-                    <Button variant="outline" size="sm">
-                      <Calendar className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Instructor: {clase.instructor}</h4>
+                      <p className="text-sm text-muted-foreground">{clase.description || "Clase grupal dirigida por instructor certificado."}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button className="flex-1">Reservar Clase</Button>
+                      <Button variant="outline" size="sm">
+                        <Calendar className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Schedule Section */}
       <section className="py-20 px-4 bg-card/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -178,21 +196,22 @@ export default async function ClasesPage({ params }: { params: Promise<{ gymId: 
           </div>
           
           <div className="grid gap-4 md:grid-cols-7">
-            {["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"].map((day) => (
+            {daysOfWeek.map((day) => (
               <Card key={day} className="text-center">
                 <CardHeader>
                   <CardTitle className="text-lg">{day}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm">
-                    <div className="p-2 bg-primary/10 rounded">Yoga 7:00 AM</div>
-                    <div className="p-2 bg-accent/10 rounded">Spinning 8:00 AM</div>
-                    <div className="p-2 bg-primary/10 rounded">Pilates 9:00 AM</div>
-                    <div className="p-2 bg-accent/10 rounded">Aqua Fitness 10:00 AM</div>
-                    <div className="p-2 bg-primary/10 rounded">HIIT 6:30 AM</div>
-                    <div className="p-2 bg-accent/10 rounded">Boxing 5:00 PM</div>
-                    <div className="p-2 bg-primary/10 rounded">CrossFit 6:00 PM</div>
-                    <div className="p-2 bg-accent/10 rounded">Zumba 7:00 PM</div>
+                    {classesByDay[day] && classesByDay[day].length > 0 ? (
+                      classesByDay[day].map((cls) => (
+                        <div key={cls.id} className="p-2 bg-primary/10 rounded">
+                          {cls.name} {cls.time}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-xs">Sin clases</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -201,7 +220,6 @@ export default async function ClasesPage({ params }: { params: Promise<{ gymId: 
         </div>
       </section>
 
-      {/* Contact Section */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">¿Tienes preguntas sobre nuestras clases?</h2>

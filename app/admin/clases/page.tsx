@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Plus, CalendarIcon, Users, Clock, Award, Star, PhoneCall, Mail, TrendingUp } from "lucide-react"
+import { Plus, CalendarIcon, Users, Clock, Award, Star, PhoneCall, Mail, TrendingUp, ExternalLink } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { ClassDialog } from "@/components/class-dialog"
 import { WeeklyClassCalendar } from "@/components/weekly-class-calendar"
+import Link from "next/link"
 
 // Initial mock classes data
 const initialClasses = [
@@ -118,6 +119,7 @@ export default function ClassesPage() {
   const [isCreateInstructorDialogOpen, setIsCreateInstructorDialogOpen] = useState(false)
   const [instructors, setInstructors] = useState<Instructor[]>([])
   const [isLoadingInstructors, setIsLoadingInstructors] = useState(true)
+  const [gymSlug, setGymSlug] = useState<string>("")
   const [instructorFormData, setInstructorFormData] = useState({
     name: "",
     specialty: "",
@@ -318,6 +320,12 @@ export default function ClassesPage() {
           <SidebarTrigger />
           <h1 className="text-xl font-semibold text-foreground">Clases e Instructores</h1>
           <div className="ml-auto flex gap-2">
+            <Link href={`/gym/${gymSlug || ""}/clases`} target="_blank">
+              <Button size="sm" variant="outline" className="gap-2">
+                <ExternalLink className="h-4 w-4" />
+                Ver Página Pública
+              </Button>
+            </Link>
             <Button size="sm" className="gap-2" onClick={() => setIsDialogOpen(true)}>
               <Plus className="h-4 w-4" />
               Nueva Clase
