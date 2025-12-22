@@ -49,17 +49,13 @@ export default function MembresiasPage() {
   const [gym, setGym] = useState<any>(null)
   const [memberships, setMemberships] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  
-  if (!gymId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
 
   // Cargar datos del gimnasio y planes de membresía
   useEffect(() => {
+    if (!gymId) {
+      setIsLoading(false)
+      return
+    }
     const loadData = async () => {
       try {
         
@@ -152,6 +148,14 @@ export default function MembresiasPage() {
   const clearCart = () => {
     setCartItems([])
     localStorage.removeItem('gym-cart')
+  }
+
+  if (!gymId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   if (isLoading) {
