@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, Clock, Save } from "lucide-react"
+import { ArrowLeft, Clock, Save, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
@@ -38,9 +38,25 @@ export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [gymSlug, setGymSlug] = useState<string>("")
 
   useEffect(() => {
     loadSchedules()
+    // Cargar slug del gimnasio
+    const loadGymSlug = async () => {
+      try {
+        const response = await fetch("/api/gym/current")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.gym?.slug) {
+            setGymSlug(data.gym.slug)
+          }
+        }
+      } catch (error) {
+        console.error("Error loading gym slug", error)
+      }
+    }
+    loadGymSlug()
   }, [])
 
   const loadSchedules = async () => {
@@ -127,6 +143,14 @@ export default function SchedulesPage() {
               <h1 className="text-2xl font-bold text-foreground">Horarios de Operación</h1>
               <p className="text-sm text-muted-foreground">Configura los horarios de tu gimnasio</p>
             </div>
+            {gymSlug && (
+              <Link href={`/gym/${gymSlug}/horarios`} target="_blank">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  Ver Página Pública
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
