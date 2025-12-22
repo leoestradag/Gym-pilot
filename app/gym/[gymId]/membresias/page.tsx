@@ -50,7 +50,6 @@ export default function MembresiasPage() {
   const [memberships, setMemberships] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Cargar datos del gimnasio y planes de membresía
   useEffect(() => {
     if (!gymId) {
       setIsLoading(false)
@@ -58,8 +57,6 @@ export default function MembresiasPage() {
     }
     const loadData = async () => {
       try {
-        
-        // Buscar gimnasio y planes de membresía
         const gymResponse = await fetch(`/api/gyms`)
         if (gymResponse.ok) {
           const gyms = await gymResponse.json()
@@ -72,8 +69,6 @@ export default function MembresiasPage() {
           
           if (foundGym) {
             setGym(foundGym)
-            
-            // Cargar planes de membresía del gimnasio usando endpoint público
             const plansResponse = await fetch(`/api/public/gym/${gymId}/membership-plans`)
             if (plansResponse.ok) {
               const plans = await plansResponse.json()
@@ -97,11 +92,9 @@ export default function MembresiasPage() {
         setIsLoading(false)
       }
     }
-    
     loadData()
   }, [gymId])
 
-  // Cargar carrito desde localStorage al inicio
   useEffect(() => {
     const savedCart = localStorage.getItem('gym-cart')
     if (savedCart) {
@@ -123,16 +116,12 @@ export default function MembresiasPage() {
     }
 
     setCartItems(prev => {
-      // Verificar si ya existe en el carrito
       const existingItem = prev.find(item => item.id === cartItem.id)
       if (existingItem) {
-        return prev // No agregar duplicados
+        return prev
       }
       const newItems = [...prev, cartItem]
-      
-      // Guardar en localStorage
       localStorage.setItem('gym-cart', JSON.stringify(newItems))
-      
       return newItems
     })
   }
@@ -185,14 +174,12 @@ export default function MembresiasPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Shopping Cart */}
       <ShoppingCartComponent 
         items={cartItems}
         onRemoveItem={removeFromCart}
         onClearCart={clearCart}
       />
 
-      {/* Header */}
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4">
@@ -210,7 +197,6 @@ export default function MembresiasPage() {
         </div>
       </div>
 
-      {/* Hero Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/20">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Planes de Membresía</h2>
@@ -226,7 +212,6 @@ export default function MembresiasPage() {
         </div>
       </section>
 
-      {/* Membership Plans */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {memberships.length === 0 ? (
@@ -276,10 +261,10 @@ export default function MembresiasPage() {
                 </Card>
               ))}
             </div>
+          )}
         </div>
       </section>
 
-      {/* Benefits Section */}
       <section className="py-20 px-4 bg-card/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -303,7 +288,6 @@ export default function MembresiasPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -364,7 +348,6 @@ export default function MembresiasPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/20">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">¿Listo para comenzar?</h2>
