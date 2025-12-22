@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Plus, Edit, Trash2, ArrowLeft, Dumbbell, Heart, Shield, Users } from "lucide-react"
+import { Plus, Edit, Trash2, ArrowLeft, Dumbbell, Heart, Shield, Users, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
@@ -39,6 +39,7 @@ export default function FacilitiesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null)
+  const [gymSlug, setGymSlug] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -50,6 +51,21 @@ export default function FacilitiesPage() {
 
   useEffect(() => {
     loadFacilities()
+    // Cargar slug del gimnasio
+    const loadGymSlug = async () => {
+      try {
+        const response = await fetch("/api/gym/current")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.gym?.slug) {
+            setGymSlug(data.gym.slug)
+          }
+        }
+      } catch (error) {
+        console.error("Error loading gym slug", error)
+      }
+    }
+    loadGymSlug()
   }, [gymId])
 
   const loadFacilities = async () => {
@@ -190,10 +206,20 @@ export default function FacilitiesPage() {
                 <p className="text-sm text-muted-foreground">Gestiona las áreas de tu gimnasio</p>
               </div>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nueva Instalación
-            </Button>
+            <div className="flex gap-2">
+              {gymSlug && (
+                <Link href={`/gym/${gymSlug}/instalaciones`} target="_blank">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <ExternalLink className="h-4 w-4" />
+                    Ver Página Pública
+                  </Button>
+                </Link>
+              )}
+              <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Nueva Instalación
+              </Button>
+            </div>
           </div>
         </div>
       </div>
