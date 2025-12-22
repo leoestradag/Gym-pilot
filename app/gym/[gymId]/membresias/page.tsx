@@ -99,7 +99,7 @@ function MembresiasPageClient() {
     }
     
     loadData()
-  }, [params])
+  }, [gymId])
 
   // Cargar carrito desde localStorage al inicio
   useEffect(() => {
