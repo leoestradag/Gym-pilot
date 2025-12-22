@@ -64,17 +64,17 @@ function MembresiasPageClient() {
         if (gymResponse.ok) {
           const gyms = await gymResponse.json()
           const foundGym = gyms.find((g: any) => 
-            g.slug === id || 
-            g.slug === id.replace(/-/g, " ") ||
-            g.slug === id.replace(/ /g, "-") ||
-            g.id === parseInt(id)
+            g.slug === gymId || 
+            g.slug === gymId.replace(/-/g, " ") ||
+            g.slug === gymId.replace(/ /g, "-") ||
+            g.id === parseInt(gymId)
           )
           
           if (foundGym) {
             setGym(foundGym)
             
             // Cargar planes de membresía del gimnasio usando endpoint público
-            const plansResponse = await fetch(`/api/public/gym/${id}/membership-plans`)
+            const plansResponse = await fetch(`/api/public/gym/${gymId}/membership-plans`)
             if (plansResponse.ok) {
               const plans = await plansResponse.json()
               setMemberships(plans.map((plan: any) => ({
@@ -110,6 +110,8 @@ function MembresiasPageClient() {
   }, [])
 
   const addToCart = (membership: typeof memberships[0]) => {
+    if (!gym) return
+    
     const cartItem: CartItem = {
       id: `${gymId}-${membership.id}`,
       name: `Membresía ${membership.name}`,
