@@ -43,10 +43,6 @@ interface CartItem {
 }
 
 export default function MembresiasPage() {
-  return <MembresiasPageClient />
-}
-
-function MembresiasPageClient() {
   const params = useParams()
   const gymId = params.gymId as string
   const [cartItems, setCartItems] = useState<CartItem[]>([])
