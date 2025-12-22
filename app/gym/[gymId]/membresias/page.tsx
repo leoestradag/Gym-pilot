@@ -1,123 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Check, Star, Users, Clock, Shield, Zap, ShoppingCart } from "lucide-react"
+import { ArrowLeft, Check, Star, Users, Clock, Shield, Zap, ShoppingCart, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { ShoppingCart as ShoppingCartComponent } from "@/components/shopping-cart"
-
-const gymsData = {
-  "tessalp-centro": {
-    name: "Tessalp Centro",
-    location: "Av. Principal 123, Centro",
-    phone: "+52 (555) 123-4567",
-    email: "centro@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/modern-gym-interior.png",
-  },
-  "tessalp-norte": {
-    name: "Tessalp Norte",
-    location: "Blvd. Norte 456, Zona Norte",
-    phone: "+52 (555) 234-5678",
-    email: "norte@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/fitness-center-equipment.jpg",
-  },
-  "tessalp-sur": {
-    name: "Tessalp Sur",
-    location: "Calle Sur 789, Zona Sur",
-    phone: "+52 (555) 345-6789",
-    email: "sur@tessalpgyms.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 7:00 AM - 9:00 PM",
-    image: "/gym-training-area.jpg",
-  },
-  "one-gym": {
-    name: "One Gym",
-    location: "Plaza Galerías, Zona Rosa",
-    phone: "+52 (555) 456-7890",
-    email: "info@onegym.com",
-    hours: "24/7 - Acceso ilimitado todos los días",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "world-gym": {
-    name: "World Gym",
-    location: "Centro Comercial Perisur",
-    phone: "+52 (555) 567-8901",
-    email: "contacto@worldgym.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-  "smartfit": {
-    name: "Smart Fit",
-    location: "Plaza Satélite",
-    phone: "+52 (555) 678-9012",
-    email: "atencion@smartfit.com",
-    hours: "Lunes a Viernes: 5:00 AM - 11:00 PM | Sábado y Domingo: 6:00 AM - 10:00 PM",
-    image: "/people-training-in-modern-gym.jpg",
-  },
-}
-
-const memberships = [
-  {
-    id: "basico",
-    name: "Básico",
-    price: 599,
-    displayPrice: "$599",
-    period: "/mes",
-    description: "Perfecto para comenzar tu viaje fitness",
-    features: [
-      "Acceso al área de pesas",
-      "Acceso a cardio", 
-      "Casillero personal",
-      "Wi-Fi gratuito",
-      "Horarios extendidos",
-      "App móvil incluida"
-    ],
-    popular: false,
-    color: "border-gray-300"
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 899,
-    displayPrice: "$899",
-    period: "/mes",
-    description: "La opción más popular para resultados serios",
-    features: [
-      "Todo lo del plan Básico",
-      "Clases grupales ilimitadas",
-      "1 sesión de entrenamiento personal/mes",
-      "Acceso a zona de spa",
-      "Descuentos en productos",
-      "Plan nutricional básico",
-      "Evaluación física mensual"
-    ],
-    popular: true,
-    color: "border-primary"
-  },
-  {
-    id: "elite",
-    name: "Elite",
-    price: 1299,
-    displayPrice: "$1,299",
-    period: "/mes",
-    description: "Experiencia premium completa",
-    features: [
-      "Todo lo del plan Premium",
-      "4 sesiones de entrenamiento personal/mes",
-      "Plan nutricional personalizado",
-      "Acceso prioritario a clases",
-      "Invitaciones a eventos exclusivos",
-      "Toalla y amenidades premium",
-      "Nutricionista personal",
-      "Acceso 24/7"
-    ],
-    popular: false,
-    color: "border-yellow-400"
-  }
-]
 
 const benefits = [
   {
@@ -152,19 +42,64 @@ interface CartItem {
   gymName: string
 }
 
-export default async function MembresiasPage({ params }: { params: Promise<{ gymId: string }> }) {
-  const { gymId } = await params
-  const gym = gymsData[gymId as keyof typeof gymsData]
-
-  if (!gym) {
-    return <div>Gimnasio no encontrado</div>
-  }
-
-  return <MembresiasPageClient gymId={gymId} gym={gym} />
+export default function MembresiasPage() {
+  return <MembresiasPageClient />
 }
 
-function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
+function MembresiasPageClient() {
+  const params = useParams()
+  const gymId = params.gymId as string
   const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [gym, setGym] = useState<any>(null)
+  const [memberships, setMemberships] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Cargar datos del gimnasio y planes de membresía
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        
+        // Buscar gimnasio y planes de membresía
+        const gymResponse = await fetch(`/api/gyms`)
+        if (gymResponse.ok) {
+          const gyms = await gymResponse.json()
+          const foundGym = gyms.find((g: any) => 
+            g.slug === id || 
+            g.slug === id.replace(/-/g, " ") ||
+            g.slug === id.replace(/ /g, "-") ||
+            g.id === parseInt(id)
+          )
+          
+          if (foundGym) {
+            setGym(foundGym)
+            
+            // Cargar planes de membresía del gimnasio usando endpoint público
+            const plansResponse = await fetch(`/api/public/gym/${id}/membership-plans`)
+            if (plansResponse.ok) {
+              const plans = await plansResponse.json()
+              setMemberships(plans.map((plan: any) => ({
+                id: plan.id.toString(),
+                name: plan.name,
+                price: plan.price,
+                displayPrice: `$${plan.price.toLocaleString()}`,
+                period: plan.period === "mes" ? "/mes" : plan.period === "trimestre" ? "/trimestre" : "/año",
+                description: plan.description || "",
+                features: plan.features || [],
+                popular: plan.popular || false,
+                color: plan.color ? `border-${plan.color}` : plan.popular ? "border-primary" : "border-gray-300"
+              })))
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error loading gym data", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [params])
 
   // Cargar carrito desde localStorage al inicio
   useEffect(() => {
@@ -213,6 +148,31 @@ function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
     localStorage.removeItem('gym-cart')
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2 text-muted-foreground">Cargando planes de membresía...</span>
+      </div>
+    )
+  }
+
+  if (!gym) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Gimnasio no encontrado</h1>
+          <p className="text-muted-foreground mb-4">
+            No se encontró el gimnasio con el identificador: {gymId}
+          </p>
+          <Link href="/gimnasios">
+            <Button>Ver todos los gimnasios</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Shopping Cart */}
@@ -226,7 +186,7 @@ function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
       <div className="border-b border-border/50 bg-card/30 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4">
-            <Link href={`/gym/${gymId}`}>
+            <Link href={`/gym/${gym.slug || gymId}`}>
               <Button variant="ghost" size="sm" className="gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Volver al Gimnasio
@@ -259,8 +219,13 @@ function MembresiasPageClient({ gymId, gym }: { gymId: string, gym: any }) {
       {/* Membership Plans */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid gap-8 md:grid-cols-3">
-            {memberships.map((plan) => (
+          {memberships.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">No hay planes de membresía disponibles en este momento.</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-3">
+              {memberships.map((plan) => (
               <Card
                 key={plan.name}
                 className={`border-2 ${plan.color} bg-card/90 backdrop-blur relative hover:shadow-xl transition-all duration-300 ${

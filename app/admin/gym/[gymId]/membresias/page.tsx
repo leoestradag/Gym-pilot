@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
-import { Plus, Edit, Trash2, ArrowLeft, Check } from "lucide-react"
+import { Plus, Edit, Trash2, ArrowLeft, Check, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -35,6 +35,7 @@ export default function MembershipPlansPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPlan, setEditingPlan] = useState<MembershipPlan | null>(null)
+  const [gymSlug, setGymSlug] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -47,8 +48,23 @@ export default function MembershipPlansPage() {
   })
 
   useEffect(() => {
+    loadGymInfo()
     loadPlans()
   }, [gymId])
+
+  const loadGymInfo = async () => {
+    try {
+      const response = await fetch("/api/gym/current")
+      if (response.ok) {
+        const data = await response.json()
+        if (data.gym?.slug) {
+          setGymSlug(data.gym.slug)
+        }
+      }
+    } catch (error) {
+      console.error("Error loading gym info", error)
+    }
+  }
 
   const loadPlans = async () => {
     try {
@@ -195,10 +211,20 @@ export default function MembershipPlansPage() {
                 <p className="text-sm text-muted-foreground">Gestiona los planes y precios de tu gimnasio</p>
               </div>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nuevo Plan
-            </Button>
+            <div className="flex gap-2">
+              {gymSlug && (
+                <Link href={`/gym/${gymSlug}/membresias`} target="_blank">
+                  <Button variant="outline" className="gap-2">
+                    <ExternalLink className="h-4 w-4" />
+                    Ver Página Pública
+                  </Button>
+                </Link>
+              )}
+              <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Nuevo Plan
+              </Button>
+            </div>
           </div>
         </div>
       </div>
