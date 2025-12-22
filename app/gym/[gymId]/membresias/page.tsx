@@ -44,11 +44,19 @@ interface CartItem {
 
 export default function MembresiasPage() {
   const params = useParams()
-  const gymId = params.gymId as string
+  const gymId = (params?.gymId as string) || ""
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [gym, setGym] = useState<any>(null)
   const [memberships, setMemberships] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  
+  if (!gymId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   // Cargar datos del gimnasio y planes de membresía
   useEffect(() => {
@@ -224,46 +232,46 @@ export default function MembresiasPage() {
           ) : (
             <div className="grid gap-8 md:grid-cols-3">
               {memberships.map((plan) => (
-              <Card
-                key={plan.name}
-                className={`border-2 ${plan.color} bg-card/90 backdrop-blur relative hover:shadow-xl transition-all duration-300 ${
-                  plan.popular ? "shadow-lg shadow-primary/20 scale-105" : ""
-                }`}
-              >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
-                    Más Popular
-                  </Badge>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <p className="text-muted-foreground">{plan.description}</p>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">{plan.displayPrice}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
-                    variant={plan.popular ? "default" : "outline"}
-                    onClick={() => addToCart(plan)}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {plan.popular ? "Elegir Plan Premium" : `Elegir Plan ${plan.name}`}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                <Card
+                  key={plan.name}
+                  className={`border-2 ${plan.color} bg-card/90 backdrop-blur relative hover:shadow-xl transition-all duration-300 ${
+                    plan.popular ? "shadow-lg shadow-primary/20 scale-105" : ""
+                  }`}
+                >
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                      Más Popular
+                    </Badge>
+                  )}
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <p className="text-muted-foreground">{plan.description}</p>
+                    <div className="mt-4">
+                      <span className="text-4xl font-bold">{plan.displayPrice}</span>
+                      <span className="text-muted-foreground">{plan.period}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className={`w-full ${plan.popular ? "bg-primary hover:bg-primary/90" : ""}`}
+                      variant={plan.popular ? "default" : "outline"}
+                      onClick={() => addToCart(plan)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      {plan.popular ? "Elegir Plan Premium" : `Elegir Plan ${plan.name}`}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
         </div>
       </section>
 
