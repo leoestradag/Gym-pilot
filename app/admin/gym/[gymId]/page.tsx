@@ -192,7 +192,7 @@ export default async function GymAdminDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Edita precios y características de tus planes
+                  Edita precios y características de tus planes. Los cambios se reflejan en la página pública.
                 </p>
               </CardContent>
             </Card>
