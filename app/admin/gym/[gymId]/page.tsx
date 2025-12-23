@@ -10,7 +10,8 @@ import {
   Dumbbell,
   Heart,
   Clock,
-  Users
+  Users,
+  Home
 } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/db"
@@ -160,6 +161,24 @@ export default async function GymAdminDashboard({
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Link href={`/admin/gym/${gymId}/inicio`}>
+            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Home className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Inicio</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Edita la información de la página principal de tu gimnasio. Los cambios se reflejan en la página pública.
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href={`/admin/gym/${gymId}/instalaciones`}>
             <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
               <CardHeader>
