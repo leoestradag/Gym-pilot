@@ -124,7 +124,10 @@ export default function FacilitiesPage() {
           body: JSON.stringify(facilityData),
         })
 
-        if (!response.ok) throw new Error("Error al crear")
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || "Error al crear")
+        }
 
         toast({
           title: "Instalación creada",
@@ -144,9 +147,11 @@ export default function FacilitiesPage() {
       })
       loadFacilities()
     } catch (error) {
+      console.error("Error saving facility:", error)
+      const errorMessage = error instanceof Error ? error.message : "No se pudo guardar la instalación"
       toast({
         title: "Error",
-        description: "No se pudo guardar la instalación",
+        description: errorMessage,
         variant: "destructive",
       })
     }

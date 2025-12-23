@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getGymSession } from "@/lib/gym-session"
+import { getGymSession, getGymAccess } from "@/lib/gym-session"
 import { prisma } from "@/lib/db"
 import { z } from "zod"
 
@@ -83,8 +83,17 @@ export async function DELETE(
 ) {
   try {
     const { gymId, facilityId } = await params
-    const gym = await getGymSession()
+    const gymSession = await getGymSession()
+    const gymAccess = await getGymAccess(Number(gymId))
 
+    if (!gymSession && !gymAccess) {
+      return NextResponse.json(
+        { error: "No autorizado" },
+        { status: 401 },
+      )
+    }
+
+    const gym = gymSession || gymAccess
     if (!gym || gym.id !== Number(gymId)) {
       return NextResponse.json(
         { error: "No autorizado" },
