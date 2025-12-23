@@ -11,7 +11,8 @@ import {
   Heart,
   Clock,
   Users,
-  Home
+  Home,
+  Settings
 } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/db"
@@ -264,6 +265,24 @@ export default async function GymAdminDashboard({
               <CardContent>
                 <p className="text-sm text-muted-foreground">
                   Actualiza dirección, teléfono y email. Los cambios se reflejan en la página pública.
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/admin/gym/${gymId}/configuracion`}>
+            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Settings className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Configuración</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Cambia contraseña y configuración general
                 </p>
               </CardContent>
             </Card>
