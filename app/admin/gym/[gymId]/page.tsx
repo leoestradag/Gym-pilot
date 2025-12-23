@@ -6,12 +6,10 @@ import {
   CreditCard, 
   Calendar, 
   MapPin, 
-  Settings,
   LogOut,
   Dumbbell,
   Heart,
   Clock,
-  DollarSign,
   Users
 } from "lucide-react"
 import Link from "next/link"
@@ -174,7 +172,7 @@ export default async function GymAdminDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Gestiona las áreas y equipamiento de tu gimnasio
+                  Gestiona las áreas y equipamiento de tu gimnasio. Los cambios se reflejan en la página pública.
                 </p>
               </CardContent>
             </Card>
@@ -210,25 +208,7 @@ export default async function GymAdminDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Configura los horarios de operación
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/admin/finanzas">
-            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-lg">Finanzas</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Revisa ingresos, gastos y reportes financieros
+                  Configura los horarios de operación. Los cambios se reflejan en la página pública.
                 </p>
               </CardContent>
             </Card>
@@ -246,7 +226,7 @@ export default async function GymAdminDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Gestiona clases grupales e instructores
+                  Gestiona clases grupales e instructores. Los cambios se reflejan en la página pública.
                 </p>
               </CardContent>
             </Card>
@@ -264,25 +244,7 @@ export default async function GymAdminDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Actualiza dirección, teléfono y email
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={`/admin/gym/${gymId}/configuracion`}>
-            <Card className="border-border/50 bg-card/50 backdrop-blur hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Settings className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-lg">Configuración</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Cambia contraseña y configuración general
+                  Actualiza dirección, teléfono y email. Los cambios se reflejan en la página pública.
                 </p>
               </CardContent>
             </Card>
