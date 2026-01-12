@@ -107,6 +107,7 @@ export default function InstalacionesPage() {
 
       <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/20">
         <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm text-muted-foreground mb-2">{gym.name}</p>
           <h2 className="text-4xl font-bold mb-4">Nuestras Instalaciones</h2>
           <p className="text-xl text-muted-foreground mb-8">
             Espacios diseñados para tu comodidad y rendimiento
