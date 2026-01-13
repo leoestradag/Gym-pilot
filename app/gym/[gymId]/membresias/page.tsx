@@ -256,7 +256,12 @@ export default function MembresiasPage() {
                       onClick={() => addToCart(plan)}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
-                      {plan.popular ? "Elegir Plan Premium" : `Elegir Plan ${plan.name}`}
+                      {plan.popular 
+                        ? "Elegir Plan Premium" 
+                        : plan.name.toLowerCase().startsWith("plan ")
+                          ? `Elegir ${plan.name}`
+                          : `Elegir Plan ${plan.name}`
+                      }
                     </Button>
                   </CardContent>
                 </Card>
