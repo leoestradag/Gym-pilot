@@ -552,8 +552,6 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
-          </>
-        )}
 
         {/* Dialog Ver Detalles */}
         <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
