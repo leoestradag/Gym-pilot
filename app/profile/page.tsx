@@ -7,8 +7,11 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Calendar, MapPin, CreditCard, CheckCircle, Clock, Settings, User as UserIcon, Mail, Save } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, CreditCard, CheckCircle, Clock, Settings, User as UserIcon, Mail, Save, X } from "lucide-react"
 import Link from "next/link"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 interface Membership {
   id: string
@@ -55,6 +58,12 @@ export default function ProfilePage() {
     email: '',
   })
   const [isSavingSettings, setIsSavingSettings] = useState(false)
+  const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [isRenewOpen, setIsRenewOpen] = useState(false)
+  const [membershipPlanDetails, setMembershipPlanDetails] = useState<any>(null)
+  const { toast } = useToast()
+  const router = useRouter()
 
   useEffect(() => {
     // Verificar si hay un usuario autenticado
@@ -183,6 +192,82 @@ export default function ProfilePage() {
       default:
         return 'bg-amber-500/10 text-amber-600 border-amber-500/40'
     }
+  }
+
+  const calculateDaysRemaining = (purchaseDate: string) => {
+    const purchase = new Date(purchaseDate)
+    const now = new Date()
+    
+    // Calcular el próximo mes desde la fecha de compra
+    const nextMonth = new Date(purchase)
+    nextMonth.setMonth(nextMonth.getMonth() + 1)
+    
+    // Calcular días restantes
+    const diffTime = nextMonth.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    return diffDays > 0 ? diffDays : 0
+  }
+
+  const handleViewDetails = async (membership: Membership) => {
+    setSelectedMembership(membership)
+    setIsDetailsOpen(true)
+    
+    // Intentar obtener detalles del plan desde la API
+    if (membership.items.length > 0) {
+      const item = membership.items[0]
+      try {
+        const response = await fetch(`/api/public/gym/${item.gymId}/membership-plans`)
+        if (response.ok) {
+          const plans = await response.json()
+          const plan = plans.find((p: any) => p.name === item.plan)
+          if (plan) {
+            setMembershipPlanDetails(plan)
+          }
+        }
+      } catch (error) {
+        console.error("Error loading plan details", error)
+      }
+    }
+  }
+
+  const handleRenew = (membership: Membership) => {
+    setSelectedMembership(membership)
+    setIsRenewOpen(true)
+  }
+
+  const confirmRenewal = () => {
+    if (!selectedMembership || selectedMembership.items.length === 0) return
+    
+    const item = selectedMembership.items[0]
+    
+    // Agregar al carrito para renovar
+    const cartItem = {
+      id: `${item.gymId}-${item.plan}-renew`,
+      name: `Membresía ${item.plan}`,
+      price: item.price,
+      type: "membership" as const,
+      plan: item.plan,
+      gymId: item.gymId,
+      gymName: item.gymName
+    }
+    
+    // Guardar en localStorage
+    const existingCart = localStorage.getItem('gym-cart')
+    const cart = existingCart ? JSON.parse(existingCart) : []
+    cart.push(cartItem)
+    localStorage.setItem('gym-cart', JSON.stringify(cart))
+    
+    setIsRenewOpen(false)
+    toast({
+      title: "Plan agregado al carrito",
+      description: "Redirigiendo al checkout para completar la renovación",
+    })
+    
+    // Redirigir al checkout
+    setTimeout(() => {
+      router.push('/checkout')
+    }, 1000)
   }
 
   const handleLoadAccessRequests = async () => {
@@ -377,11 +462,21 @@ export default function ProfilePage() {
                     </div>
                     
                     <div className="flex gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => handleViewDetails(membership)}
+                      >
                         Ver Detalles
                       </Button>
                       {membership.status === 'active' && (
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => handleRenew(membership)}
+                        >
                           Renovar
                         </Button>
                       )}
@@ -457,6 +552,168 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
+          </>
+        )}
+
+        {/* Dialog Ver Detalles */}
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Detalles de la Membresía</DialogTitle>
+              <DialogDescription>
+                Información completa de tu plan y reglas de uso
+              </DialogDescription>
+            </DialogHeader>
+            {selectedMembership && (
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">Información del Plan</h3>
+                    <div className="space-y-2 text-sm">
+                      {selectedMembership.items.map((item, index) => (
+                        <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium">{item.name}</span>
+                            <span className="text-primary font-bold">
+                              {formatPrice(item.price)}/mes
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <MapPin className="h-3 w-3" />
+                            <span>{item.gymName}</span>
+                          </div>
+                          <Badge variant="outline" className="mt-2">
+                            {item.plan}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {membershipPlanDetails && membershipPlanDetails.features && membershipPlanDetails.features.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-2">Beneficios Incluidos</h3>
+                      <ul className="space-y-2">
+                        {membershipPlanDetails.features.map((feature: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="font-semibold mb-2">Reglas y Términos</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <Clock className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>La membresía es válida por 30 días desde la fecha de compra</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>Acceso ilimitado a las instalaciones durante el horario de operación</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>Puedes renovar tu membresía antes de que expire</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>No hay penalización por cancelación</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <span>La renovación extiende tu membresía por 30 días adicionales</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Total pagado:</span>
+                      <span className="font-bold">{formatPrice(selectedMembership.total)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Fecha de compra:</span>
+                      <span>{formatDate(selectedMembership.date)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Estado:</span>
+                      <Badge className={getStatusColor(selectedMembership.status)}>
+                        {getStatusText(selectedMembership.status)}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog Renovar */}
+        <Dialog open={isRenewOpen} onOpenChange={setIsRenewOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Renovar Membresía</DialogTitle>
+              <DialogDescription>
+                Extiende tu membresía por 30 días adicionales
+              </DialogDescription>
+            </DialogHeader>
+            {selectedMembership && selectedMembership.items.length > 0 && (
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">{selectedMembership.items[0].name}</span>
+                    <span className="text-primary font-bold">
+                      {formatPrice(selectedMembership.items[0].price)}/mes
+                    </span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <MapPin className="h-3 w-3 inline mr-1" />
+                    {selectedMembership.items[0].gymName}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Días restantes del mes actual:</span>
+                    <span className="text-lg font-bold text-primary">
+                      {calculateDaysRemaining(selectedMembership.date)} días
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <p className="text-muted-foreground">
+                    Al renovar, tu membresía se extenderá por 30 días adicionales desde la fecha de renovación.
+                  </p>
+                  <p className="text-muted-foreground">
+                    El pago se procesará de forma segura y recibirás confirmación por email.
+                  </p>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsRenewOpen(false)}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={confirmRenewal}
+                    className="flex-1"
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Renovar por {formatPrice(selectedMembership.items[0].price)}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
